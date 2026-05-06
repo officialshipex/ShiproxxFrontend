@@ -218,16 +218,43 @@ export const handleBulkDownloadInvoice = async ({ selectedOrders }) => {
 
 export const handleBulkDownloadLabel = async ({ selectedOrders }) => {
   try {
+    if (!selectedOrders || selectedOrders.length === 0) {
+      Notification("No orders selected.", "info");
+      return;
+    }
+
+    // ── 1. Fetch user's label settings to determine page layout ──────────
+    let labelSize = "A4"; // default
+    try {
+      const token = Cookies.get("session");
+      const settingsRes = await fetch(`${REACT_APP_BACKEND_URL}/label/getLabel`, {
+        headers: { authorization: `Bearer ${token}` },
+      });
+      if (settingsRes.ok) {
+        const settingsData = await settingsRes.json();
+        labelSize = settingsData.labelSize || "A4";
+      }
+    } catch (_) {
+      // silently fall back to A4
+    }
+
+    const isThermal = labelSize === "thermal";
+
     const mergedPdf = await PDFDocument.create();
-    const pageWidth = 595; // A4 width
-    const pageHeight = 842; // A4 height
-    const labelWidth = pageWidth / 2; // For 2x2 grid
-    const labelHeight = pageHeight / 2; // For 2x2 grid
+    // A4 pts
+    const pageWidth  = 595;
+    const pageHeight = 842;
+    // Thermal pts (4"×6" at 72 dpi)
+    const thermalW = 288;
+    const thermalH = 432;
+
+    const labelWidth  = pageWidth  / 2; // for 2×2 grid
+    const labelHeight = pageHeight / 2;
 
     let labelCount = 0;
     let currentPage = null;
 
-    // 🟢 Fetch all order details first (so we know which are Amazon)
+    // ── 2. Fetch order info (to handle Amazon labels) ────────────────────
     const orderResponses = await Promise.all(
       selectedOrders.map((id) =>
         fetch(`${REACT_APP_BACKEND_URL}/orders/checkCourier/${id}`).then(
@@ -236,15 +263,14 @@ export const handleBulkDownloadLabel = async ({ selectedOrders }) => {
       ),
     );
 
+    // ── 3. Download and assemble each label ──────────────────────────────
     for (const orderData of orderResponses) {
       let response;
       if (orderData.provider === "Amazon Shipping" && orderData.label) {
-        // 🟡 Use Amazon-provided label link directly
         response = await fetch(
           `${REACT_APP_BACKEND_URL}/printlabel/proxy-label?url=${encodeURIComponent(orderData.label)}`,
         );
       } else {
-        // 🟢 Generate label from your system
         response = await fetch(
           `${REACT_APP_BACKEND_URL}/printlabel/generate-pdf/${orderData._id}`,
         );
@@ -259,44 +285,25 @@ export const handleBulkDownloadLabel = async ({ selectedOrders }) => {
       );
 
       for (const page of copiedPages) {
-        if (selectedOrders.length === 1) {
-          // If only 1 label, make it full-page
-          let singlePage = mergedPdf.addPage([pageWidth, pageHeight]);
-          const embeddedPage = await mergedPdf.embedPage(page);
-          singlePage.drawPage(embeddedPage, {
-            x: 0,
-            y: 0,
-            width: pageWidth,
-            height: pageHeight,
-          });
-        } else if (selectedOrders.length === 2) {
-          // If 2 labels, each label gets a full page
-          let newPage = mergedPdf.addPage([pageWidth, pageHeight]);
-          const embeddedPage = await mergedPdf.embedPage(page);
-          newPage.drawPage(embeddedPage, {
-            x: 0,
-            y: 0,
-            width: pageWidth,
-            height: pageHeight,
-          });
+        if (isThermal) {
+          // Thermal: one label per 4"×6" page, no grid
+          const tPage = mergedPdf.addPage([thermalW, thermalH]);
+          const embedded = await mergedPdf.embedPage(page);
+          tPage.drawPage(embedded, { x: 0, y: 0, width: thermalW, height: thermalH });
+        } else if (selectedOrders.length <= 2) {
+          // A4, 1–2 labels: full page each
+          const newPage = mergedPdf.addPage([pageWidth, pageHeight]);
+          const embedded = await mergedPdf.embedPage(page);
+          newPage.drawPage(embedded, { x: 0, y: 0, width: pageWidth, height: pageHeight });
         } else {
-          // 4 or more labels → Arrange in 2x2 grid
+          // A4, 3+ labels: 2×2 grid
           if (labelCount % 4 === 0) {
             currentPage = mergedPdf.addPage([pageWidth, pageHeight]);
           }
-
           const x = (labelCount % 2) * labelWidth;
-          const y =
-            pageHeight - ((Math.floor(labelCount / 2) % 2) + 1) * labelHeight;
-
-          const embeddedPage = await mergedPdf.embedPage(page);
-          currentPage.drawPage(embeddedPage, {
-            x,
-            y,
-            width: labelWidth,
-            height: labelHeight,
-          });
-
+          const y = pageHeight - ((Math.floor(labelCount / 2) % 2) + 1) * labelHeight;
+          const embedded = await mergedPdf.embedPage(page);
+          currentPage.drawPage(embedded, { x, y, width: labelWidth, height: labelHeight });
           labelCount++;
         }
       }
@@ -304,12 +311,12 @@ export const handleBulkDownloadLabel = async ({ selectedOrders }) => {
 
     const mergedPdfBytes = await mergedPdf.save();
     const mergedBlob = new Blob([mergedPdfBytes], { type: "application/pdf" });
-    saveAs(mergedBlob, "bulk-labels.pdf");
+    saveAs(mergedBlob, `bulk-labels${isThermal ? "-thermal" : ""}.pdf`);
 
-    Notification("Label downloaded successfully!", "success");
+    Notification("Labels downloaded successfully!", "success");
   } catch (error) {
     console.error("Error downloading Label:", error);
-    Notification("Failed to download Label.", "error");
+    Notification("Failed to download Labels.", "error");
   }
 };
 
