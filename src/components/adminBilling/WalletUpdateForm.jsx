@@ -140,7 +140,8 @@ const WalletUpdateForm = ({ onClose }) => {
         "Weight Dispute Charges",
         "Cashback",
         "Credit Note",
-        "Wallet to bank"
+        "Wallet to bank",
+        "GST Charges"
     ];
     const categoryOptions = ["credit", "debit"];
 
@@ -228,7 +229,7 @@ const WalletUpdateForm = ({ onClose }) => {
                         />
                     </div>
                     {descOpen && (
-                        <div className="absolute left-0 right-0 bg-white shadow-lg rounded-lg mt-1 z-40 max-h-48 overflow-y-auto">
+                        <div className="absolute left-0 right-0 bg-white shadow-lg rounded-lg mt-1 z-40 max-h-36 overflow-y-auto">
                             {descriptionOptions.map((desc, index) => (
                                 <div
                                     key={index}

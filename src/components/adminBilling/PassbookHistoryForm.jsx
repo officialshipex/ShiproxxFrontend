@@ -248,9 +248,33 @@ const PassbookHistoryForm = ({ onClose }) => {
 
                 {/* Description Textarea */}
                 <div className="flex flex-col">
-                    {/* <label htmlFor="description" className="font-[400] mb-1 text-gray-500">
-                        Description
-                    </label> */}
+                    <div className="flex flex-wrap gap-2 mb-2">
+                        {[
+                            "Freight Charges Applied",
+                            "GST Charges Applied",
+                            "COD Charges Applied",
+                            "Weight Dispute Charges Applied",
+                            "Credit Note",
+                        ].map((suggestion) => (
+                            <button
+                                key={suggestion}
+                                type="button"
+                                onClick={() =>
+                                    setFormData((prev) => ({
+                                        ...prev,
+                                        description: suggestion,
+                                    }))
+                                }
+                                className={`text-[10px] px-2 py-1 rounded border transition-colors ${
+                                    formData.description === suggestion
+                                        ? "bg-green-100 border-[#0CBB7D] text-[#0CBB7D] font-bold"
+                                        : "bg-gray-50 border-gray-200 text-gray-500 hover:bg-gray-100"
+                                }`}
+                            >
+                                {suggestion}
+                            </button>
+                        ))}
+                    </div>
                     <textarea
                         id="description"
                         name="description"

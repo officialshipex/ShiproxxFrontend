@@ -924,10 +924,10 @@ const Shippings = (filterOrder) => {
                         <div className="space-y-2 text-[12px]">
                           {row.orderType === "B2C" ? (
                             <>
-                              <div className="flex justify-between"><span className="text-gray-500">Freight</span><span className="font-bold">₹ {row.priceBreakup?.freight ?? 0}</span></div>
-                              <div className="flex justify-between"><span className="text-gray-500">COD</span><span className="font-bold">₹ {row.priceBreakup?.cod ?? 0}</span></div>
-                              <div className="flex justify-between"><span className="text-gray-500">GST</span><span className="font-bold">₹ {row.priceBreakup?.gst ?? 0}</span></div>
-                              <div className="flex justify-between border-t pt-2 mt-1"><span className="font-bold text-gray-800">Total</span><span className="font-bold text-[#0CBB7D]">₹ {row.priceBreakup?.total ?? row.totalFreightCharges ?? 0}</span></div>
+                              <div className="flex justify-between"><span className="text-gray-500">Freight</span><span className="font-bold">₹ {Number(row.priceBreakup?.freight ?? 0).toFixed(2)}</span></div>
+                              <div className="flex justify-between"><span className="text-gray-500">COD</span><span className="font-bold">₹ {Number(row.priceBreakup?.cod ?? 0).toFixed(2)}</span></div>
+                              <div className="flex justify-between"><span className="text-gray-500">GST</span><span className="font-bold">₹ {Number(row.priceBreakup?.gst ?? 0).toFixed(2)}</span></div>
+                              <div className="flex justify-between border-t pt-2 mt-1"><span className="font-bold text-gray-800">Total</span><span className="font-bold text-[#0CBB7D]">₹ {Number(row.priceBreakup?.total ?? row.totalFreightCharges ?? 0).toFixed(2)}</span></div>
                             </>
                           ) : (
                             <>
@@ -935,12 +935,12 @@ const Shippings = (filterOrder) => {
                                 ? Object.entries(row.rateBreakup).map(([key, val]) => (
                                   <div key={key} className="flex justify-between">
                                     <span className="text-gray-500 capitalize">{key}</span>
-                                    <span className="font-bold">{typeof val === "number" ? `₹ ${val}` : val}</span>
+                                    <span className="font-bold">{typeof val === "number" ? `₹ ${val.toFixed(2)}` : val}</span>
                                   </div>
                                 ))
                                 : <p className="text-gray-400 italic text-center py-2">No breakup available</p>
                               }
-                              <div className="flex justify-between border-t pt-2 mt-1"><span className="font-bold text-gray-800">Total</span><span className="font-bold text-[#0CBB7D]">₹ {row.totalFreightCharges ?? 0}</span></div>
+                              <div className="flex justify-between border-t pt-2 mt-1"><span className="font-bold text-gray-800">Total</span><span className="font-bold text-[#0CBB7D]">₹ {Number(row.totalFreightCharges ?? 0).toFixed(2)}</span></div>
                             </>
                           )}
                         </div>
@@ -1017,10 +1017,10 @@ const Shippings = (filterOrder) => {
           </div>
           {pricePopupPos.order.orderType === "B2C" ? (
             <div className="space-y-1">
-              <div className="flex justify-between"><span className="text-gray-500">Freight</span><span className="font-[600]">₹ {pricePopupPos.order.priceBreakup?.freight ?? 0}</span></div>
-              <div className="flex justify-between"><span className="text-gray-500">COD</span><span className="font-[600]">₹ {pricePopupPos.order.priceBreakup?.cod ?? 0}</span></div>
-              <div className="flex justify-between"><span className="text-gray-500">GST</span><span className="font-[600]">₹ {pricePopupPos.order.priceBreakup?.gst ?? 0}</span></div>
-              <div className="flex justify-between border-t pt-1 mt-1"><span className="font-[700] text-gray-800">Total</span><span className="font-[700] text-[#0CBB7D]">₹ {pricePopupPos.order.priceBreakup?.total ?? pricePopupPos.order.totalFreightCharges ?? 0}</span></div>
+              <div className="flex justify-between"><span className="text-gray-500">Freight</span><span className="font-[600]">₹ {Number(pricePopupPos.order.priceBreakup?.freight ?? 0).toFixed(2)}</span></div>
+              <div className="flex justify-between"><span className="text-gray-500">COD</span><span className="font-[600]">₹ {Number(pricePopupPos.order.priceBreakup?.cod ?? 0).toFixed(2)}</span></div>
+              <div className="flex justify-between"><span className="text-gray-500">GST</span><span className="font-[600]">₹ {Number(pricePopupPos.order.priceBreakup?.gst ?? 0).toFixed(2)}</span></div>
+              <div className="flex justify-between border-t pt-1 mt-1"><span className="font-[700] text-gray-800">Total</span><span className="font-[700] text-[#0CBB7D]">₹ {Number(pricePopupPos.order.priceBreakup?.total ?? pricePopupPos.order.totalFreightCharges ?? 0).toFixed(2)}</span></div>
             </div>
           ) : (
             <div className="space-y-1">
@@ -1028,12 +1028,12 @@ const Shippings = (filterOrder) => {
                 ? Object.entries(pricePopupPos.order.rateBreakup).map(([key, val]) => (
                   <div key={key} className="flex justify-between">
                     <span className="text-gray-500 capitalize">{key}</span>
-                    <span className="font-[600]">{typeof val === "number" ? `₹ ${val}` : val}</span>
+                    <span className="font-[600]">{typeof val === "number" ? `₹ ${val.toFixed(2)}` : val}</span>
                   </div>
                 ))
                 : <p className="text-gray-400 italic">No breakup available</p>
               }
-              <div className="flex justify-between border-t pt-1 mt-1"><span className="font-[700] text-gray-800">Total</span><span className="font-[700] text-[#0CBB7D]">₹ {pricePopupPos.order.totalFreightCharges ?? 0}</span></div>
+              <div className="flex justify-between border-t pt-1 mt-1"><span className="font-[700] text-gray-800">Total</span><span className="font-[700] text-[#0CBB7D]">₹ {Number(pricePopupPos.order.totalFreightCharges ?? 0).toFixed(2)}</span></div>
             </div>
           )}
         </div>

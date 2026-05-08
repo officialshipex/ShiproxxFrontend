@@ -758,10 +758,10 @@ const Passbooks = () => {
                   if (row.orderType === "B2C") {
                     return (
                       <div className="space-y-1.5">
-                        <div className="flex justify-between"><span className="text-gray-500">Freight</span><span className="font-bold">₹ {row.priceBreakup?.freight ?? 0}</span></div>
-                        <div className="flex justify-between"><span className="text-gray-500">COD</span><span className="font-bold">₹ {row.priceBreakup?.cod ?? 0}</span></div>
-                        <div className="flex justify-between"><span className="text-gray-500">GST</span><span className="font-bold">₹ {row.priceBreakup?.gst ?? 0}</span></div>
-                        <div className="flex justify-between border-t pt-2 mt-1"><span className="font-bold text-gray-800">Total</span><span className="font-bold text-[#0CBB7D]">₹ {row.priceBreakup?.total ?? row.amount ?? 0}</span></div>
+                        <div className="flex justify-between"><span className="text-gray-500">Freight</span><span className="font-bold">₹ {Number(row.priceBreakup?.freight ?? 0).toFixed(2)}</span></div>
+                        <div className="flex justify-between"><span className="text-gray-500">COD</span><span className="font-bold">₹ {Number(row.priceBreakup?.cod ?? 0).toFixed(2)}</span></div>
+                        <div className="flex justify-between"><span className="text-gray-500">GST</span><span className="font-bold">₹ {Number(row.priceBreakup?.gst ?? 0).toFixed(2)}</span></div>
+                        <div className="flex justify-between border-t pt-2 mt-1"><span className="font-bold text-gray-800">Total</span><span className="font-bold text-[#0CBB7D]">₹ {Number(row.priceBreakup?.total ?? row.amount ?? 0).toFixed(2)}</span></div>
                       </div>
                     );
                   } else {
@@ -771,12 +771,12 @@ const Passbooks = () => {
                           ? Object.entries(row.rateBreakup).map(([key, val]) => (
                             <div key={key} className="flex justify-between">
                               <span className="text-gray-500 capitalize">{key}</span>
-                              <span className="font-bold">{typeof val === "number" ? `₹ ${val}` : val}</span>
+                              <span className="font-bold">{typeof val === "number" ? `₹ ${val.toFixed(2)}` : val}</span>
                             </div>
                           ))
                           : <p className="text-gray-400 italic text-center py-2">No breakup available</p>
                         }
-                        <div className="flex justify-between border-t border-dashed pt-2 mt-1"><span className="font-bold text-gray-800">Total</span><span className="font-bold text-[#0CBB7D]">₹ {row.amount || 0}</span></div>
+                        <div className="flex justify-between border-t border-dashed pt-2 mt-1"><span className="font-bold text-gray-800">Total</span><span className="font-bold text-[#0CBB7D]">₹ {Number(row.amount || 0).toFixed(2)}</span></div>
                       </div>
                     );
                   }
@@ -815,10 +815,10 @@ const Passbooks = () => {
           </div>
           {pricePopupPos.order.orderType === "B2C" ? (
             <div className="space-y-1">
-              <div className="flex justify-between"><span className="text-gray-500">Freight</span><span className="font-[600]">₹ {pricePopupPos.order.priceBreakup?.freight ?? 0}</span></div>
-              <div className="flex justify-between"><span className="text-gray-500">COD</span><span className="font-[600]">₹ {pricePopupPos.order.priceBreakup?.cod ?? 0}</span></div>
-              <div className="flex justify-between"><span className="text-gray-500">GST</span><span className="font-[600]">₹ {pricePopupPos.order.priceBreakup?.gst ?? 0}</span></div>
-              <div className="flex justify-between border-t pt-1 mt-1"><span className="font-[700] text-gray-800">Total</span><span className="font-[700] text-[#0CBB7D]">₹ {pricePopupPos.order.priceBreakup?.total ?? pricePopupPos.order.amount ?? 0}</span></div>
+              <div className="flex justify-between"><span className="text-gray-500">Freight</span><span className="font-[600]">₹ {Number(pricePopupPos.order.priceBreakup?.freight ?? 0).toFixed(2)}</span></div>
+              <div className="flex justify-between"><span className="text-gray-500">COD</span><span className="font-[600]">₹ {Number(pricePopupPos.order.priceBreakup?.cod ?? 0).toFixed(2)}</span></div>
+              <div className="flex justify-between"><span className="text-gray-500">GST</span><span className="font-[600]">₹ {Number(pricePopupPos.order.priceBreakup?.gst ?? 0).toFixed(2)}</span></div>
+              <div className="flex justify-between border-t pt-1 mt-1"><span className="font-[700] text-gray-800">Total</span><span className="font-[700] text-[#0CBB7D]">₹ {Number(pricePopupPos.order.priceBreakup?.total ?? pricePopupPos.order.amount ?? 0).toFixed(2)}</span></div>
             </div>
           ) : (
             <div className="space-y-1">
@@ -826,12 +826,12 @@ const Passbooks = () => {
                 ? Object.entries(pricePopupPos.order.rateBreakup).map(([key, val]) => (
                   <div key={key} className="flex justify-between">
                     <span className="text-gray-500 capitalize">{key}</span>
-                    <span className="font-[600]">{typeof val === "number" ? `₹ ${val}` : val}</span>
+                    <span className="font-[600]">{typeof val === "number" ? `₹ ${val.toFixed(2)}` : val}</span>
                   </div>
                 ))
                 : <p className="text-gray-400 italic">No breakup available</p>
               }
-              <div className="flex justify-between border-t pt-1 mt-1"><span className="font-[700] text-gray-800">Total</span><span className="font-[700] text-[#0CBB7D]">₹ {pricePopupPos.order.amount || 0}</span></div>
+              <div className="flex justify-between border-t pt-1 mt-1"><span className="font-[700] text-gray-800">Total</span><span className="font-[700] text-[#0CBB7D]">₹ {Number(pricePopupPos.order.amount || 0).toFixed(2)}</span></div>
             </div>
           )}
         </div>
