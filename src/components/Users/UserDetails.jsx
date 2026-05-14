@@ -208,10 +208,10 @@ export default function ProfileCard() {
   const refreshRates = async () => {
     setRateLoading(true);
     try {
-      const endpoint = rateCardType === "B2B" 
-        ? `${REACT_APP_BACKEND_URL}/b2b/saveRate/getRateCard` 
+      const endpoint = rateCardType === "B2B"
+        ? `${REACT_APP_BACKEND_URL}/b2b/saveRate/getRateCard`
         : `${REACT_APP_BACKEND_URL}/saveRate/getRateCard`;
-        
+
       const response = await axios.get(endpoint, {
         headers: { Authorization: `Bearer ${Cookies.get("session")}` },
         params: { userId: id }
@@ -229,7 +229,7 @@ export default function ProfileCard() {
     if (window.confirm("Are you sure you want to delete this rate card?")) {
       try {
         await axios.delete(`${REACT_APP_BACKEND_URL}/saveRate/deleteRateCard/${rateId}`, {
-          data: { userId: id }, 
+          data: { userId: id },
           headers: { Authorization: `Bearer ${Cookies.get("session")}` }
         });
         Notification("Rate card deleted successfully", "success");
@@ -269,7 +269,7 @@ export default function ProfileCard() {
     try {
       const token = Cookies.get("session");
       // Skip createPlanName as it's only for the global collection
-      
+
       const assignData = {
         userId: id,
         userName: userData.fullname,
@@ -890,7 +890,7 @@ export default function ProfileCard() {
                         const currentPlan = String(userData?.rateCard || "");
                         const uId = String(userData?.userId || "");
                         const isShared = sharedPlans.includes(currentPlan) || (currentPlan !== "" && !currentPlan.includes(uId));
-                        
+
                         if (userData?.rateCard && isShared) {
                           Notification("Preparing user-specific plan...", "info");
                           const newPlan = await handleAutoCreateUserPlan();

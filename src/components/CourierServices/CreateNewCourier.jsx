@@ -176,7 +176,11 @@ export default function CreateNewCourier({ isSidebarAdmin }) {
       // Clear location state and go back to the list
       navigate("/adminDashboard/setup/courierservices/add/b2c", { replace: true, state: {} });
     } catch (error) {
-      Notification("Error saving courier", "error");
+      if (error.response?.data?.error?.includes("E11000") || error.response?.data?.error?.includes("duplicate key")) {
+        Notification("Courier service name already exists. Please use a unique name.", "error");
+      } else {
+        Notification("Error saving courier", "error");
+      }
       console.error("Error saving courier:", error);
     } finally {
       setLoading(false);
@@ -228,16 +232,30 @@ export default function CreateNewCourier({ isSidebarAdmin }) {
                 placeholder="Select Provider"
               />
 
-              {/* Courier */}
-              {providerServices.length > 0 && (
-                <CustomDropdown
-                  label={selectedProvider === "Dtdc" ? "Service Type" : "Courier"}
-                  name="courier"
-                  value={formData.courier}
-                  onChange={handleChange}
-                  options={providerServices.map(s => typeof s === 'string' ? s : s.service)}
-                  placeholder={selectedProvider ? `Select ${selectedProvider === "Dtdc" ? "Service Type" : "Courier"}` : "Select Provider first"}
-                />
+              {/* Courier / Service ID */}
+              {(providerServices.length > 0 || selectedProvider === "BoxdLogistics") && (
+                selectedProvider === "BoxdLogistics" ? (
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-[10px] sm:text-[12px] font-[600] text-gray-700">Courier Service ID</label>
+                    <input
+                      type="text"
+                      name="courier"
+                      placeholder="Enter Courier Service ID"
+                      value={formData.courier}
+                      onChange={handleChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-[10px] sm:text-[12px] focus:outline-none focus:border-[#0CBB7D] transition-all font-[600] text-gray-700"
+                    />
+                  </div>
+                ) : (
+                  <CustomDropdown
+                    label={selectedProvider === "Dtdc" ? "Service Type" : "Courier"}
+                    name="courier"
+                    value={formData.courier}
+                    onChange={handleChange}
+                    options={providerServices.map(s => typeof s === 'string' ? s : s.service)}
+                    placeholder={selectedProvider ? `Select ${selectedProvider === "Dtdc" ? "Service Type" : "Courier"}` : "Select Provider first"}
+                  />
+                )
               )}
 
               {/* Courier Type */}
