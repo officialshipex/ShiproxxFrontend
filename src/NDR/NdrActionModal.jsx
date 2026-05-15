@@ -90,13 +90,14 @@ const NdrActionModal = ({ isOpen, onClose, order, onSubmit }) => {
     }
 
     // ─── Validate provider-specific required fields ───────────
-    if (isEcomExpress && isReattempt) {
-      if (!scheduledDate) return Notification("Please select delivery date.", "info");
-      if (!deliverySlot) return Notification("Please select delivery slot.", "info");
-    }
-    if (isSmartship && isReattempt) {
-      if (!scheduledDate) return Notification("Please select next attempt date.", "info");
-    }
+    // Removed mandatory check for scheduledDate and deliverySlot as per user request
+    // if (isEcomExpress && isReattempt) {
+    //   if (!scheduledDate) return Notification("Please select delivery date.", "info");
+    //   if (!deliverySlot) return Notification("Please select delivery slot.", "info");
+    // }
+    // if (isSmartship && isReattempt) {
+    //   if (!scheduledDate) return Notification("Please select next attempt date.", "info");
+    // }
     if (isAmazon && action === "RE-ATTEMPT") {
       // just remarks needed
     }

@@ -11,7 +11,8 @@ import OrdersTable from "../Common/OrdersTable";
 import MobileOrderCard from "../Common/MobileOrderCard";
 import NdrActionModal from "./NdrActionModal";
 import NdrStatusModal from "./NdrStatusModal";
-import { ChevronDown, Filter } from "lucide-react";
+import BulkNdrActionModal from "./BulkNdrActionModal";
+import { ChevronDown, Filter, Play } from "lucide-react";
 import { FaBars } from "react-icons/fa";
 import ThreeDotLoader from "../Loader";
 import NotFound from "../assets/nodatafound.png";
@@ -68,6 +69,7 @@ const ActionRequired = () => {
   const [isActionModalOpen, setIsActionModalOpen] = useState(false);
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
   const [selectedNdrHistory, setSelectedNdrHistory] = useState([]);
+  const [isBulkNdrModalOpen, setIsBulkNdrModalOpen] = useState(false);
 
   const navigate = useNavigate();
   const { id } = useParams();
@@ -243,6 +245,10 @@ const ActionRequired = () => {
                     onClick={() => { handleBulkDownloadLabel({ selectedOrders }); setDesktopDropdownOpen(false); }}>
                     Download Labels
                   </li>
+                  <li className="px-3 py-2 text-gray-700 hover:bg-green-50 cursor-pointer flex items-center gap-2"
+                    onClick={() => { setIsBulkNdrModalOpen(true); setDesktopDropdownOpen(false); }}>
+                    Bulk NDR Action
+                  </li>
                 </ul>
               </div>
             )}
@@ -306,6 +312,7 @@ const ActionRequired = () => {
                   <li className="px-3 py-2 text-gray-700 hover:bg-green-50 cursor-pointer" onClick={() => { handleBulkDownloadInvoice({ selectedOrders }); setMobileDropdownOpen(false); }}>Download Invoices</li>
                   <li className="px-3 py-2 text-gray-700 hover:bg-green-50 cursor-pointer" onClick={() => { handleBulkDownloadManifests(selectedOrders); setMobileDropdownOpen(false); }}>Download Manifests</li>
                   <li className="px-3 py-2 text-gray-700 hover:bg-green-50 cursor-pointer" onClick={() => { handleBulkDownloadLabel({ selectedOrders }); setMobileDropdownOpen(false); }}>Download Labels</li>
+                  <li className="px-3 py-2 text-gray-700 hover:bg-green-50 cursor-pointer" onClick={() => { setIsBulkNdrModalOpen(true); setMobileDropdownOpen(false); }}>Bulk NDR Action</li>
                 </ul>
               </div>
             )}
@@ -390,6 +397,15 @@ const ActionRequired = () => {
           isOpen={isHistoryModalOpen}
           setIsOpen={setIsHistoryModalOpen}
           ndrHistory={selectedNdrHistory}
+        />
+      )}
+
+      {isBulkNdrModalOpen && (
+        <BulkNdrActionModal
+          isOpen={isBulkNdrModalOpen}
+          onClose={() => setIsBulkNdrModalOpen(false)}
+          selectedOrders={selectedOrders}
+          onRefresh={() => setRefresh(prev => !prev)}
         />
       )}
     </div>

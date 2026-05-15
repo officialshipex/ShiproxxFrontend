@@ -1,16 +1,15 @@
 import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
+import Cookies from "js-cookie";
 import { Notification } from "../Notification";
 
 const instructionOptions = [
     { label: "Re-attempt", value: "RE-ATTEMPT" },
-    { label: "Reschedule", value: "RESCHEDULE" },
-    { label: "Return to Origin", value: "RTO" },
-    { label: "Change Contact", value: "CHANGE_CONTACT" },
     { label: "Change Address", value: "CHANGE_ADDRESS" },
+    { label: "Return to Origin (RTO)", value: "RTO" },
 ];
 
-const BulkNdrActionModal = ({ isOpen, onClose, orders = [] }) => {
+const BulkNdrActionModal = ({ isOpen, onClose, selectedOrders = [], onRefresh }) => {
     const [action, setAction] = useState("");
     const [remarks, setRemarks] = useState("");
     const [scheduledDate, setScheduledDate] = useState("");
@@ -20,12 +19,15 @@ const BulkNdrActionModal = ({ isOpen, onClose, orders = [] }) => {
         address1: "",
         address2: "",
         customer_name: "",
+        city: "",
+        state: "",
+        pincode: "",
     });
     const [loading, setLoading] = useState(false);
     const [dropdownOpen, setDropdownOpen] = useState(false);
 
     const dropdownRef = useRef(null);
-    const REACT_APP_BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+    const REACT_APP_BACKEND_URL = (process.env.REACT_APP_BACKEND_URL || "").trim();
 
     // Close dropdown on outside click
     useEffect(() => {
@@ -44,15 +46,12 @@ const BulkNdrActionModal = ({ isOpen, onClose, orders = [] }) => {
     const validateFields = () => {
         if (!action) return Notification("Please select an action.", "info");
 
-        if (!remarks.trim() && action !== "RESCHEDULE" && action!=="CHANGE_CONTACT") {
+        if (!remarks.trim()) {
             return Notification("Please enter remarks.", "info");
         }
 
-        if (action === "RESCHEDULE" && !scheduledDate)
-            return Notification("Please select scheduled date.", "info");
+        // Removed mandatory check for scheduledDate as per user request
 
-        if (action === "CHANGE_CONTACT" && !mobile.trim())
-            return Notification("Please enter new contact number.", "info");
 
         if (action === "CHANGE_ADDRESS") {
             if (!address.customer_name.trim())
@@ -66,51 +65,55 @@ const BulkNdrActionModal = ({ isOpen, onClose, orders = [] }) => {
 
     // 🔥 SUBMIT HANDLER WITH API CALL
     const handleSubmit = () => {
+        if (!selectedOrders || selectedOrders.length === 0) {
+            return Notification("No shipments selected for bulk action.", "error");
+        }
         const isValid = validateFields();
         if (isValid !== true) return;
 
-        // Close modal immediately
-        onClose();
-
-        // Show initial notification
-        Notification("Processing NDR actions…", "info");
-
-        // Build payloads
-        const payloads = orders.map((orderId) => {
+        // Construction
+        const payloads = selectedOrders.map((orderId) => {
             const p = { orderId, action, remarks };
-
-            if (action === "RESCHEDULE") {
-                p.scheduledDate = scheduledDate;
-            }
-
-            if (action === "CHANGE_CONTACT") {
-                p.phone = mobile;
-            }
 
             if (action === "CHANGE_ADDRESS") {
                 p.customer_name = address.customer_name;
                 p.address1 = address.address1;
                 p.address2 = address.address2;
+                p.city = address.city;
+                p.state = address.state;
+                p.pincode = address.pincode;
+                p.phone = mobile;
             }
 
             if (action === "RE-ATTEMPT") {
                 p.scheduled_delivery_date = scheduledDate;
                 p.deliverySlot = deliverySlot;
+                p.phone = mobile;
             }
 
             return p;
         });
 
-        // Fire-and-forget request (NO await)
+        console.log("Frontend sending payloads:", payloads);
+        setLoading(true);
+
+        const token = Cookies.get("session");
+
         axios
-            .post(`${REACT_APP_BACKEND_URL}/ndr/bulk`, { payloads })
+            .post(`${REACT_APP_BACKEND_URL}/ndr/bulk`, { payloads }, {
+                headers: { authorization: `Bearer ${token}` }
+            })
             .then((res) => {
+                setLoading(false);
+                onClose();
                 Notification(
                     res?.data?.message || "Bulk NDR completed",
                     "success"
                 );
+                if (onRefresh) onRefresh();
             })
             .catch((err) => {
+                setLoading(false);
                 Notification(
                     err?.response?.data?.message || "Bulk NDR failed",
                     "error"
@@ -129,7 +132,7 @@ const BulkNdrActionModal = ({ isOpen, onClose, orders = [] }) => {
                 <div className="px-6 py-4 border-b">
                     <h2 className="text-[14px] sm:text-[16px] font-[600] text-gray-700">Bulk NDR Action</h2>
                     <p className="text-[10px] sm:text-[12px] text-gray-500 mt-1">
-                        Selected Shipments: <b>{orders.length}</b>
+                        Selected Shipments: <b>{selectedOrders.length}</b>
                     </p>
                 </div>
 
@@ -180,61 +183,60 @@ const BulkNdrActionModal = ({ isOpen, onClose, orders = [] }) => {
 
 
                     {/* Remarks */}
-                    {action !== "RESCHEDULE" && action !== "CHANGE_CONTACT" && (
+                    {action && (
                         <div className="space-y-1">
                             <label className="text-[12px] sm:text-[14px] font-[500] text-gray-700">Remarks</label>
                             <textarea
                                 value={remarks}
                                 onChange={(e) => setRemarks(e.target.value)}
-                                rows={3}
+                                rows={2}
                                 className="w-full border border-gray-300 rounded-lg px-3 py-2 text-[12px] focus:ring-1 focus:ring-green-500 outline-none"
                                 placeholder="Enter remarks"
                             />
                         </div>
                     )}
 
-                    {/* Reschedule Date */}
-                    {action === "RESCHEDULE" && (
+                    {/* Re-attempt Date */}
+                    {action === "RE-ATTEMPT" && (
                         <div className="space-y-1">
-                            <label className="text-[12px] sm:text-[14px] font-[500] text-gray-700">Scheduled Delivery Date</label>
+                            <label className="text-[12px] sm:text-[14px] font-[500] text-gray-700">Scheduled Delivery Date (Optional)</label>
                             <input
                                 type="date"
                                 value={scheduledDate}
                                 onChange={(e) => setScheduledDate(e.target.value)}
+                                min={new Date().toISOString().split("T")[0]}
                                 className="w-full border border-gray-300 rounded-lg px-3 py-2 text-[12px] focus:ring-1 focus:ring-green-500 outline-none"
-                            />
-                        </div>
-                    )}
-
-                    {/* Change Contact */}
-                    {action === "CHANGE_CONTACT" && (
-                        <div className="space-y-1">
-                            <label className="text-[12px] sm:text-[14px] font-[500] text-gray-700">New Contact Number</label>
-                            <input
-                                type="text"
-                                value={mobile}
-                                onChange={(e) => setMobile(e.target.value)}
-                                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-[12px] text-gray-700 focus:ring-1 focus:ring-green-500 outline-none"
-                                placeholder="Enter phone number"
                             />
                         </div>
                     )}
 
                     {/* Change Address */}
                     {action === "CHANGE_ADDRESS" && (
-                        <div className="space-y-4">
+                        <div className="space-y-3">
 
-                            <div className="space-y-1">
-                                <label className="text-[12px] sm:text-[14px] font-[500] text-gray-700">Customer Name</label>
-                                <input
-                                    type="text"
-                                    value={address.customer_name}
-                                    onChange={(e) =>
-                                        setAddress({ ...address, customer_name: e.target.value })
-                                    }
-                                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-[12px] focus:ring-1 focus:ring-green-500 outline-none"
-                                    placeholder="Enter customer name"
-                                />
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div className="space-y-1">
+                                    <label className="text-[12px] sm:text-[14px] font-[500] text-gray-700">Customer Name</label>
+                                    <input
+                                        type="text"
+                                        value={address.customer_name}
+                                        onChange={(e) =>
+                                            setAddress({ ...address, customer_name: e.target.value })
+                                        }
+                                        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-[12px] focus:ring-1 focus:ring-green-500 outline-none"
+                                        placeholder="Full Name"
+                                    />
+                                </div>
+                                <div className="space-y-1">
+                                    <label className="text-[12px] sm:text-[14px] font-[500] text-gray-700">Contact Number</label>
+                                    <input
+                                        type="text"
+                                        value={mobile}
+                                        onChange={(e) => setMobile(e.target.value)}
+                                        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-[12px] focus:ring-1 focus:ring-green-500 outline-none"
+                                        placeholder="New Phone"
+                                    />
+                                </div>
                             </div>
 
                             <div className="space-y-1">
@@ -246,7 +248,7 @@ const BulkNdrActionModal = ({ isOpen, onClose, orders = [] }) => {
                                         setAddress({ ...address, address1: e.target.value })
                                     }
                                     className="w-full border border-gray-300 rounded-lg px-3 py-2 text-[12px] focus:ring-1 focus:ring-green-500 outline-none"
-                                    placeholder="Enter address line 1"
+                                    placeholder="House/Flat, Street"
                                 />
                             </div>
 
@@ -259,8 +261,41 @@ const BulkNdrActionModal = ({ isOpen, onClose, orders = [] }) => {
                                         setAddress({ ...address, address2: e.target.value })
                                     }
                                     className="w-full border border-gray-300 rounded-lg px-3 py-2 text-[12px] focus:ring-1 focus:ring-green-500 outline-none"
-                                    placeholder="Enter address line 2"
+                                    placeholder="Area, Landmark"
                                 />
+                            </div>
+
+                            <div className="grid grid-cols-3 gap-2">
+                                <div className="space-y-1">
+                                    <label className="text-[12px] sm:text-[14px] font-[500] text-gray-700">City</label>
+                                    <input
+                                        type="text"
+                                        value={address.city}
+                                        onChange={(e) => setAddress({ ...address, city: e.target.value })}
+                                        className="w-full border border-gray-300 rounded-lg px-2 py-2 text-[12px] focus:ring-1 focus:ring-green-500 outline-none"
+                                        placeholder="City"
+                                    />
+                                </div>
+                                <div className="space-y-1">
+                                    <label className="text-[12px] sm:text-[14px] font-[500] text-gray-700">State</label>
+                                    <input
+                                        type="text"
+                                        value={address.state}
+                                        onChange={(e) => setAddress({ ...address, state: e.target.value })}
+                                        className="w-full border border-gray-300 rounded-lg px-2 py-2 text-[12px] focus:ring-1 focus:ring-green-500 outline-none"
+                                        placeholder="State"
+                                    />
+                                </div>
+                                <div className="space-y-1">
+                                    <label className="text-[12px] sm:text-[14px] font-[500] text-gray-700">Pincode</label>
+                                    <input
+                                        type="text"
+                                        value={address.pincode}
+                                        onChange={(e) => setAddress({ ...address, pincode: e.target.value })}
+                                        className="w-full border border-gray-300 rounded-lg px-2 py-2 text-[12px] focus:ring-1 focus:ring-green-500 outline-none"
+                                        placeholder="Pincode"
+                                    />
+                                </div>
                             </div>
 
                         </div>
