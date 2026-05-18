@@ -3,7 +3,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
-import { ChevronDown, Wallet, Banknote, Minus, Send, Filter, X, Download, Search, Upload, Clock, CheckCircle } from "lucide-react";
+import { ChevronDown, Wallet, Banknote, Minus, Send, Filter, X, Download, Search, Upload, Clock, CheckCircle, FileSpreadsheet } from "lucide-react";
 import dayjs from "dayjs";
 import ThreeDotLoader from "../../Loader";
 import Cookies from "js-cookie";
@@ -69,6 +69,11 @@ const CODRemittanceOrder = ({ isSidebarAdmin }) => {
   const [showUpload, setShowUpload] = useState(false);
   const [showTransferCODModal, setShowTransferCODModal] = useState(false);
   const [transferCODUserId, setTransferCODUserId] = useState(null);
+  const [bankExportLoading, setBankExportLoading] = useState(false);
+  const [showBankResponseUpload, setShowBankResponseUpload] = useState(false);
+  const [bankResponseUploading, setBankResponseUploading] = useState(false);
+  const [selectedBankFile, setSelectedBankFile] = useState(null);
+  const bankFileInputRef = useRef(null);
 
   const navigate = useNavigate();
 
@@ -89,7 +94,6 @@ const CODRemittanceOrder = ({ isSidebarAdmin }) => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
-
   const handleClearFilters = () => {
     const cleared = {
       selectedUserId: null,
@@ -209,6 +213,152 @@ const CODRemittanceOrder = ({ isSidebarAdmin }) => {
     }
   };
 
+  // Export Bank Template — supports single & multi-user bulk
+  const handleExportBankTemplate = async () => {
+    if (selectedRemittanceIds.length === 0) return;
+    setBankExportLoading(true);
+    try {
+      const token = Cookies.get("session");
+      const params = new URLSearchParams();
+      selectedRemittanceIds.forEach(id => params.append("selectedRemittanceIds", id));
+      const response = await axios.get(
+        `${REACT_APP_BACKEND_URL}/cod/exportBankTemplate?${params.toString()}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      const { rows, heldCount, topUpCount, payableCount, skippedPaid, userErrors } = response.data;
+
+      // Show informational warnings
+      if (skippedPaid > 0) {
+        Notification(`${skippedPaid} remittance(s) already Paid — skipped from template`, "warning");
+      }
+      if (heldCount > 0) {
+        Notification(`${heldCount} remittance(s) HELD (hold amount) — excluded from template`, "warning");
+      }
+      if (topUpCount > 0) {
+        Notification(`${topUpCount} remittance(s) used for wallet top-up — excluded from template`, "info");
+      }
+      if (userErrors && userErrors.length > 0) {
+        userErrors.forEach(err => Notification(err, "error"));
+      }
+      if (!rows || rows.length === 0) {
+        Notification("No payable remittances to export", "info");
+        return;
+      }
+
+      // Build XLSX in bank's exact column format
+      const HEADERS = [
+        "Debit Account Number",
+        "Payment mode",
+        "Amount",
+        "Beneficiary Name",
+        "Beneficiary Account",
+        "Beneficiary Bank IFSC",
+        "Remarks",
+        "Beneficiary LEI",
+      ];
+      const worksheet = XLSX.utils.json_to_sheet(rows, { header: HEADERS });
+
+      // Set column widths — auto-fit based on header + data content
+      const colWidths = HEADERS.map(header => {
+        const headerLen = header.length;
+        const maxDataLen = rows.reduce((max, row) => {
+          const val = row[header] !== undefined && row[header] !== null ? String(row[header]) : "";
+          return Math.max(max, val.length);
+        }, 0);
+        return { wch: Math.max(headerLen, maxDataLen) + 3 }; // +3 for padding
+      });
+      worksheet["!cols"] = colWidths;
+
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Bulk Payment Template");
+      const buf = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
+      saveAs(
+        new Blob([buf], { type: "application/octet-stream" }),
+        `bank_payment_template_${new Date().toISOString().slice(0, 10)}.xlsx`
+      );
+      Notification(`Bank template exported: ${payableCount} remittance(s)`, "success");
+    } catch (error) {
+      Notification(error?.response?.data?.message || "Failed to export bank template", "error");
+    } finally {
+      setBankExportLoading(false);
+    }
+  };
+
+  const handleOpenBankResponseUpload = async () => {
+    if (selectedRemittanceIds.length === 0) {
+      Notification("Please select at least one remittance in the table first", "warning");
+      return;
+    }
+
+    try {
+      const token = Cookies.get("session");
+      const res = await axios.post(
+        `${REACT_APP_BACKEND_URL}/cod/validateExportedStatus`,
+        { selectedRemittanceIds },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      if (res.data?.success) {
+        setShowBankResponseUpload(true);
+      } else {
+        Notification(res.data?.message || "Some selected remittance IDs are not exported yet. Please export them first.", "error");
+      }
+    } catch (error) {
+      Notification(error?.response?.data?.message || "Failed to validate exported status of selected remittances", "error");
+    }
+  };
+
+  // Parse bank response file and send to backend
+  const handleBankResponseSubmit = () => {
+    if (!selectedBankFile) return;
+    setBankResponseUploading(true);
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      try {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, { type: "array" });
+        const sheet = workbook.Sheets[workbook.SheetNames[0]];
+        const jsonRows = XLSX.utils.sheet_to_json(sheet, { defval: "" });
+
+        // Map bank column headers to our internal field names
+        // Bank columns: Reference Number | UTR Number | Beneficiary Name | Beneficiary Account | Amount | Status | Reason of failure/return
+        const mappedRows = jsonRows.map(r => ({
+          remarks: String(r["Remarks"] || "").trim(),
+          referenceNumber: String(r["Reference Number"] || "").trim(),
+          utrNumber: String(r["UTR Number"] || r["UTR"] || "").trim(),
+          beneficiaryName: String(r["Beneficiary Name"] || "").trim(),
+          beneficiaryAccount: String(r["Beneficiary Account"] || "").trim(),
+          amount: Number(r["Amount"] || 0),
+          status: String(r["Status"] || "").trim(),
+          reason: String(r["Reason of failure/return"] || "").trim(),
+        }));
+
+        const token = Cookies.get("session");
+        const response = await axios.post(
+          `${REACT_APP_BACKEND_URL}/cod/uploadBankResponse`,
+          { rows: mappedRows, selectedRemittanceIds },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+
+        const { successCount, skippedCount, errorCount } = response.data;
+        Notification(
+          `Bank response processed: ${successCount} paid, ${skippedCount} skipped, ${errorCount} errors`,
+          successCount > 0 ? "success" : "info"
+        );
+        setShowBankResponseUpload(false);
+        setSelectedBankFile(null);
+        setRefresh(prev => !prev);
+      } catch (error) {
+        Notification(error?.response?.data?.message || "Failed to process bank response", "error");
+      } finally {
+        setBankResponseUploading(false);
+        if (bankFileInputRef.current) bankFileInputRef.current.value = "";
+      }
+    };
+    reader.readAsArrayBuffer(selectedBankFile);
+  };
+
   const openRemittanceDetails = (id) => {
     setSelectedRemittanceId(id);
     setOpenRemittancePopup(true);
@@ -287,9 +437,19 @@ const CODRemittanceOrder = ({ isSidebarAdmin }) => {
               <ChevronDown className={`w-4 h-4 transition-transform ${bulkActionOpen ? "rotate-180" : ""}`} />
             </button>
             {bulkActionOpen && (
-              <div className="absolute right-0 top-full mt-1 bg-white border border-gray-100 rounded-lg shadow-xl w-44 text-[12px] z-[100] animate-popup-in overflow-hidden border">
+              <div className="absolute right-0 top-full mt-1 bg-white border border-gray-100 rounded-lg shadow-xl w-52 text-[12px] z-[100] animate-popup-in overflow-hidden border">
                 <div className="px-4 py-2 hover:bg-green-50 cursor-pointer font-bold text-gray-700 flex items-center gap-2 border-b border-gray-50 transition-colors" onClick={() => { handleExport(); setBulkActionOpen(false); }}>
-                  <Download className="w-4 h-4 text-[#0CBB7D]" /> Export
+                  <Download className="w-4 h-4 text-[#0CBB7D]" /> Export Data
+                </div>
+                <div
+                  className={`px-4 py-2 hover:bg-green-50 cursor-pointer font-bold text-gray-700 flex items-center gap-2 border-b border-gray-50 transition-colors ${bankExportLoading ? "opacity-60 cursor-not-allowed" : ""}`}
+                  onClick={() => { if (!bankExportLoading) { handleExportBankTemplate(); setBulkActionOpen(false); } }}
+                >
+                  <FileSpreadsheet className="w-4 h-4 text-blue-500" />
+                  {bankExportLoading ? "Generating..." : "Export Bank Template"}
+                </div>
+                <div className="px-4 py-2 hover:bg-green-50 cursor-pointer font-bold text-gray-700 flex items-center gap-2 border-b border-gray-50 transition-colors" onClick={() => { handleOpenBankResponseUpload(); setBulkActionOpen(false); }}>
+                  <Upload className="w-4 h-4 text-orange-500" /> Upload Bank Response
                 </div>
                 <div className="px-4 py-2 hover:bg-green-50 cursor-pointer font-bold text-gray-700 flex items-center gap-2 transition-colors" onClick={() => { handleTransferCOD(); setBulkActionOpen(false); }}>
                   <Send className="w-4 h-4 text-[#0CBB7D]" /> Transfer COD
@@ -355,12 +515,27 @@ const CODRemittanceOrder = ({ isSidebarAdmin }) => {
             </button>
 
             {bulkActionOpen && (
-              <div className="absolute right-0 top-full mt-2 w-44 bg-white rounded-xl shadow-2xl border border-gray-100 z-[100] overflow-hidden animate-popup-in">
+              <div className="absolute right-0 top-full mt-2 w-52 bg-white rounded-xl shadow-2xl border border-gray-100 z-[100] overflow-hidden animate-popup-in">
                 <button
                   onClick={() => { handleExport(); setBulkActionOpen(false); }}
                   className="w-full px-4 py-2 text-[12px] font-bold text-gray-700 hover:bg-green-50 hover:text-[#0CBB7D] flex items-center gap-2.5 transition-colors border-b border-gray-50"
                 >
-                  <Download className="w-3 h-3 text-[#0CBB7D]" /> Export
+                  <Download className="w-3 h-3 text-[#0CBB7D]" /> Export Data
+                </button>
+                <button
+                  onClick={() => { if (!bankExportLoading) { handleExportBankTemplate(); setBulkActionOpen(false); } }}
+                  className="w-full px-4 py-2 text-[12px] font-bold text-gray-700 hover:bg-blue-50 hover:text-blue-600 flex items-center gap-2.5 transition-colors border-b border-gray-50"
+                >
+                  <FileSpreadsheet className="w-3 h-3 text-blue-500" /> {bankExportLoading ? "Generating..." : "Bank Template"}
+                </button>
+                <button
+                  onClick={() => {
+                    handleOpenBankResponseUpload();
+                    setBulkActionOpen(false);
+                  }}
+                  className="w-full px-4 py-2 text-[12px] font-bold text-gray-700 hover:bg-orange-50 hover:text-orange-600 flex items-center gap-2.5 transition-colors border-b border-gray-50"
+                >
+                  <Upload className="w-3 h-3 text-orange-500" /> Bank Response
                 </button>
                 <button
                   onClick={() => { handleTransferCOD(); setBulkActionOpen(false); }}
@@ -632,6 +807,114 @@ const CODRemittanceOrder = ({ isSidebarAdmin }) => {
       )}
 
       {showUpload && <CodUploadPoopup onClose={() => setShowUpload(false)} setRefresh={setRefresh} />}
+
+      {/* Bank Response Upload Modal */}
+      <AnimatePresence>
+        {showBankResponseUpload && (
+          <motion.div
+            className="fixed inset-0 bg-black/60 flex items-center justify-center z-[1000] p-4"
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+          >
+            <motion.div
+              className="bg-white rounded-2xl shadow-2xl w-full max-w-[400px] p-5 relative"
+              initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ type: "spring", stiffness: 200, damping: 20 }}
+            >
+              {/* Close Button */}
+              <button
+                onClick={() => {
+                  setShowBankResponseUpload(false);
+                  setSelectedBankFile(null);
+                }}
+                className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+
+              {/* Header */}
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-2 bg-green-50 rounded-xl border border-green-100">
+                  <FileSpreadsheet className="w-6 h-6 text-[#0CBB7D]" />
+                </div>
+                <div>
+                  <h2 className="text-[13px] sm:text-[14px] font-bold text-gray-800">Upload Bank Response</h2>
+                  <p className="text-[10px] sm:text-[11px] text-gray-500">Upload the Excel file received from the bank</p>
+                </div>
+              </div>
+
+              {/* Upload Box */}
+              <div className="bg-gray-50 border border-dashed border-gray-300 rounded-xl p-5 text-center mb-4 transition-all">
+                {selectedBankFile ? (
+                  <div className="flex flex-col items-center">
+                    <div className="p-2 bg-green-100 rounded-full mb-2">
+                      <CheckCircle className="w-8 h-8 text-[#0CBB7D]" />
+                    </div>
+                    <p className="text-[12px] text-gray-800 font-bold mb-1 break-all px-4">
+                      {selectedBankFile.name}
+                    </p>
+                    <p className="text-[10px] text-gray-400 mb-3">
+                      {(selectedBankFile.size / 1024).toFixed(1)} KB
+                    </p>
+
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => setSelectedBankFile(null)}
+                        className="px-3 py-1.5 border border-gray-200 rounded-lg text-[10px] sm:text-[11px] font-bold text-gray-500 hover:bg-gray-100 transition"
+                      >
+                        Remove
+                      </button>
+                      <button
+                        onClick={handleBankResponseSubmit}
+                        disabled={bankResponseUploading}
+                        className="px-4 py-1.5 bg-[#0CBB7D] text-white rounded-lg text-[10px] sm:text-[11px] font-bold hover:bg-green-600 transition flex items-center gap-1.5 shadow-sm"
+                      >
+                        {bankResponseUploading ? (
+                          <><span className="animate-spin inline-block w-3 h-3 border-2 border-white border-t-transparent rounded-full" /> Processing...</>
+                        ) : (
+                          <>Confirm & Submit</>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div>
+                    <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                    <p className="text-[12px] text-gray-600 font-bold mb-1">Select Bank Response Excel</p>
+                    <p className="text-[10px] text-gray-400 mb-3">Expected: Beneficiary Account, UTR Number, Status, Amount</p>
+                    <input
+                      ref={bankFileInputRef}
+                      type="file"
+                      accept=".xlsx,.xls"
+                      className="hidden"
+                      id="bankResponseFile"
+                      onChange={(e) => {
+                        const file = e.target.files[0];
+                        if (file) setSelectedBankFile(file);
+                      }}
+                    />
+                    <label
+                      htmlFor="bankResponseFile"
+                      className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-[11px] font-bold cursor-pointer transition-all bg-[#0CBB7D] text-white hover:bg-green-600 shadow-sm"
+                    >
+                      <Upload className="w-4 h-4" /> Choose File
+                    </label>
+                  </div>
+                )}
+              </div>
+
+              {/* Info Box */}
+              <div className="bg-blue-50 border border-blue-100 rounded-lg p-3 text-[10px] sm:text-[11px] text-blue-700">
+                <p className="font-bold mb-1">ℹ️ How it works:</p>
+                <ul className="list-disc list-inside space-y-0.5">
+                  <li>Only rows with <strong>Status = "Successful"</strong> will be processed.</li>
+                  <li>Reconciliation matches by <strong>Beneficiary Account + Amount</strong>.</li>
+                  <li>Matched items will be automatically marked as <strong>Paid</strong> in the wallet.</li>
+                </ul>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Side Filter Panel */}
       <AnimatePresence>

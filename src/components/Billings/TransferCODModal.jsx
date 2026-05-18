@@ -58,6 +58,10 @@ const TranseferCODModal = ({ id, onClose, selectedRemittanceIds = [] }) => {
             0
           )
         );
+
+        setCreditLimit(
+          Number(response.data.creditLimit ?? 0)
+        );
       } catch (error) {
         console.error("Error fetching remittance data:", error);
       }
@@ -364,14 +368,14 @@ const TranseferCODModal = ({ id, onClose, selectedRemittanceIds = [] }) => {
                 <div className="flex gap-2 w-full">
                   {/* Credit Limit */}
                   <div
-                    className={`${boxClass(creditLimit === 0)} w-full`}
+                    className={`${boxClass(creditLimit >= 0)} w-full`}
                   // style={{ minWidth: 180, flex: 1 }}
                   >
                     <div className="flex items-center gap-2 w-full">
 
                       {/* Icon with dynamic background */}
                       <div
-                        className={`p-2 rounded-full ${creditLimit > 0 ? "bg-red-600 text-white" : "bg-[#0CBB7D] text-white"
+                        className={`p-2 rounded-full ${creditLimit >= 0 ? "bg-[#0CBB7D] text-white" : "bg-red-500 text-white"
                           }`}
                       >
                         <Lock size={16} />
@@ -380,7 +384,7 @@ const TranseferCODModal = ({ id, onClose, selectedRemittanceIds = [] }) => {
                       <div>
                         <div className="text-[10px] font-[600]">Credit Limit</div>
                         <div
-                          className={`text-[16px] font-[700] ${creditLimit > 0 ? "text-red-600" : "text-green-700"
+                          className={`text-[16px] font-[700] ${creditLimit >= 0 ? "text-[#0CBB7D]" : "text-red-500"
                             }`}
                         >
                           ₹{creditLimit.toFixed(2)}
