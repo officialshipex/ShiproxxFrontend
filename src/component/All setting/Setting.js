@@ -54,12 +54,12 @@ const settingsCards = [
     icon: FaWhatsapp,
     link: "/dashboard/settings/notification",
   },
-  // {
-  //   title: "Webhook",
-  //   subtitle: "Manage your webhooks and logs",
-  //   icon: FiActivity,
-  //   link: "/dashboard/settings/webhook",
-  // },
+  {
+    title: "Webhook",
+    subtitle: "Manage your webhooks and logs",
+    icon: FiActivity,
+    link: "/dashboard/settings/webhook",
+  },
 ];
 
 const Settings = () => {

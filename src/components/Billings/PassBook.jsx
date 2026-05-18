@@ -82,12 +82,22 @@ const Passbooks = ({
     }
   }, [clearFiltersTrigger]);
 
+  const abortControllerRef = useRef(null);
+
   const fetchTransactions = async () => {
+    // Cancel any previous in-flight request to prevent stale data overwriting new page data
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    abortControllerRef.current = new AbortController();
+
     try {
       const token = Cookies.get("session");
       if (!token) return;
 
       setLoading(true);
+      setTransactions([]);
+
       const params = {
         id,
         category,
@@ -108,19 +118,15 @@ const Passbooks = ({
         {
           headers: { Authorization: `Bearer ${token}` },
           params: params,
+          signal: abortControllerRef.current.signal,
         }
       );
-      console.log("trans", response.data.results)
+
       setTransactions(response.data.results || []);
-      // The seller API returns `page` as total pages in some components, 
-      // but let's check what it actually returns for passbook.
-      // Original code: setTotalPages(response.data.page || 0);
-      // Wait, if it returns `page` as total pages, I'll use it.
-      // Actually, admin uses response.data.total.
-      // Seller original: response.data.page
-      setTotalPages(response.data.page || 0); // In seller code, 'page' seems to be totalPages
+      setTotalPages(response.data.page || 0);
       setLoading(false);
     } catch (error) {
+      if (axios.isCancel(error)) return; // Silently ignore cancelled (stale) requests
       Notification("Error fetching transactions", "error");
       setLoading(false);
     }
