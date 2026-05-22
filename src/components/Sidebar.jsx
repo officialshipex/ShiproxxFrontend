@@ -641,8 +641,8 @@ const Sidebar = ({ isAdmin: isAdminProp, adminTab: adminTabProp }) => {
 
       <aside
         className={`fixed left-0 border-r transition-all duration-500 ease-in-out 
-          ${localStorage.getItem("admin_token_backup") 
-            ? "top-[32px] mt-[56px] sm:mt-[60px] h-[calc(100vh-88px)] sm:h-[calc(100vh-92px)]" 
+          ${localStorage.getItem("admin_token_backup")
+            ? "top-[32px] mt-[56px] sm:mt-[60px] h-[calc(100vh-88px)] sm:h-[calc(100vh-92px)]"
             : "top-0 mt-[56px] sm:mt-[60px] h-[calc(100vh-56px)] sm:h-[calc(100vh-60px)]"} 
           ${expanded ? "w-60 z-50 bg-white" : "w-16 z-50 bg-white"} ${isMobile && !expanded ? "-translate-x-full" : "translate-x-0 z-49"}`}
         onMouseEnter={() => {

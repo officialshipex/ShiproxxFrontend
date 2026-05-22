@@ -16,9 +16,14 @@ const TranseferCODModal = ({ id, onClose, selectedRemittanceIds = [] }) => {
   const [holdAmount, setHoldAmount] = useState(0);
   const [creditLimit, setCreditLimit] = useState(0);
 
-  const [approveTopup, setApproveTopup] = useState(true); // NEW
+  const [adjustMode, setAdjustMode] = useState("full"); // "full" | "negative_only" | null
 
   const REACT_APP_BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+
+  // Reset adjustMode whenever fresh balance is loaded
+  useEffect(() => {
+    setAdjustMode("full");
+  }, [balance]);
 
   // ======================================================================
   // FETCH DATA
@@ -174,12 +179,26 @@ const TranseferCODModal = ({ id, onClose, selectedRemittanceIds = [] }) => {
   }, [balance, remittanceEntries, holdResolved]);
 
   // ======================================================================
-  // FROZEN LOGIC → if checkbox unchecked
+  // WALLET NEGATIVE-ONLY TOPUP LOGIC
+  // ======================================================================
+  const walletNegativeOnly = useMemo(() => {
+    if (balance >= 0) return { needed: 0, sourceId: null };
+    const needed = Math.abs(balance);
+    const available = remittanceEntries.filter(
+      (r) => !holdResolved.heldIds.includes(String(r.remittanceId || r._id))
+    );
+    const sorted = [...available].sort((a, b) => a.remittanceAmount - b.remittanceAmount);
+    const source = sorted.find((r) => r.remittanceAmount >= needed) || sorted[sorted.length - 1];
+    return { needed, sourceId: source ? String(source.remittanceId || source._id) : null };
+  }, [balance, remittanceEntries, holdResolved]);
+
+  // ======================================================================
+  // FROZEN LOGIC → if no checkbox selected
   // ======================================================================
   const frozenIds = useMemo(() => {
-    if (!approveTopup) return [...walletTopUp.topUpIds];
+    if (adjustMode === null) return [...walletTopUp.topUpIds];
     return [];
-  }, [approveTopup, walletTopUp]);
+  }, [adjustMode, walletTopUp]);
 
   // ======================================================================
   // PAYABLE LOGIC
@@ -195,13 +214,18 @@ const TranseferCODModal = ({ id, onClose, selectedRemittanceIds = [] }) => {
       if (heldSet.has(id)) return false;
       if (frozenSet.has(id)) return false;
 
-      if (approveTopup && topUpSet.has(id)) return false;
+      if (adjustMode === "full" && topUpSet.has(id)) return false;
 
       return true;
     });
 
     const total = payable.reduce(
-      (sum, r) => sum + (r.remittanceAmount || 0),
+      (sum, r) => {
+        const idStr = String(r.remittanceId || r._id);
+        if (adjustMode === "negative_only" && idStr === walletNegativeOnly.sourceId)
+          return sum + Math.max(0, (r.remittanceAmount || 0) - walletNegativeOnly.needed);
+        return sum + (r.remittanceAmount || 0);
+      },
       0
     );
 
@@ -215,7 +239,8 @@ const TranseferCODModal = ({ id, onClose, selectedRemittanceIds = [] }) => {
     holdResolved,
     walletTopUp,
     frozenIds,
-    approveTopup,
+    adjustMode,
+    walletNegativeOnly,
   ]);
 
   // ======================================================================
@@ -233,8 +258,12 @@ const TranseferCODModal = ({ id, onClose, selectedRemittanceIds = [] }) => {
         String(r.remittanceId || r._id)
       ),
       payableRemittanceIds: payableInfo.payableIds,
-      topUpRemittanceIds: approveTopup ? walletTopUp.topUpIds : [],
+      topUpRemittanceIds: adjustMode === "full" ? walletTopUp.topUpIds : [],
       frozenRemittanceIds: frozenIds,
+      negativeOnlyAdjust:
+        adjustMode === "negative_only" && walletNegativeOnly.sourceId
+          ? { remittanceId: walletNegativeOnly.sourceId, amount: walletNegativeOnly.needed }
+          : null,
     };
 
     setLoading(true);
@@ -444,23 +473,44 @@ const TranseferCODModal = ({ id, onClose, selectedRemittanceIds = [] }) => {
                     {walletTopUp.topUpIds.join(", ")}
                   </div>
 
-                  {/* NEW CHECKBOX (UI unchanged position) */}
-                  <label className="flex items-center gap-2 mt-2">
-                    <input
-                      type="checkbox"
-                      checked={approveTopup}
-                      onChange={() => setApproveTopup(!approveTopup)}
-                    />
-                    <span className="text-[12px] font-semibold">
-                      Adjust this amount into wallet
-                    </span>
-                  </label>
+                  {/* TWO MUTUALLY EXCLUSIVE CHECKBOXES */}
+                  <div className="mt-2 flex flex-col gap-2">
+                    {/* Checkbox 1: Adjust full remittance amount */}
+                    <label className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={adjustMode === "full"}
+                        onChange={() => setAdjustMode(adjustMode === "full" ? null : "full")}
+                      />
+                      <span className="text-[12px] font-semibold">
+                        Adjust full remittance amount into wallet (₹{walletTopUp.topUpAmount.toFixed(2)})
+                      </span>
+                    </label>
 
-                  {!approveTopup && (
-                    <div className="text-purple-600 text-[11px] mt-1">
-                      These remittances will be Frozen (not paid + not adjusted)
-                    </div>
-                  )}
+                    {/* Checkbox 2: Adjust only negative balance */}
+                    <label className={`flex items-center gap-2 ${!walletNegativeOnly.sourceId ? "opacity-50 cursor-not-allowed" : ""}`}>
+                      <input
+                        type="checkbox"
+                        checked={adjustMode === "negative_only"}
+                        onChange={() => setAdjustMode(adjustMode === "negative_only" ? null : "negative_only")}
+                        disabled={!walletNegativeOnly.sourceId}
+                      />
+                      <span className="text-[12px] font-semibold">
+                        Adjust only negative balance (₹{walletNegativeOnly.needed.toFixed(2)})
+                      </span>
+                    </label>
+
+                    {adjustMode === null && (
+                      <div className="text-purple-600 text-[11px]">
+                        These remittances will be Frozen (not paid + not adjusted)
+                      </div>
+                    )}
+                    {adjustMode === "negative_only" && walletNegativeOnly.sourceId && (
+                      <div className="text-blue-600 text-[11px]">
+                        ₹{walletNegativeOnly.needed.toFixed(2)} will be deducted from Remittance ID: {walletNegativeOnly.sourceId}
+                      </div>
+                    )}
+                  </div>
                 </section>
               )}
               <h3 className="text-[12px] font-[600] mb-2 text-gray-700">
@@ -572,9 +622,13 @@ const TranseferCODModal = ({ id, onClose, selectedRemittanceIds = [] }) => {
                                 <span className="text-purple-600 font-semibold">
                                   Frozen
                                 </span>
-                              ) : isTopUp ? (
+                              ) : isTopUp && adjustMode === "full" ? (
                                 <span className="text-blue-600 font-semibold">
                                   TopUp
+                                </span>
+                              ) : adjustMode === "negative_only" && idStr === walletNegativeOnly.sourceId ? (
+                                <span className="text-orange-500 font-semibold">
+                                  Partial TopUp (₹{walletNegativeOnly.needed.toFixed(2)})
                                 </span>
                               ) : (
                                 <span className="text-green-600 font-semibold">
