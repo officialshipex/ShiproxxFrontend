@@ -109,8 +109,8 @@ const Passbooks = ({
       };
 
       if (dateRange?.[0]) {
-        params.fromDate = dayjs(dateRange[0].startDate).toISOString();
-        params.toDate = dayjs(dateRange[0].endDate).toISOString();
+        params.fromDate = dayjs(dateRange[0].startDate).startOf("day").toISOString();
+        params.toDate = dayjs(dateRange[0].endDate).endOf("day").toISOString();
       }
 
       const response = await axios.get(

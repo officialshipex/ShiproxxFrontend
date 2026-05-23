@@ -96,11 +96,13 @@ const Billing = () => {
         const response = await axios.get(
           `${REACT_APP_BACKEND_URL}/order/orders`,
           {
+            params: { id },
             headers: { authorization: `Bearer ${token}` },
           }
         );
 
-        const orders = response.data;
+        const rawOrders = response.data?.orders ?? response.data;
+        const orders = Array.isArray(rawOrders) ? rawOrders : [];
         setTotalShipments(orders.length);
 
         const totalCharges = orders.reduce(
