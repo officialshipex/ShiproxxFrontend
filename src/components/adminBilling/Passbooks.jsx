@@ -48,8 +48,6 @@ const Passbooks = () => {
   const mobileActionRef = useRef();
   const navigate = useNavigate();
   const location = useLocation();
-  // Ref to skip fetch while nav-state is being applied (prevents showing all-data flash)
-  const skipNextFetchRef = useRef(false);
 
   const handleClearFilters = () => {
     setSelectedUserId(null);
@@ -65,10 +63,6 @@ const Passbooks = () => {
 
   useEffect(() => {
     if (location.state?.awbNumber) {
-      // Mark that we're about to update multiple states from nav
-      // The fetchTransactions dependency useEffect will fire multiple times
-      // during state settling — skip those and let the final settled state fire
-      skipNextFetchRef.current = true;
       setAwbNumber(location.state.awbNumber.trim());
       setSelectedUserId(null);
       setDateRange(null);
@@ -120,11 +114,6 @@ const Passbooks = () => {
   };
 
   useEffect(() => {
-    if (skipNextFetchRef.current) {
-      // States are still settling from nav — skip this intermediate fetch
-      skipNextFetchRef.current = false;
-      return;
-    }
     fetchTransactions();
   }, [selectedUserId, dateRange, page, limit, category, description, awbNumber, orderId]);
 

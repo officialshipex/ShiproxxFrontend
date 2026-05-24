@@ -47,8 +47,6 @@ const Passbooks = ({
   const navigate = useNavigate();
   const location = useLocation();
   const { id } = useParams();
-  // Ref to skip fetch while nav-state is being applied (prevents showing all-data flash)
-  const skipNextFetchRef = useRef(false);
 
   const handleClearFilters = () => {
     setDateRange(null);
@@ -62,7 +60,6 @@ const Passbooks = ({
 
   useEffect(() => {
     if (location.state?.awbNumber) {
-      skipNextFetchRef.current = true;
       setAwbNumber(location.state.awbNumber.trim());
       setDateRange(null);
       setCategory("");
@@ -133,12 +130,8 @@ const Passbooks = ({
   };
 
   useEffect(() => {
-    if (skipNextFetchRef.current) {
-      skipNextFetchRef.current = false;
-      return;
-    }
     fetchTransactions();
-  }, [dateRange, page, limit, category, description, awbNumber, orderId]);
+  }, [id, dateRange, page, limit, category, description, awbNumber, orderId]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {

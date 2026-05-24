@@ -17,7 +17,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import ThreeDotLoader from "../../Loader";
 import Cookies from "js-cookie";
 import PaginationFooter from "../../Common/PaginationFooter";
-import { ExportExcel } from "../../Common/orderActions";
 import NotFound from "../../assets/nodatafound.png";
 
 const Shippings = (filterOrder) => {
@@ -353,7 +352,56 @@ const Shippings = (filterOrder) => {
   );
 
   const handleExportExcel = () => {
-    ExportExcel({ selectedOrders, orders })
+    if (selectedOrders.length === 0) return;
+    const exportData = orders
+      .filter((o) => selectedOrders.includes(o._id))
+      .map((o) => {
+        const base = Number(o.totalFreightCharges) || 0;
+        const excess = Number(o.weightDiscrepancy?.excessWeightCharges?.excessCharges) || 0;
+        const wd = o.weightDiscrepancy;
+        const isB2C = o.orderType === "B2C";
+        return {
+          "Order ID": o.orderId,
+          "AWB Number": o.awb_number,
+          "Courier Service": o.courierServiceName,
+          Status: o.status,
+          "Assigned Weight (Kg)": isB2C
+            ? o.packageDetails?.applicableWeight
+            : o.B2BPackageDetails?.applicableWeight,
+          "Applied Chgs. (₹)": base,
+          "Excess Chgs. (₹)": excess,
+          "Total Freight (₹)": (base + excess).toFixed(2),
+          "Entered Wt (Kg)": isB2C
+            ? o.packageDetails?.deadWeight
+            : o.B2BPackageDetails?.applicableWeight,
+          "Entered Dim (cm)": isB2C
+            ? `${o.packageDetails?.volumetricWeight?.length || ""}x${o.packageDetails?.volumetricWeight?.width || ""}x${o.packageDetails?.volumetricWeight?.height || ""}`
+            : "B2B",
+          "Charged Wt (Kg)": wd?.chargedWeight?.applicableWeight || "",
+          "Charged Dim (cm)": wd?.chargeDimension?.length
+            ? `${wd.chargeDimension.length}x${wd.chargeDimension.breadth}x${wd.chargeDimension.height}`
+            : "",
+          "Order Date": new Date(o.createdAt).toLocaleString(),
+          "Sender": o.pickupAddress?.contactName,
+          "Receiver": o.receiverAddress?.contactName,
+          "Receiver Phone": o.receiverAddress?.phoneNumber,
+          "Payment Method": o.paymentDetails?.method,
+          "COD Amount (₹)": o.paymentDetails?.amount,
+        };
+      });
+
+    const ws = XLSX.utils.json_to_sheet(exportData);
+    ws["!cols"] = [
+      { wch: 12 }, { wch: 18 }, { wch: 20 }, { wch: 14 },
+      { wch: 16 }, { wch: 14 }, { wch: 14 }, { wch: 14 },
+      { wch: 14 }, { wch: 18 }, { wch: 14 }, { wch: 18 },
+      { wch: 20 }, { wch: 14 }, { wch: 14 }, { wch: 14 },
+      { wch: 14 }, { wch: 14 },
+    ];
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Shippings");
+    const wbout = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+    saveAs(new Blob([wbout], { type: "application/octet-stream" }), "shippings.xlsx");
   };
 
   // tracking
@@ -665,13 +713,18 @@ const Shippings = (filterOrder) => {
                     </td>
                     {/* Excess Charges */}
                     <td className="py-2 px-3 whitespace-nowrap text-center">
-                      <p>_ _</p>
+                      <p>{order.weightDiscrepancy?.excessWeightCharges?.excessCharges ? `₹ ${order.weightDiscrepancy.excessWeightCharges.excessCharges}` : "_ _"}</p>
                     </td>
                     {/* Total Freight Charges with smart-direction breakup popup */}
                     <td className="py-2 px-3 whitespace-nowrap text-center">
                       <div className="flex items-center justify-center gap-1">
                         <span>
-                          {order.totalFreightCharges ? `₹ ${order.totalFreightCharges}` : "_ _"}
+                          {(() => {
+                            const base = Number(order.totalFreightCharges) || 0;
+                            const excess = Number(order.weightDiscrepancy?.excessWeightCharges?.excessCharges) || 0;
+                            const total = base + excess;
+                            return total ? `₹ ${total.toFixed(2)}` : "_ _";
+                          })()}
                         </span>
                         {order.totalFreightCharges && (
                           <div
@@ -717,7 +770,16 @@ const Shippings = (filterOrder) => {
                       </td>
                     )}
                     <td className="py-2 px-3 whitespace-nowrap text-center">
-                      _ _
+                      {order.weightDiscrepancy ? (
+                        <>
+                          <p>{Number(order.weightDiscrepancy.chargedWeight?.applicableWeight || 0).toFixed(3)} Kg</p>
+                          {order.weightDiscrepancy.chargeDimension?.length && (
+                            <p className="text-[10px] text-gray-400">
+                              {order.weightDiscrepancy.chargeDimension.length} x {order.weightDiscrepancy.chargeDimension.breadth} x {order.weightDiscrepancy.chargeDimension.height} cm
+                            </p>
+                          )}
+                        </>
+                      ) : "_ _"}
                     </td>
                     <td className="py-2 px-3">
                       <button

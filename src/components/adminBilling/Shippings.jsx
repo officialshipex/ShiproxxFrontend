@@ -12,7 +12,8 @@ import PaginationFooter from "../../Common/PaginationFooter";
 import ShippingFilterPanel from "../../Common/ShippingFilterPanel";
 import NotFound from "../../assets/nodatafound.png";
 import DateFilter from "../../filter/DateFilter";
-import { ExportExcel } from "../../Common/orderActions";
+import { saveAs } from "file-saver";
+import * as XLSX from "xlsx";
 import { getCarrierLogo } from "../../Common/getCarrierLogo";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -69,7 +70,7 @@ const Shippings = () => {
             page,
             limit,
             orderId,
-            awb_number,
+            awbNumber: awb_number,
             provider,
             courierServiceName: selectedCourier.length > 0 ? selectedCourier.join(",") : undefined
           },
@@ -134,7 +135,59 @@ const Shippings = () => {
   };
 
   const handleExportExcel = () => {
-    ExportExcel({ selectedOrders, orders: transactions });
+    if (selectedOrders.length === 0) return;
+    const exportData = transactions
+      .filter((o) => selectedOrders.includes(o._id))
+      .map((o) => {
+        const base = Number(o.totalFreightCharges) || 0;
+        const excess = Number(o.weightDiscrepancy?.excessWeightCharges?.excessCharges) || 0;
+        const wd = o.weightDiscrepancy;
+        const isB2C = o.orderType === "B2C";
+        return {
+          "User ID": o.user?.userId,
+          "User Name": o.user?.name,
+          "Order ID": o.orderId,
+          "AWB Number": o.awb_number,
+          "Courier Service": o.courierServiceName,
+          Status: o.status,
+          "AWB Assigned Wt (Kg)": isB2C
+            ? o.packageDetails?.deadWeight
+            : o.B2BPackageDetails?.applicableWeight,
+          "Appl. Chgs. (₹)": base,
+          "Excess Chgs. (₹)": excess,
+          "Total Freight (₹)": (base + excess).toFixed(2),
+          "Entered Wt (Kg)": isB2C
+            ? o.packageDetails?.applicableWeight
+            : o.B2BPackageDetails?.applicableWeight,
+          "Entered Dim (cm)": isB2C
+            ? `${o.packageDetails?.volumetricWeight?.length || ""}x${o.packageDetails?.volumetricWeight?.width || ""}x${o.packageDetails?.volumetricWeight?.height || ""}`
+            : "B2B",
+          "Charged Wt (Kg)": wd?.chargedWeight?.applicableWeight || "",
+          "Charged Dim (cm)": wd?.chargeDimension?.length
+            ? `${wd.chargeDimension.length}x${wd.chargeDimension.breadth}x${wd.chargeDimension.height}`
+            : "",
+          "Order Date": new Date(o.createdAt).toLocaleString(),
+          "Sender": o.pickupAddress?.contactName,
+          "Receiver": o.receiverAddress?.contactName,
+          "Receiver Phone": o.receiverAddress?.phoneNumber,
+          "Payment Method": o.paymentDetails?.method,
+          "COD Amount (₹)": o.paymentDetails?.amount,
+        };
+      });
+
+    const ws = XLSX.utils.json_to_sheet(exportData);
+    ws["!cols"] = [
+      { wch: 12 }, { wch: 18 }, { wch: 12 }, { wch: 18 },
+      { wch: 20 }, { wch: 14 }, { wch: 16 },
+      { wch: 14 }, { wch: 14 }, { wch: 14 },
+      { wch: 14 }, { wch: 18 }, { wch: 14 }, { wch: 18 },
+      { wch: 20 }, { wch: 14 }, { wch: 14 }, { wch: 14 },
+      { wch: 14 }, { wch: 14 },
+    ];
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Shippings");
+    const wbout = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+    saveAs(new Blob([wbout], { type: "application/octet-stream" }), "shippings.xlsx");
     setActionOpen(false);
   };
 
@@ -264,6 +317,7 @@ const Shippings = () => {
                     </div>
                   </div>
                 </th>
+                <th className="py-2 px-3 text-left">Excess Chgs.</th>
                 <th className="py-2 px-3 text-left">
                   <div className="flex items-center gap-1">
                     <span>Ent. Wt &amp; Dim</span>
@@ -273,19 +327,28 @@ const Shippings = () => {
                     </div>
                   </div>
                 </th>
+                <th className="py-2 px-3 text-left">
+                  <div className="flex items-center gap-1">
+                    <span>Chgd. Wt &amp; Dim</span>
+                    <div className="relative group">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="w-3 h-3 text-white opacity-75 cursor-help" fill="none" viewBox="0 0 24 24" stroke="currentColor"><circle cx="12" cy="12" r="10" strokeWidth="2" /><path d="M12 8v4m0 4h.01" strokeWidth="2" strokeLinecap="round" /></svg>
+                      <div className="absolute left-1/2 -translate-x-1/2 top-5 z-[200] hidden group-hover:block bg-gray-800 text-white text-[10px] px-2 py-1 rounded whitespace-nowrap shadow-lg">Charged Weight &amp; Dimension</div>
+                    </div>
+                  </div>
+                </th>
                 <th className="py-2 px-3 text-left">Action</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={10} className="py-10 text-center">
+                  <td colSpan={12} className="py-10 text-center">
                     <ThreeDotLoader />
                   </td>
                 </tr>
               ) : transactions.length === 0 ? (
                 <tr>
-                  <td colSpan={10} className="py-10 text-center">
+                  <td colSpan={12} className="py-10 text-center">
                     <div className="flex flex-col items-center justify-center">
                       <img src={NotFound} alt="No Data Found" className="w-60 h-60 mb-2" />
                       {/* <p className="text-gray-400 font-medium">No shippings found</p> */}
@@ -356,14 +419,20 @@ const Shippings = () => {
                     </td>
                     <td className="py-2 px-3 font-medium">
                       <div className="flex items-center gap-1">
-                        <span className="text-[#0CBB7D]">₹{row.totalFreightCharges || 0}</span>
-                        {row.totalFreightCharges && (
+                        <span className="text-[#0CBB7D]">
+                          {(() => {
+                            const base = Number(row.totalFreightCharges) || 0;
+                            const excess = Number(row.weightDiscrepancy?.excessWeightCharges?.excessCharges) || 0;
+                            const total = base + excess;
+                            return `₹${total.toFixed(2)}`;
+                          })()}
+                        </span>
+                        {(row.totalFreightCharges || row.weightDiscrepancy?.excessWeightCharges?.excessCharges) && (
                           <div
                             className="relative cursor-help"
                             onMouseEnter={(e) => {
                               if (pricePopupTimerRef.current) clearTimeout(pricePopupTimerRef.current);
                               const rect = e.currentTarget.getBoundingClientRect();
-                              // Improved: if in upper 40% of screen, open bottom. Else open top.
                               const dir = rect.top < window.innerHeight * 0.4 ? "bottom" : "top";
                               setPricePopupPos({
                                 x: rect.left + rect.width / 2,
@@ -383,6 +452,10 @@ const Shippings = () => {
                         )}
                       </div>
                     </td>
+                    {/* Excess Charges */}
+                    <td className="py-2 px-3 font-medium text-center">
+                      <span>{row.weightDiscrepancy?.excessWeightCharges?.excessCharges ? `₹${row.weightDiscrepancy.excessWeightCharges.excessCharges}` : "_ _"}</span>
+                    </td>
                     <td className="py-2 px-3">
                       {row.orderType === "B2C" ? (
                         <>
@@ -397,6 +470,19 @@ const Shippings = () => {
                           <p className="text-gray-500 italic">B2B Shipment</p>
                         </>
                       )}
+                    </td>
+                    {/* Charged Weight & Dimension */}
+                    <td className="py-2 px-3 font-medium text-center">
+                      {row.weightDiscrepancy ? (
+                        <>
+                          <p>{Number(row.weightDiscrepancy.chargedWeight?.applicableWeight || 0).toFixed(3)} Kg</p>
+                          {row.weightDiscrepancy.chargeDimension?.length && (
+                            <p className="text-[10px] text-gray-400">
+                              {row.weightDiscrepancy.chargeDimension.length} x {row.weightDiscrepancy.chargeDimension.breadth} x {row.weightDiscrepancy.chargeDimension.height} cm
+                            </p>
+                          )}
+                        </>
+                      ) : "_ _"}
                     </td>
                     <td className="py-2 px-3 text-[#0CBB7D]">
                       <button
