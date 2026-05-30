@@ -401,7 +401,7 @@ const CourierCODRemittance = ({ isSidebarAdmin }) => {
                         </div>
                       </td>
                       <td className="py-2 px-3">
-                        {/* <p className="text-gray-700">{row.userId}</p> */}
+                        <p className="text-green-500 font-bold">{row.userId}</p>
                         <p className="text-gray-700">{row.userName}</p>
                         <p className="text-gray-700">{row.Email}</p>
                       </td>
@@ -546,11 +546,11 @@ const CourierCODRemittance = ({ isSidebarAdmin }) => {
                     <p className="text-gray-700 font-bold text-[10px] tracking-tight">
                       {row.PhoneNumber || "N/A"}
                     </p>
-                    {/* {row.userId && (
-                      <span className="text-[8px] text-gray-400 font-bold uppercase tracking-widest mt-0.5">
-                        ID: {row.userId}
+                    {row.userId && (
+                      <span className="text-[10px] text-green-500 font-bold mt-0.5">
+                        {row.userId}
                       </span>
-                    )} */}
+                    )}
                   </div>
                 </div>
               </div>
