@@ -1,14 +1,11 @@
 const Aggrement = ({ documentDetails, companyAddress, gstNumber, billingInfo }) => {
-  console.log("documentntnt", documentDetails.name, documentDetails.aadharNo, companyAddress, gstNumber, billingInfo);
 
-  // Get the current date in the required format
   const currentDate = new Date().toLocaleDateString('en-US', {
     day: 'numeric',
     month: 'long',
     year: 'numeric',
   });
 
-  // Determine what to display based on gstNumber presence
   const userInfo = gstNumber
     ? `${companyAddress} [GSTIN: ${gstNumber}]`
     : `${documentDetails.name} [Aadhar No: ${documentDetails.aadharNo}]`;
@@ -16,79 +13,48 @@ const Aggrement = ({ documentDetails, companyAddress, gstNumber, billingInfo }) 
   return (
     <div className="space-y-4">
       <p className="text-[10px] sm:text-[12px] text-gray-700 leading-relaxed font-bold">
-        This Seller Agreement is signed up on {currentDate} (“Signed up date”) and verified on {currentDate} (“Verification Date”) thus agreement is treated as effective from verified date only (“Verification Date”) by and between:
+        This Merchant Agreement ("Agreement") is between you (company/individual/firm/partnership/body corporate), together with any company or other business entity you are representing, if any (hereinafter collectively referred to as "Merchant" or "you" or "User"); and QUICKPOST, originally known as QUICKPOST360 Services Private Limited, a company registered under the Companies Act, 1956, having its registered office at House No 87 Singhal Panna, Gali No2 Near Shiv Mandir, Badesera, Bhiwani, Bhiwani, Haryana, India, 127031, offering 'Logistics Management Services', under the name QUICKPOST (hereinafter referred to as "QUICKPOST" or "we" or "Company", and together with the User referred jointly as the "Parties" and individually as a "Party").
       </p>
 
-      <p className="text-[10px] sm:text-[12px] text-gray-700 leading-relaxed ">
-        <span className="font-bold">Shipex India</span>, a company incorporated under the provisions of the Companies Act, 2013, and having its
-        registered office at 01, Basement, Biju Tower, Baba Nagar, Bhiwani, Haryana 127021, legally
-        represented by Mr. Sandeep (hereinafter referred to as “Company” or “Service Provider” or “Shipex
-        India or Shipex India”), which means and include, unless repugnant to the context or meaning thereof
-        its legal agents, contractors, sub-contractors, affiliates, employees, receivers and assigns of ONE
-        PART;
-      </p>
-      <p className="text-center">-and-</p>
+      <p className="text-[10px] sm:text-[12px] text-gray-700 leading-relaxed font-bold">BACKGROUND</p>
 
-      {/* Display the name with GSTIN or Aadhar No based on availability */}
-      <p className="text-[10px] sm:text-[12px] text-gray-700 leading-relaxed ">
-        <span className="font-bold">{userInfo}</span>, incorporated under the provisions of Companies Act 1956/2013 or LLP/partnership/proprietorship and having its registered office at {gstNumber ? companyAddress : billingInfo.address} with its PAN No {documentDetails.pan}, legally
-        represented by its authorised signatory (hereinafter referred to as “Customer/Merchant/User”),
-        which means and include, unless repugnant to the context or meaning thereof mean and include its
-        legal agents, contractors, sub-contractors, affiliates, employees, assign, liquidators,
-        successors and permitted assigns of the OTHER PART.
-      </p>
-
-      {/* Other Agreement Clauses */}
       <p className="text-[10px] sm:text-[12px] text-gray-700 leading-relaxed">
-        This Agreement comes into effect when the Customer register for use of Shipex India services or sign an
-        application for utilizing services of Shipex India available at www.shipexindia.com (“Website/
-        Platform”). By registering or signing with Shipex India, the Customer signifies absolute and unconditional
-        consent to all the provisions of this Agreement in its entirety.
+        This Agreement comes into effect when you register to use the Services (as defined below), or click on "Continue" box, and accept the terms and conditions provided herein.
       </p>
 
       <p className="text-[10px] sm:text-[12px] text-gray-700 leading-relaxed">
-        This Agreement constitutes a legally binding agreement between the Customer and Shipex India.
-        The Customer is advised to read this Agreement carefully. If the Customer is not in agreement with
-        any of the terms and conditions, the Customer(s) should not use the Services and should notify the
-        same to Shipex India. The Customer expressly represents and warrants that it will not avail the
-        Services if they do not understand, agree to become a party to, and abide by all of the terms and
-        conditions specified below. Any violation of this Agreement may result in legal liability upon the
-        Customer. By clicking “Agree”, the Customer agrees to all the terms and conditions of this Agreement
-        and is bound by the same.
+        By registering or clicking on the 'Continue' box, you signify your absolute, irrevocable and unconditional consent to all the provisions of this Agreement in its entirety. This Agreement constitutes a legally binding agreement between you and QUICKPOST. This Agreement defines the terms and conditions under which you're allowed to use the QUICKPOST's website ("Website") and QUICKPOST's mobile application ("Mobile App"), and how QUICKPOST will treat your account while you are a member. If you have any questions about our terms, feel free to contact us at support@QUICKPOST.in.
       </p>
 
       <p className="text-[10px] sm:text-[12px] text-gray-700 leading-relaxed">
-        The Website provides access to a platform that facilitates more comfortable form of e- commerce
-        where you can use the logistics services according to your requirements.
-
+        You are advised to read this Agreement carefully. You expressly represent and warrant that you will not avail the Services if you do not understand, agree to become a party to, and abide by all of the terms and conditions specified below. Any violation of this Agreement may result in legal liability upon you.
       </p>
 
       <p className="text-[10px] sm:text-[12px] text-gray-700 leading-relaxed">
-        This Agreement defines the terms and conditions under which Customer is allowed to use the
-        Platform and how the Company will treat the Customer’s account while it is a member.
+        The Website/ Mobile App and the online/ offline services of QUICKPOST or its affiliates, provides access to a platform that facilitates more comfortable form of e-commerce where you can use the logistics services according to your requirements within India and in countries designated by QUICKPOST from time to time ("Service(s)").
       </p>
 
       <p className="text-[10px] sm:text-[12px] text-gray-700 leading-relaxed">
-        This Agreement is an electronic record in terms of Information Technology Act, 2000 and generated by a computer system, and does not require any physical or digital signatures. This Agreement is published in accordance with the provisions of Rule 3(1) of the Information Technology (Intermediaries guidelines) Rules, 2011 that require publishing of the rules and regulations, privacy policy and terms of usage for access or usage of the Website/ Services.
+        This Agreement, among other things, provides the terms and conditions for use of the Services, primarily through a web-based practice management software hosted and managed remotely through the Website/Mobile App.
       </p>
 
       <p className="text-[10px] sm:text-[12px] text-gray-700 leading-relaxed">
-        The Company reserves the right to modify the terms of this Agreement, at any time, with prior notice of 7 (seven) days. Customer’s use of the Services following any such modification constitutes Customer’s agreement to follow and be bound by the terms of the Agreement, as modified.
+        This Agreement is an electronic record in terms of Information Technology Act, 2000 and generated by a computer system, and does not require any physical or digital signatures. This Agreement is published in accordance with the provisions of Rule 3(1) of the Information Technology (Intermediaries guidelines) Rules, 2011 that require publishing of the rules and regulations, privacy policy and terms of usage for access or usage of the website/ service.
       </p>
 
       <p className="text-[10px] sm:text-[12px] text-gray-700 leading-relaxed">
-        Any additional terms and conditions, standard operating procedures (SOPs), service-level agreements
-        (SLAs), terms of use, disclaimers and other policies applicable to general and specific areas of this Agreement, Website, and/or Service shall be construed to form an integral part of this Agreement and any breach thereof will be construed as a breach of this Agreement
-
+        QUICKPOST reserves the right to modify the terms of this Agreement, at any time, without giving you any prior notice. Your use of the Service following any such modification constitutes your agreement to follow and be bound by the terms of the Agreement, as modified.
       </p>
 
       <p className="text-[10px] sm:text-[12px] text-gray-700 leading-relaxed">
-        Your access to use the Services will be solely at the discretion of Shipex
-        India.
-
+        Any additional terms and conditions, standard operating procedures (SOPs), service-level agreements (SLAs), terms of use, disclaimers and other policies applicable to general and specific areas of this Agreement, Website, Mobile App and/or Service shall be construed to form an integral part of this Agreement and any breach thereof will be construed as a breach of this Agreement.
       </p>
-      <p className="text-[10px] sm:text-[12px] text-gray-700 leading-relaxed font-bold">The Company and the Customer shall hereinafter collectively be referred to as “Parties” and individually as “Party”.
-        WHEREAS:
+
+      <p className="text-[10px] sm:text-[12px] text-gray-700 leading-relaxed">
+        Your access to use the Services will be solely at the discretion of QUICKPOST.
+      </p>
+
+      <p className="text-[10px] sm:text-[12px] text-gray-700 leading-relaxed font-bold">WHEREAS:
       </p>
       <ol className="text-[10px] sm:text-[12px] text-gray-700 leading-relaxed space-y-2">
         <li>A.	The Company is engaged in the business of aggregating logistic services. Through itsPlatform, it enables the Customer to ship shipments to multiple locations, without having to directly deal with multiple courier companies (“Logistics Service Provider(s)”) (“Business”).</li>
@@ -133,34 +99,34 @@ const Aggrement = ({ documentDetails, companyAddress, gstNumber, billingInfo }) 
         2) ACCOUNT USAGE:
       </p>
       <ol className="text-[10px] sm:text-[12px] text-gray-700 leading-relaxed space-y-2">
-        <li>i.	This Agreement is a master agreement which governs the relationship between the Parties inrelation to one or more Services that are offered by Shipex India to the Customer, inter-alia as per the terms and specifications mentioned and payment as per commercials updated on regular basis on Shipex India online panel. Shipex India authorizes the Customer to view and access the content available
+        <li>i.	This Agreement is a master agreement which governs the relationship between the Parties inrelation to one or more Services that are offered by QUICKPOST to the Customer, inter-alia as per the terms and specifications mentioned and payment as per commercials updated on regular basis on QUICKPOST online panel. QUICKPOST authorizes the Customer to view and access the content available
           on the Website solely for ordering, receiving, delivering and communicating as per this Agreement.
         </li>
-        <li>ii.	The contents of the Services, information, text, graphics, images, logos, button icons,software code, design, and the collection, arrangement and assembly of content on the Website and Mobile App (collectively, "Shipex India Content"), are the property of Shipex India and are
-          protected under copyright, trademark and other laws. User shall not modify the Shipex India Content or reproduce, display, publicly perform, distribute, or otherwise use the Shipex India Content in any manner,
-          without the consent of Shipex India.
+        <li>ii.	The contents of the Services, information, text, graphics, images, logos, button icons,software code, design, and the collection, arrangement and assembly of content on the Website and Mobile App (collectively, "QUICKPOST Content"), are the property of QUICKPOST and are
+          protected under copyright, trademark and other laws. User shall not modify the QUICKPOST Content or reproduce, display, publicly perform, distribute, or otherwise use the QUICKPOST Content in any manner,
+          without the consent of QUICKPOST.
         </li>
-        <li>iii.	Customer shall not transfer or share (including by way of sublicense, lease,assignment orother transfer, including by operation of law) their log-in or right to use the Service to any third party. The Customer shall be solely responsible for the way anyone it has authorized to use the Services and for ensuring that all of such customer comply with all of the terms and conditions of this Agreement. Any violation of the terms and/or conditions of this Agreement by any such customer shall be deemed to be a violation thereof by you, towards which Shipex India shall have no liability or responsibility.</li>
+        <li>iii.	Customer shall not transfer or share (including by way of sublicense, lease,assignment orother transfer, including by operation of law) their log-in or right to use the Service to any third party. The Customer shall be solely responsible for the way anyone it has authorized to use the Services and for ensuring that all of such customer comply with all of the terms and conditions of this Agreement. Any violation of the terms and/or conditions of this Agreement by any such customer shall be deemed to be a violation thereof by you, towards which QUICKPOST shall have no liability or responsibility.</li>
         <li>iv.	Multiple users are not permitted to share the same/single log-in. You agree and understandthat you are responsible for maintaining the confidentiality of passwords associated with any log-in you use to access the Services;</li>
-        <li>v.	Customer agree that any information it gives to Shipex India will always be true, accurate,
+        <li>v.	Customer agree that any information it gives to QUICKPOST will always be true, accurate,
           correct, complete and up to date, to the best of its knowledge. Any phone number used to register with supporting documents to prove the same.
         </li>
         <li>vi. Customer agrees that you will not use the Services
-          provided by Shipex India for any unauthorized and unlawful purpose. The Customer will not impersonate another person to any of the aforesaid. </li>
+          provided by QUICKPOST for any unauthorized and unlawful purpose. The Customer will not impersonate another person to any of the aforesaid. </li>
         <li>vii. Customer agrees to use the Services only for purposes that are permitted by: (a)the
           terms of usage as outlined herein; and (b) any applicable law, regulation and generally accepted practices or guidelines in the relevant jurisdictions (including any laws regarding the export of goods, data or software to and from India or other relevant countries). </li>
-        <li>viii. Customer agrees that it is solely responsible for (and that Shipex India has no responsibility to
+        <li>viii. Customer agrees that it is solely responsible for (and that QUICKPOST has no responsibility to
           the
-          Customer or to any third party for) any breach of Customer’s obligations under this Agreement and for the consequences (including any loss or damage which Shipex India may suffer) of any
+          Customer or to any third party for) any breach of Customer’s obligations under this Agreement and for the consequences (including any loss or damage which QUICKPOST may suffer) of any
           such breach.
         </li>
-        <li>ix.	Customer expressly acknowledges and agrees that the use of the Services is at Customer’ssole risk and that the Services are provided “as is” and “as available”, and Shipex India at its discretion, will provide any customization or modification.</li>
-        <li>x.	Customer agrees that this Agreement and the Services of Shipex India form a part of subject to
-          any modification or be removed by Shipex India with change in government regulations, policies and local laws as applicable.
+        <li>ix.	Customer expressly acknowledges and agrees that the use of the Services is at Customer’ssole risk and that the Services are provided “as is” and “as available”, and QUICKPOST at its discretion, will provide any customization or modification.</li>
+        <li>x.	Customer agrees that this Agreement and the Services of QUICKPOST form a part of subject to
+          any modification or be removed by QUICKPOST with change in government regulations, policies and local laws as applicable.
         </li>
-        <li>xi.	Customer agrees not to access (or attempt to access) any of the Services by any meansother than through the interface that is provided by Shipex India, unless you have been specifically allowed to do so in a separate agreement with Shipex India.</li>
+        <li>xi.	Customer agrees not to access (or attempt to access) any of the Services by any meansother than through the interface that is provided by QUICKPOST, unless you have been specifically allowed to do so in a separate agreement with QUICKPOST.</li>
         <li>xii.	Customer agrees that you will not engage in any activity that interferes with or disrupts theServices (or the servers and networks which are connected to the Services).</li>
-        <li>xiii.	Customer agrees that you are solely responsible for (and that Shipex India has noresponsibility to
+        <li>xiii.	Customer agrees that you are solely responsible for (and that QUICKPOST has noresponsibility to
           you or to any third party for) any breach of your obligations under this Agreement
         </li>
       </ol>
@@ -170,10 +136,10 @@ const Aggrement = ({ documentDetails, companyAddress, gstNumber, billingInfo }) 
       </p>
 
       <ol className="text-[10px] sm:text-[12px] text-gray-700 leading-relaxed space-y-2">
-        <li>i. With effect from the Effective Date, the Customer hereby appoints the Company, to provide consequences (including any loss or damage which Shipex India may sulogistics solutions in accordance with the terms and conditions of this Agreement (“Services”).ffer) of any such breach</li>
+        <li>i. With effect from the Effective Date, the Customer hereby appoints the Company, to provide consequences (including any loss or damage which QUICKPOST may sulogistics solutions in accordance with the terms and conditions of this Agreement (“Services”).ffer) of any such breach</li>
         <li>ii.	In order to avail the Services, the Customer is required to create an account at the Platform(“User Account”), by providing all the relevant, true, accurate, current and complete details, as detailed in (which includes- GST registration in case of registered customer, Pan, TAN, COI in case of company, Cancelled cheque of bank account as per KYC).</li>
-        <li>iii.	Customer agrees that no fake, inaccurate or incomplete details of the Customer shall beprovided to Shipex India as part of the KYC process set out above. In case the Customer fails to provide
-          complete and accurate details to the Company as part of the KYC process, such act or omission shall be considered a material breach of this Agreement and Shipex India has the right to recover from the Customer, damages and any and all losses suffered by it on account of such incomplete or inaccurate KYC details provided by the Customer.
+        <li>iii.	Customer agrees that no fake, inaccurate or incomplete details of the Customer shall beprovided to QUICKPOST as part of the KYC process set out above. In case the Customer fails to provide
+          complete and accurate details to the Company as part of the KYC process, such act or omission shall be considered a material breach of this Agreement and QUICKPOST has the right to recover from the Customer, damages and any and all losses suffered by it on account of such incomplete or inaccurate KYC details provided by the Customer.
         </li>
         <li>iv.	Customer is mandatorily required to give full address of shipping location/warehouses fromwhere the shipment is required to be picked and address should be updated at place of business or additional place of business in statutory registrations as applicable.</li>
         <li>v.	The Customer shall also be required to assign itself, a username and password to access theUser Account.</li>
@@ -181,17 +147,17 @@ const Aggrement = ({ documentDetails, companyAddress, gstNumber, billingInfo }) 
         <li>vii.	The Customer agrees and acknowledges that it shall be required to process/ place a requestfor its logistics requirement on the Platform. Upon receiving the request, the Company shall assign a Logistics Service Provider, who shall pick up the shipment from the location provided by the Customer. The Company shall assign a Logistics Service Provider, at its sole discretion and such assignment of a Logistics Service Provider shall be based on the location of the Customer, nature of the consignment, etc.</li>
         <li>viii.	The Customer shall be required to clearly provide on the Platform, the details of theconsignment, including but not limited to consignment details, consignee details, return address/ shipping address, amount of money to be collected in case of cash on delivery (“COD”) shipments etc The details of the bank account, where any money is collected as part of the COD, should also be provided on the Platform. Any bank account details provided for collection of COD should match the copy of the cancelled cheque submitted by the Customer. In case of revision of bank account revised cancelled cheque will need to be provided. The customer also certifies and confirms that the bank accounts provided are for legitimate business purposes and are legally permitted to receive monies collected by the Company for such shipment/s for which the Company received COD.</li>
         <li>ix.	The duly packaged consignment shall be handed over to the Logistics Service Provider bythe Customer, along with the aforementioned details on the packaging.</li>
-        <li>x.	Customer agrees that tax invoice shall be issued as per GST compliances and copy of thesame shall be attached in shipment. Customer can use the feature of Add on services of Shipex India
-          on seller panel and generate invoice from the same. In both the scenario, Shipex India has no involvement in the invoicing and not liable for the same. Customer shall be only liable for the same.
+        <li>x.	Customer agrees that tax invoice shall be issued as per GST compliances and copy of thesame shall be attached in shipment. Customer can use the feature of Add on services of QUICKPOST
+          on seller panel and generate invoice from the same. In both the scenario, QUICKPOST has no involvement in the invoicing and not liable for the same. Customer shall be only liable for the same.
         </li>
-        <li>xi.	In case of COD consignments, the Logistics Service Provider shall collect the amount ofmoney from the consignee, as per the instructions provided by the Customer. The Logistics Service Provider shall remit such money to the bank account of the Company, after the same being collected from the consignee. The Company shall thereafter remit the COD amount so received from the Logistics Service Provider to the bank account of the Customer as notified by the Customer on the Platform and as per any other terms agreed between the Shipex India and Customer. However, the Company shall not be held liable in case the COD payments are delayed or misplaced by the Logistics Service Provider. Upon receipt of the COD payments from the Logistics Service Provider by the Company and remittance of the same by the Company to the aforementioned bank account notified by the Customer, the Company shall have no liability towards the Customer for the collection or recovery of such COD payments. Further, once the details of relevant bank account have been notified to the Company by the Customer, the Company shall have no further obligation to verify the veracity and genuineness of the notification by the Customer, or to undertake any further due diligence or KYC process on the signatories of such bank account. However, the Company shall have the right to conduct a KYC on such bank account for its records.</li>
+        <li>xi.	In case of COD consignments, the Logistics Service Provider shall collect the amount ofmoney from the consignee, as per the instructions provided by the Customer. The Logistics Service Provider shall remit such money to the bank account of the Company, after the same being collected from the consignee. The Company shall thereafter remit the COD amount so received from the Logistics Service Provider to the bank account of the Customer as notified by the Customer on the Platform and as per any other terms agreed between the QUICKPOST and Customer. However, the Company shall not be held liable in case the COD payments are delayed or misplaced by the Logistics Service Provider. Upon receipt of the COD payments from the Logistics Service Provider by the Company and remittance of the same by the Company to the aforementioned bank account notified by the Customer, the Company shall have no liability towards the Customer for the collection or recovery of such COD payments. Further, once the details of relevant bank account have been notified to the Company by the Customer, the Company shall have no further obligation to verify the veracity and genuineness of the notification by the Customer, or to undertake any further due diligence or KYC process on the signatories of such bank account. However, the Company shall have the right to conduct a KYC on such bank account for its records.</li>
         <li>xii.	The Customer shall be required to raise any concerns/ queries, (i) with respect to a lostconsignment, within a period of 15 days from sending the consignment; and (ii) with respect to any damage, default or any other concerns with respect to the consignment, within a period of 7 days from delivery/ reverse delivery of the consignment. xiii. The Customer shall be provided with a tracking number (AWB number) by the Company for the consignment. The Customer can track the consignment, on a real time basis using the tracking number provided.</li>
         <li>xiii. The Customer shall be provided with a tracking number (AWB number) by the Company for the consignment. The Customer can track the consignment, on a real time basis using the tracking number provided.</li>
         <li>The Customer agrees and acknowledges that it shall be responsible for paying all duties, taxes, any other charge/levy that may be levied on consignment under Applicable Law. </li>
         <li>xv. The Customer hereby agrees that the Company is only an intermediary between the Customer and the Logistics Service Provider. In the event of a dispute between the Customer and the Logistics Service Provider, the Company shall take all reasonable steps to try and ensure an amicable settlement between the Customer and the Logistics Service Provider. In the event of a settlement between the Customer and the Logistics Service Provider, the Company’s obligation shall be to merely pass on any damages provided by the Logistics Service Provider to the Customer, as per the individual terms and conditions of the Logistics Service Provider. However, the Company shall not be liable in the event the Customer and the Logistics Service Provider are unable to reach an amicable settlement. Further, the Company shall not be liable for any costs/ damages/ claims arising from or in relation to such dispute between the Customer and the Logistics Service Provider.</li>
-        <li>Customer agrees that no fake products/goods will be delivered to the end consumer and if any fake product is found then Shipex India has the right to pay the amount to end customer and same
+        <li>Customer agrees that no fake products/goods will be delivered to the end consumer and if any fake product is found then QUICKPOST has the right to pay the amount to end customer and same
           shall be recovered from Customer. Any cost , expense in relation to that issue will be received from the customer or deducted from COD amount . In addition to this, Customer shall be liable for prosecution and penalty of Rs 100,000/- or Goods value whichever is higher if found to be in delivering any illegal or fake products/Goods. </li>
-        <li>xvii. Customer agrees that if there is any quality issue with the end consumer then Shipex India has
+        <li>xvii. Customer agrees that if there is any quality issue with the end consumer then QUICKPOST has
           the right to pay the amount to end consumer and same shall be received from the customer.</li>
         <li>xviii. Customer agrees that it is solely responsible for any breach of Customer obligations under this Agreement and for the consequences of any such breach.</li>
         <li>xix. In consideration of the Services rendered by Company, the Customer agrees to pay to the Company, the consideration in accordance with Clause 4 of this Agreement.</li>
@@ -201,52 +167,52 @@ const Aggrement = ({ documentDetails, companyAddress, gstNumber, billingInfo }) 
       </p>
 
       <ol className="text-[10px] sm:text-[12px] text-gray-700 leading-relaxed space-y-2">
-        <li>i.	In consideration of the Company providing the Services to the Customer, the Customer agreesto pay the Company, valid consideration, the details of which are mentioned on Billing section on Shipex India online panel to this Agreement (“Consideration”) or in the billing section of the
-          Shipex India panel. In addition to the Consideration, the Customer shall also be required to pay applicable fees for shipping the consignment, which shall again be provided on the billing section of Shipex
+        <li>i.	In consideration of the Company providing the Services to the Customer, the Customer agreesto pay the Company, valid consideration, the details of which are mentioned on Billing section on QUICKPOST online panel to this Agreement (“Consideration”) or in the billing section of the
+          QUICKPOST panel. In addition to the Consideration, the Customer shall also be required to pay applicable fees for shipping the consignment, which shall again be provided on the billing section of Shipex
           India panel to this Agreement (“Shipping fees")
         </li>
         <li>ii.	The Consideration specified in this Agreement is exclusive of all applicable taxes. TheCustomer shall be required to pay applicable goods and service tax and fuel surcharge etc. The same shall be stated as separate items in the invoice raised by the Company on the Customer on or before 07th of the succeeding month for the Services that have been rendered in previous month as per the terms of this Agreement.</li>
-        <li>iii.	Shipex India may add new services for additional fees and charges or may proactively amendfees and charges for existing services, at any time in its sole discretion. Fees stated prior to the services being provided, as amended at Shipex India’s sole discretion from time to time, shall apply.</li>
-        <li>iv.	If you purchase any subscription based paid service, you authorize Shipex India to charge youapplicable fees at the beginning of every subscription period or at such intervals as applicable to the said service, and you authorize Shipex India make such modification to the fee structure as required and also agree to abide by such modified fee structure.</li>
-        <li>v.	Customer agrees that the billing credentials provided by it for any purchases from Shipex India
+        <li>iii.	QUICKPOST may add new services for additional fees and charges or may proactively amendfees and charges for existing services, at any time in its sole discretion. Fees stated prior to the services being provided, as amended at QUICKPOST’s sole discretion from time to time, shall apply.</li>
+        <li>iv.	If you purchase any subscription based paid service, you authorize QUICKPOST to charge youapplicable fees at the beginning of every subscription period or at such intervals as applicable to the said service, and you authorize QUICKPOST make such modification to the fee structure as required and also agree to abide by such modified fee structure.</li>
+        <li>v.	Customer agrees that the billing credentials provided by it for any purchases from QUICKPOST
           will be accurate and the Customer shall not use billing credentials that are not lawfully owned by it.</li>
         <li>vi. The Customer agrees to pay all subscription fees, service fees and other fees applicable to User’s use of Services or any other services which are beyond the scope of the Services and/or this Agreement, and the User shall not (directly or indirectly) circumvent the fee structure.</li>
-        <li>vii.	The User is solely responsible for payment of all taxes, legal compliances, and statutoryregistrations and reporting under applicable law. Shipex India is in no way responsible for any of the
+        <li>vii.	The User is solely responsible for payment of all taxes, legal compliances, and statutoryregistrations and reporting under applicable law. QUICKPOST is in no way responsible for any of the
           User’s taxes or legal or statutory compliances.
         </li>
         <li>viii.	Unless otherwise specified, all fees shall be exclusive of taxes, and Goods and Service taxand other statutory taxes, as applicable, shall be levied on every purchase/Service.</li>
         <li>ix.	The Customer may also use the prepaid mode of payment of Consideration and Shipping Fees.</li>
         <li>x.	The Company shall issue an invoice to the Customer on or before 07th of each succeedingmonth for the Services that have been rendered in previous month as per the terms of this Agreement.</li>
-        <li>xi.	The Customer shall pay to the Company within Seven (7) days from the date of submissionof the invoice as per commercials updated on the billing section of the Shipex India panel. </li>
+        <li>xi.	The Customer shall pay to the Company within Seven (7) days from the date of submissionof the invoice as per commercials updated on the billing section of the QUICKPOST panel. </li>
         <li>xii. It will be the responsibility of the Customer to verify the invoices and inform the Company within 5 (five) days in case of any disputes regarding the contents of the invoice from the date of receipt of invoices. Thereafter, the Parties shall promptly seek to resolve the dispute in good faith. Payment of the undisputed amount shall not be affected and should be made as per the general terms of this Agreement.</li>
         <li>xiii.	If for any reason the Customer defaults in making the payments against undisputedInvoices issued by Service Provider, then the Service Provider shall have the right to invoke the dispute resolution as set out under the Agreement.</li>
-        <li>xiv.	If the User fails to pay the full invoice amount in accordance with the time period mentionedabove or any other amounts/charges payable under this Agreement by the due date, then Shipex India will have the right to: (i) retain (and subsequently adjust the outstanding amounts/charges within 30 days of retention from) the amounts received from the end customer of the User through the cash on delivery method (“COD Amount”), and/or (ii) retain the custody of (and subsequently dispose within 30 days of retention) the shipments of the User which are in the possession of Shipex India logistics partner(s), and/or (iii) levy an interest of 18% per annum from
-          the due date of payment, till such time that the User makes entire payment towards the invoice, and/or (iv) forfeit the security deposit amount of the User (if any) lying with Shipex India. Without
+        <li>xiv.	If the User fails to pay the full invoice amount in accordance with the time period mentionedabove or any other amounts/charges payable under this Agreement by the due date, then QUICKPOST will have the right to: (i) retain (and subsequently adjust the outstanding amounts/charges within 30 days of retention from) the amounts received from the end customer of the User through the cash on delivery method (“COD Amount”), and/or (ii) retain the custody of (and subsequently dispose within 30 days of retention) the shipments of the User which are in the possession of QUICKPOST logistics partner(s), and/or (iii) levy an interest of 18% per annum from
+          the due date of payment, till such time that the User makes entire payment towards the invoice, and/or (iv) forfeit the security deposit amount of the User (if any) lying with QUICKPOST. Without
           being
-          prejudice to the above, the User hereby agrees that it shall become liable to pay the freight charges (both forward and RTO charges) as soon as a shipment is picked up or is RTO initiated by the Shipex India courier partner, and that Shipex India shall have a right to recover such freight charges
+          prejudice to the above, the User hereby agrees that it shall become liable to pay the freight charges (both forward and RTO charges) as soon as a shipment is picked up or is RTO initiated by the QUICKPOST courier partner, and that QUICKPOST shall have a right to recover such freight charges
           from the User (for all the shipments which have been picked-up/shipped/RTO however which have not been invoiced) as per the various modes agreed under this Agreement, including but not limited to retaining/adjusting the COD Amounts for the shipments of the User. The Company shall release such consignments and/or COD shipment payments, only upon the Customer paying the Consideration owed to the Company.
         </li>
         <li>xv.	The Company reserves its right to revise the Consideration payable by the Customer, byproviding a prior written notice of 7 days to the Customer. The Customer shall be required to raise any concerns pertaining to the same within a period of 4 days from the date of receiving such notice. In the event, the Customer fails to raise any concern within the stipulated time period, the revised Consideration shall deemed to be accepted by the Customer. In the event the Customer raises any concerns within stipulated time period, the Parties shall negotiate and determine the revised Consideration. Such revised Consideration shall be effective, upon the expiry of the notice period.</li>
-        <li>xvi.	In the event the User closes its account with the Company, or this Agreement expires or isterminated, the Company will deduct the Consideration and Shipping Fees and the freight amounts due to it from the User, from the COD Amount. The Company shall, thereafter, remit the remaining COD amount after such deduction, within 45 (Forty-Five) business working days from the date of such closure/expiration/termination, subject to reconciliation and completion of all the shipments and transactions pertaining to the User/his account. In the event, the COD Amount falls short of the outstanding amount payable by the User, the User shall within 5 (five) days from the date of such closure/expiration/termination pay the outstanding amount to the Company, and until the payment of the entire outstanding amount, the Company shall retain the custody of the shipments of the User which are in the possession of Logistics Service Provider. In the event of any delay in payment of outstanding amount by the User (as required under this clause), Shipex India shall have a right to levy an interest of 18% per annum on the outstanding amount from the due date of payment till the date of actual payment and/or to forfeit the security deposit amount of the User (if any) lying with Shipex India.</li>
-        <li>xvii.	For any claims by the User regarding non connectivity of the shipment (i.e.where the Useris claiming that the shipment has been picked up but not connected) the signed copy of the manifest sheet of the pick up against the disputed shipment has to be submitted along with the claim request by the User within 3 (three) days from the pickup date. Without the signed manifest any such request shall not be considered valid. Shipex India shall be liable for forward &
+        <li>xvi.	In the event the User closes its account with the Company, or this Agreement expires or isterminated, the Company will deduct the Consideration and Shipping Fees and the freight amounts due to it from the User, from the COD Amount. The Company shall, thereafter, remit the remaining COD amount after such deduction, within 45 (Forty-Five) business working days from the date of such closure/expiration/termination, subject to reconciliation and completion of all the shipments and transactions pertaining to the User/his account. In the event, the COD Amount falls short of the outstanding amount payable by the User, the User shall within 5 (five) days from the date of such closure/expiration/termination pay the outstanding amount to the Company, and until the payment of the entire outstanding amount, the Company shall retain the custody of the shipments of the User which are in the possession of Logistics Service Provider. In the event of any delay in payment of outstanding amount by the User (as required under this clause), QUICKPOST shall have a right to levy an interest of 18% per annum on the outstanding amount from the due date of payment till the date of actual payment and/or to forfeit the security deposit amount of the User (if any) lying with QUICKPOST.</li>
+        <li>xvii.	For any claims by the User regarding non connectivity of the shipment (i.e.where the Useris claiming that the shipment has been picked up but not connected) the signed copy of the manifest sheet of the pick up against the disputed shipment has to be submitted along with the claim request by the User within 3 (three) days from the pickup date. Without the signed manifest any such request shall not be considered valid. QUICKPOST shall be liable for forward &
           RTO
-          delivery subject to the liability of Rs 5,000 (Rupees Five thousand only) in case of forward delivery and if loss or damage is in excess of Rs 5,000 than Shipex India shall issue COF (Certificate
+          delivery subject to the liability of Rs 5,000 (Rupees Five thousand only) in case of forward delivery and if loss or damage is in excess of Rs 5,000 than QUICKPOST shall issue COF (Certificate
           of
           Facts) govern by Limitation of Liability clause.
         </li>
         <li>xviii.	The User agrees that in case of shipments booked under Cash on Delivery(“COD”), Logistics
-          Service Provider shall collect cash, as per the instructions of Shipex India from the consignee as per the
-          details mentioned on the COD order form and remit/reimburse the amount to Shipex India which
-          then forthwith would be reimbursed to the User. However, Shipex India shall not be held liable in case the
-          COD amount has been delayed or misplaced by the courier company. The User shall seek its claim, loss or any damages suffered from the Logistics Service Provider directly, and in no way shall recover from Shipex India or hold Shipex India liable for the same. In this regard, the User
+          Service Provider shall collect cash, as per the instructions of QUICKPOST from the consignee as per the
+          details mentioned on the COD order form and remit/reimburse the amount to QUICKPOST which
+          then forthwith would be reimbursed to the User. However, QUICKPOST shall not be held liable in case the
+          COD amount has been delayed or misplaced by the courier company. The User shall seek its claim, loss or any damages suffered from the Logistics Service Provider directly, and in no way shall recover from QUICKPOST or hold QUICKPOST liable for the same. In this regard, the User
           agrees that
-          Shipex India shall have the right to deduct the freight charges from the COD Amounts received by Shipex India, and then remit/reimburse the balance amount to the User. xx. Shipex India may, from time to time, in its sole discretion, provide/allocate a credit limit to the
+          QUICKPOST shall have the right to deduct the freight charges from the COD Amounts received by QUICKPOST, and then remit/reimburse the balance amount to the User. xx. QUICKPOST may, from time to time, in its sole discretion, provide/allocate a credit limit to the
           User
-          for the Services, which can be used by the User within a specified time period. In this regard, the User hereby acknowledges and agrees to pay the service fees and all other amounts (payable by it pursuant to this Agreement), and in the event User fails to timely pay the same, Shipex India shall have an unconditional and irrevocable right, in addition to other rights and
+          for the Services, which can be used by the User within a specified time period. In this regard, the User hereby acknowledges and agrees to pay the service fees and all other amounts (payable by it pursuant to this Agreement), and in the event User fails to timely pay the same, QUICKPOST shall have an unconditional and irrevocable right, in addition to other rights and
           remedies
         </li>
-        <li>xix.	Shipex India reserves the right to modify the fee structure by providing a notice, either on yourdashboard or through email to the authorized User, which shall be considered as valid and agreed communication. Upon the User not communicating any negative response/objection to Shipex India to such notice, Shipex India shall apply the modified Fee structure.</li>
-        <li>xxi.	In order to process the fee payments, Shipex India might require details of User’s bank account, credit card number and other such financial information. Users shall be responsible to maintain the confidentiality of such information provided by Users.</li>
+        <li>xix.	QUICKPOST reserves the right to modify the fee structure by providing a notice, either on yourdashboard or through email to the authorized User, which shall be considered as valid and agreed communication. Upon the User not communicating any negative response/objection to QUICKPOST to such notice, QUICKPOST shall apply the modified Fee structure.</li>
+        <li>xxi.	In order to process the fee payments, QUICKPOST might require details of User’s bank account, credit card number and other such financial information. Users shall be responsible to maintain the confidentiality of such information provided by Users.</li>
       </ol>
 
 
@@ -254,13 +220,13 @@ const Aggrement = ({ documentDetails, companyAddress, gstNumber, billingInfo }) 
       <p className="text-xs font-bold sm:text-sm text-gray-700 leading-relaxed">5) LIMITATION OF LIABILITY AND DISCLAIMERS:</p>
       <ol className="text-[10px] sm:text-[12px] text-gray-700 leading-relaxed space-y-2">
         <li>
-          i. In case of loss or damage up to Rs 5,000 (Rupees five thousand only), the total aggregate liability of Shipex India shall be Rs 5,000 or actual loss, whichever is lower. If damage or loss exceeds Rs 5,000, then Shipex India shall issue a Certificate of Facts (COF) only.
+          i. In case of loss or damage up to Rs 5,000 (Rupees five thousand only), the total aggregate liability of QUICKPOST shall be Rs 5,000 or actual loss, whichever is lower. If damage or loss exceeds Rs 5,000, then QUICKPOST shall issue a Certificate of Facts (COF) only.
         </li>
         <li>
           ii. Under any circumstances, the company shall not be liable to the customer in any amount for special, incidental, consequential, or indirect damages, loss of goodwill or business profits, work stoppage, or exemplary or punitive damages.
         </li>
         <li>
-          iii. The Customer agrees and acknowledges that the use of the Services is at its sole risk and that the Services are provided "AS IS" by Shipex India.
+          iii. The Customer agrees and acknowledges that the use of the Services is at its sole risk and that the Services are provided "AS IS" by QUICKPOST.
         </li>
         <li>
           iv. The Company shall not be responsible or liable in any manner to the Customer for any losses, damage, or expenses incurred by the Customer as a result of any action taken by the Company, where the Customer has consented to the same.
@@ -275,10 +241,10 @@ const Aggrement = ({ documentDetails, companyAddress, gstNumber, billingInfo }) 
           vii. The Company shall, in no manner, be liable to remit the Cash-on-Delivery (COD) that is to be received as payment by the User in case of theft, robbery, or forcible snatching of the delivery package from the Logistics Service Provider. Such incidents shall be the sole responsibility of the User, and the User is liable to initiate actions to resolve such incidents, including legal proceedings and reimbursement of any losses to the concerned logistics partner or its personnel.
         </li>
         <li>
-          viii. In no event, including but not limited to negligence, shall Shipex India or any of its directors, officers, employees, agents, or service providers (collectively, the “Protected Entities”) be liable for any direct, indirect, special, incidental, consequential, exemplary, or punitive damages arising from, or directly or indirectly related to, the use of, or the inability to use, the Services or the content, materials, and functions related thereto, including lost business or lost sales, even if such Protected Entity has been advised of the possibility of such damages.
+          viii. In no event, including but not limited to negligence, shall QUICKPOST or any of its directors, officers, employees, agents, or service providers (collectively, the “Protected Entities”) be liable for any direct, indirect, special, incidental, consequential, exemplary, or punitive damages arising from, or directly or indirectly related to, the use of, or the inability to use, the Services or the content, materials, and functions related thereto, including lost business or lost sales, even if such Protected Entity has been advised of the possibility of such damages.
         </li>
         <li>
-          ix. In no event shall the total aggregate liability of the Protected Entities/Service Provider(s) to a User for all damages, losses, and causes of action (whether in contract or tort, including but not limited to negligence or otherwise) arising from the terms and conditions of this Agreement or a User’s use of the Services exceed INR 5,000 (Indian Rupees Five Thousand) only. In case of loss or damage exceeding Rs 5,000, Shipex India shall issue a Certificate of Facts (COF) only.
+          ix. In no event shall the total aggregate liability of the Protected Entities/Service Provider(s) to a User for all damages, losses, and causes of action (whether in contract or tort, including but not limited to negligence or otherwise) arising from the terms and conditions of this Agreement or a User’s use of the Services exceed INR 5,000 (Indian Rupees Five Thousand) only. In case of loss or damage exceeding Rs 5,000, QUICKPOST shall issue a Certificate of Facts (COF) only.
         </li>
         <li>
           x. The Protected Entities shall not be liable for any act or omission of any other person or entity furnishing a portion of the Service, or from any act or omission of a third party, including vendors participating in the Services, or for any unauthorized interception of communications or other breaches of privacy attributable in part to the acts or omissions of the User or third parties.
@@ -329,7 +295,7 @@ const Aggrement = ({ documentDetails, companyAddress, gstNumber, billingInfo }) 
 
       <p className="text-[10px] sm:text-[12px] font-bold text-gray-700">7) INDEMNITY</p>
       <p className="text-gray-700 text-[10px] sm:text-[12px]">
-        <span className="font-semibold">i.</span> The Customer (“Indemnifying Party”) hereby agrees to indemnify, defend, and hold Shipex India,
+        <span className="font-semibold">i.</span> The Customer (“Indemnifying Party”) hereby agrees to indemnify, defend, and hold QUICKPOST,
         its affiliates, officers, directors, employees, contractors, sub-contractors, consultants, licensors, other third-party service providers,
         agents, and representatives (“Indemnified Party”) harmless from and against claims, demands, actions, liabilities, costs, interest, damages, and expenses
         of any nature whatsoever (including all legal and other costs, charges, and expenses) incurred or suffered (directly or indirectly) by the Indemnified Party, on account of:
@@ -409,7 +375,7 @@ const Aggrement = ({ documentDetails, companyAddress, gstNumber, billingInfo }) 
           <span className="font-semibold text-[10px] sm:text-[12px] mt-2">12) NON-SOLICITATION:</span>
           <ul className="list-[lower-alpha] ml-2 space-y-1 text-[10px] sm:text-[12px]">
             <li>
-              The User agrees and undertakes that, during the term of this Agreement, and for a period of 36 (thirty-six) months thereafter, it shall not directly or indirectly attempt in any manner to solicit, any client/customer, or to persuade any person, firm or entity which is a client/customer/supplier/vendor/partner of Shipex India, to cease doing business or to reduce the amount of business which any such client/customer/supplier/vendor/partner has customarily done or might propose doing with Shipex India.
+              The User agrees and undertakes that, during the term of this Agreement, and for a period of 36 (thirty-six) months thereafter, it shall not directly or indirectly attempt in any manner to solicit, any client/customer, or to persuade any person, firm or entity which is a client/customer/supplier/vendor/partner of QUICKPOST, to cease doing business or to reduce the amount of business which any such client/customer/supplier/vendor/partner has customarily done or might propose doing with QUICKPOST.
             </li>
           </ul>
         
@@ -421,10 +387,10 @@ const Aggrement = ({ documentDetails, companyAddress, gstNumber, billingInfo }) 
               The Agreement shall come into force with effect from the Effective Date and shall remain in place until terminated by either Party in accordance with the provision of this agreement.
             </li>
             <li>
-              The Customer can request for termination of his/her/its membership with Shipex India at any time with a 30 days prior written notice subject to the provisions for the Services undertaken. During this notice period, Shipex India will investigate and ascertain the fulfillment of any ongoing Services or pending dues related to fees or any other payables by the Customer. The Customer shall be obligated to clear any dues with the Company for any of its Services which the Customer has procured. Shipex India shall not be liable to the Customer or consignee or any third party for any termination of the Customer access to the Services.
+              The Customer can request for termination of his/her/its membership with QUICKPOST at any time with a 30 days prior written notice subject to the provisions for the Services undertaken. During this notice period, QUICKPOST will investigate and ascertain the fulfillment of any ongoing Services or pending dues related to fees or any other payables by the Customer. The Customer shall be obligated to clear any dues with the Company for any of its Services which the Customer has procured. QUICKPOST shall not be liable to the Customer or consignee or any third party for any termination of the Customer access to the Services.
             </li>
             <li>
-              Shipex India reserves the right to terminate the Customer’s User Account in case:
+              QUICKPOST reserves the right to terminate the Customer’s User Account in case:
               <ul className="list-[lower-roman] ml-6 space-y-1">
                 <li>The Customer breaches any terms and conditions of this Agreement.</li>
                 <li>
@@ -433,7 +399,7 @@ const Aggrement = ({ documentDetails, companyAddress, gstNumber, billingInfo }) 
               </ul>
             </li>
             <li>
-              Shipex India may terminate the Agreement by giving 10 days prior written notice to the Customer.
+              QUICKPOST may terminate the Agreement by giving 10 days prior written notice to the Customer.
             </li>
             <li>
               In case of dispute between the parties, the Customer hereby agrees to negotiate in good faith to resolve any dispute between them regarding this Agreement. If the negotiations do not resolve the dispute to the reasonable satisfaction of the parties, then each party shall nominate a person with respectable professional standing and unimpeachable conduct as its representative. These representatives shall, within 30 (thirty) days of a written request by either party to call such a meeting, meet in person and shall attempt in good faith to resolve the dispute.
@@ -490,13 +456,13 @@ const Aggrement = ({ documentDetails, companyAddress, gstNumber, billingInfo }) 
 
       <p className="text-[10px] sm:text-[12px] text-gray-700 leading-relaxed">
         i.	This Agreement, the annexures and any other documents entered into or delivered ascontemplated in this Agreement herein sets out the entire agreement and understanding between the Parties with respect to the subject matter hereof. Unless otherwise decided by
-        Shipex India, the annexures containing specific terms of use supersedes all general terms of the Agreement, previous letters of intent, heads of terms, prior discussions and correspondence exchanged between the Parties in connection with the Agreement referred to herein. Similarly, unless otherwise decided by Shipex India, the SOPs/SLAs issued in furtherance to this Agreement,
+        QUICKPOST, the annexures containing specific terms of use supersedes all general terms of the Agreement, previous letters of intent, heads of terms, prior discussions and correspondence exchanged between the Parties in connection with the Agreement referred to herein. Similarly, unless otherwise decided by QUICKPOST, the SOPs/SLAs issued in furtherance to this Agreement,
         shall supersedes the provisions of this Agreement and of the annexures.
 
       </p>
 
       <p className="text-[10px] sm:text-[12px] text-gray-700 leading-relaxed">
-        ii.	This Agreement and the rights and obligations herein shall not be assigned by the User,without the consent of Shipex India.
+        ii.	This Agreement and the rights and obligations herein shall not be assigned by the User,without the consent of QUICKPOST.
       </p>
 
       <p className="text-[10px] sm:text-[12px] text-gray-700 leading-relaxed">
@@ -547,10 +513,10 @@ const Aggrement = ({ documentDetails, companyAddress, gstNumber, billingInfo }) 
       <p className="text-[10px] sm:text-[12px] text-gray-700 font-bold">28) CONTACT DETAILS</p>
       <p className="text-[10px] sm:text-[12px] text-gray-700 leading-relaxed">
         a.	If any User has any question, issue, complaint regarding any of our Services, please contact
-        Company’s customer service at support@shipexindia.com
+        Company’s customer service at support@QUICKPOST.in
        </p>
       <p className="text-[10px] sm:text-[12px] text-gray-700 leading-relaxed"> 
-        b.	If a User has any questions concerning Shipex India, the Services, this Agreement, oranythingrelated to any of the foregoing, it can be reached at the following email address – support@shipexindia.com
+        b.	If a User has any questions concerning QUICKPOST, the Services, this Agreement, oranythingrelated to any of the foregoing, it can be reached at the following email address – support@QUICKPOST.in
         </p>
       <p className="text-[10px] sm:text-[12px] text-gray-700 leading-relaxed">
         c.	The User hereby agrees and provides his consent to receive communications,correspondences, updates, notifications, etc. from the Company through email, SMS, WhatsApp and any other mode as agreed by the Parties from time to time. The Parties agree that the said communications, correspondences, updates, notifications, etc. will be legally binding on them. d. Notwithstanding anything provided contrary in this Agreement, the User here by agrees, provides his consent and further authorizes the Company to share his relevant details and documents (including but not limited to business/registered name(s), phone number(s), address(es), email-id(s), bank account details, KYC documents, etc.) with the concerned judicial authority, court, police, complainant, etc. (as the case may be) in the event of a complaint been filed against the User or dispute been raised in relation to the shipment(s) made by the User.

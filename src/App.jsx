@@ -139,6 +139,8 @@ import CostEstimationB2B from "./component/Toolss/Cost Estimates/CostEstimationB
 import B2BCourrierSelection from "./B2B/Shipments/CourierSelection";
 import AdminNotification from "./component/Toolss/AdminNotification/AdminNotification.jsx";
 import Announcement from "./component/Toolss/Announcement/Announcement.jsx";
+import AdminAgreement from "./agreement/AdminAgreement";
+import UserAgreement from "./agreement/UserAgreement";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -1192,6 +1194,28 @@ function App() {
                       <Route path="ai-order-updation" element={<AIOrderUpdation />} />
                     </Route>
                   </Route>
+
+                  <Route
+                    path="/adminDashboard/agreement"
+                    element={
+                      employeeAuthenticated ||
+                        (isAuthenticated && (user?.isAdmin || user?.adminTab)) ? (
+                        <AdminAgreement />
+                      ) : (
+                        <Navigate to="/login" />
+                      )
+                    }
+                  />
+                  <Route
+                    path="/dashboard/agreement"
+                    element={
+                      isAuthenticated || employeeAuthenticated ? (
+                        <UserAgreement />
+                      ) : (
+                        <Navigate to="/login" />
+                      )
+                    }
+                  />
 
                   {/* Admin Route */}
                   {isAuthenticated && user?.isAdmin && (

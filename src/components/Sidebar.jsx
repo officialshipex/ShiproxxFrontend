@@ -158,6 +158,7 @@ const accessMap = {
   "Support": "support",
   "Billing": "finance",
   "Rate Card": "ratecard",
+  "Agreement": "agreement",
   // "Operations": "operations",
   // Add more mappings as needed
 };
@@ -215,7 +216,9 @@ const sidebarItems = [
       { name: "Status Map", path: "/adminDashboard/Setup&Manage/statusMap" },
       { name: "EDD Mapping", path: "/adminDashboard/Setup&Manage/EDD-map" },
       { name: "EPD Mapping", path: "/adminDashboard/Setup&Manage/EPD-map" },
-      { name: "Pincode Information", path: "/adminDashboard/Setup&Manage/pincode-information" }
+      { name: "Pincode Information", path: "/adminDashboard/Setup&Manage/pincode-information" },
+      { name: "Agreement", path: "/adminDashboard/agreement" },
+      { name: "Agreement", path: "/dashboard/agreement" }
     ],
   },
   {
@@ -460,7 +463,8 @@ const Sidebar = ({ isAdmin: isAdminProp, adminTab: adminTabProp }) => {
               item.path === "/adminDashboard/b2b/order" ||
               item.path === "/adminDashboard/ndr" ||
               item.text === "Operations" ||
-              item.text === "Referral"
+              item.text === "Referral" ||
+              (item.text === "Agreement" && item.path === "/adminDashboard/agreement")
             ) {
               return item;
             }
@@ -477,10 +481,11 @@ const Sidebar = ({ isAdmin: isAdminProp, adminTab: adminTabProp }) => {
             }
 
             if (item.text === "Setup & Manage") {
-              const filteredList = item.list.filter((subItem) =>
-                ["Users", "Roles", "Status Map", "EDD Mapping", "EPD Mapping", "Pincode Information"].includes(subItem.name) ||
-                (subItem.name === "Allocate Sellers" && isAdmin === true && adminTab === true)
-              );
+              const filteredList = item.list.filter((subItem) => {
+                if (subItem.name === "Agreement") return subItem.path === "/adminDashboard/agreement";
+                return ["Users", "Roles", "Status Map", "EDD Mapping", "EPD Mapping", "Pincode Information"].includes(subItem.name) ||
+                  (subItem.name === "Allocate Sellers" && isAdmin === true && adminTab === true);
+              });
               return filteredList.length > 0 ? { ...item, list: filteredList } : null;
             }
             if (item.text === "Operations") {
@@ -508,7 +513,8 @@ const Sidebar = ({ isAdmin: isAdminProp, adminTab: adminTabProp }) => {
               item.path === "/adminDashboard/b2b/order" ||
               item.path === "/adminDashboard/ndr" ||
               item.text === "Operations" ||
-              item.text === "Referral"
+              item.text === "Referral" ||
+              item.path === "/adminDashboard/agreement"
             ) {
               return null;
             }
@@ -525,6 +531,7 @@ const Sidebar = ({ isAdmin: isAdminProp, adminTab: adminTabProp }) => {
             if (item.text === "Setup & Manage") {
               const filteredList = item.list.filter(
                 (subItem) =>
+                  !subItem.path?.startsWith("/adminDashboard") &&
                   subItem.name !== "Users" &&
                   subItem.name !== "Roles" &&
                   subItem.name !== "Allocate Sellers" &&
