@@ -66,6 +66,7 @@ const Navbar = () => {
   const [pendingAgreement, setPendingAgreement] = useState(null);
   const [showNotifications, setShowNotifications] = useState(false);
   const notificationRef = useRef(null);
+  const notificationDropdownRef = useRef(null);
 
   // --- User Login As (admin impersonation) ---
   const [showUserLoginPopup, setShowUserLoginPopup] = useState(false);
@@ -212,7 +213,10 @@ const Navbar = () => {
       }
 
       // 6) Notification dropdown
-      if (!isInside(notificationRef)) {
+      if (
+        !isInside(notificationRef) &&
+        !isInside(notificationDropdownRef)
+      ) {
         setShowNotifications(false);
       }
     };
@@ -952,7 +956,7 @@ const Navbar = () => {
 
       {/* Notification Dropdown (shared between mobile & desktop) */}
       {showNotifications && (
-        <div className="fixed top-[55px] right-4 z-50 w-80 bg-white rounded-xl shadow-lg border border-gray-200 animate-popup-in">
+        <div ref={notificationDropdownRef} className="fixed top-[55px] right-4 z-50 w-80 bg-white rounded-xl shadow-lg border border-gray-200 animate-popup-in">
           <div className="absolute -top-2 right-6 w-3 h-3 bg-white rotate-45 border-l border-t border-gray-200"></div>
           <div className="p-3 border-b border-gray-100">
             <h3 className="text-[13px] font-bold text-gray-800">Notifications</h3>

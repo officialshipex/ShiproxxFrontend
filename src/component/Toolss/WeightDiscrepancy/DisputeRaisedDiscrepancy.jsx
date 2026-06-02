@@ -148,16 +148,33 @@ const DisputeRaisedDiscrepancy = () => {
             .filter(order => selectedOrders.includes(order._id))
             .map(order => ({
                 "Order ID": order.orderId,
-                "Order Status": order.status,
-                "Order Date": new Date(order.createdAt).toLocaleString(),
-                "Sender Name": order.pickupAddress?.contactName,
-                "Receiver Name": order.receiverAddress?.contactName,
-                "Courier": order.courierServiceName,
                 "AWB Number": order.awbNumber,
-                "Applied Weight": `${order.enteredWeight?.applicableWeight} Kg`,
-                "Charged Weight": `${order.chargedWeight?.applicableWeight} Kg`,
+                "Courier": order.courierServiceName,
+                "Provider": order.provider,
+                "Discrepancy Status": order.adminStatus,
+                "Client Status": order.clientStatus || "",
+                "Created At": new Date(order.createdAt).toLocaleString(),
+                // Entered Weight (declared)
+                "Entered Weight (Applicable)": order.enteredWeight?.applicableWeight,
+                "Entered Weight (Dead)": order.enteredWeight?.deadWeight,
+                "Entered Volumetric L": order.enteredWeight?.volumetricWeight?.length,
+                "Entered Volumetric B": order.enteredWeight?.volumetricWeight?.breadth,
+                "Entered Volumetric H": order.enteredWeight?.volumetricWeight?.height,
+                // Charged Weight (by courier)
+                "Charged Weight (Applicable)": order.chargedWeight?.applicableWeight,
+                "Charged Weight (Dead)": order.chargedWeight?.deadWeight,
+                // Charge Dimensions
+                "Charge Dimension L": order.chargeDimension?.length,
+                "Charge Dimension B": order.chargeDimension?.breadth,
+                "Charge Dimension H": order.chargeDimension?.height,
+                // Excess Weight & Charges
+                "Excess Weight": order.excessWeightCharges?.excessWeight,
                 "Excess Charges": order.excessWeightCharges?.excessCharges,
-                "Pending Amount": order.excessWeightCharges?.pendingAmount
+                "Pending Amount": order.excessWeightCharges?.pendingAmount,
+                "Price Breakup": order.excessWeightCharges?.priceBreakup ? JSON.stringify(order.excessWeightCharges.priceBreakup) : "",
+                // Product Details
+                "Product Name": order.productDetails?.map(p => p.name).filter(Boolean).join(", ") || "",
+                "Product SKU": order.productDetails?.map(p => p.sku).filter(Boolean).join(", ") || "",
             }));
 
         const ws = XLSX.utils.json_to_sheet(exportData);

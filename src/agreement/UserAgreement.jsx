@@ -31,9 +31,22 @@ const UserAgreement = () => {
   }, []);
 
   const handleMarkAsRead = async (agreement) => {
-    window.open(agreement.fileUrl, "_blank");
+    const token = Cookies.get("session");
     try {
-      const token = Cookies.get("session");
+      const res = await axios.get(
+        `${REACT_APP_BACKEND_URL}/agreement/user/preview/${agreement._id}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      const newWindow = window.open("", "_blank");
+      if (newWindow) {
+        newWindow.document.write(res.data);
+        newWindow.document.close();
+      }
+    } catch (error) {
+      console.error("Failed to load agreement preview:", error);
+      Notification("Failed to load agreement", "error");
+    }
+    try {
       const res = await axios.get(
         `${REACT_APP_BACKEND_URL}/agreement/user/read/${agreement._id}`,
         { headers: { Authorization: `Bearer ${token}` } }
@@ -73,12 +86,32 @@ const UserAgreement = () => {
     }
   };
 
-  const handleDownload = (agreement) => {
+  const handleDownload = async (agreement) => {
     if (!agreement.isAccepted) {
       Notification("Please read and accept the agreement before downloading", "error");
       return;
     }
-    window.open(agreement.fileUrl, "_blank");
+    try {
+      const token = Cookies.get("session");
+      const res = await axios.get(
+        `${REACT_APP_BACKEND_URL}/agreement/user/download/${agreement._id}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          responseType: "blob",
+        }
+      );
+      const url = window.URL.createObjectURL(new Blob([res.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `Quickpost360_Agreement_${agreement.versionName.replace(/\s+/g, "_")}.html`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Download agreement error:", error);
+      Notification("Failed to download agreement", "error");
+    }
   };
 
   const formatDate = (dateStr) => {
