@@ -40,7 +40,7 @@ const RechargeForm = ({ onClose }) => {
                 userId: selectedUserId,
             });
             Notification("History added successfully","success");
-            navigate("/finance/billing/walletHistory");
+            navigate("/finance/billing/passbook");
             if (onClose) onClose();
         } catch (err) {
             Notification(err.response?.data?.message || "Server Error","error");

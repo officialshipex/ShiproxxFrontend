@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import HistoryAdd from "../../assets/historyAdd.png";
 import RechargeForm from "./RechargeForm";   // ⬅ Extracted from your current code
 import WalletUpdateForm from "./WalletUpdateForm"; // ⬅ The new component
+import DirectWalletUpdateForm from "./DirectWalletUpdateForm";
 
 const WalletHistoryForm = ({ onClose }) => {
   const [activeTab, setActiveTab] = useState("recharge");
@@ -37,14 +38,20 @@ const WalletHistoryForm = ({ onClose }) => {
           >
             Updation
           </button>
+          <button
+            onClick={() => setActiveTab("direct")}
+            className={`px-4 py-2 font-semibold text-sm 
+              ${activeTab === "direct" ? "text-[#0CBB7D] border-b-2 border-[#0CBB7D]" : "text-gray-500"}
+            `}
+          >
+            Direct Update
+          </button>
         </div>
 
         {/* Conditional Rendering */}
-        {activeTab === "recharge" ? (
-          <RechargeForm onClose={onClose} />
-        ) : (
-          <WalletUpdateForm onClose={onClose} />
-        )}
+        {activeTab === "recharge" && <RechargeForm onClose={onClose} />}
+        {activeTab === "updation" && <WalletUpdateForm onClose={onClose} />}
+        {activeTab === "direct" && <DirectWalletUpdateForm onClose={onClose} />}
       </div>
     </div>
   );

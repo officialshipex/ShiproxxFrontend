@@ -8,10 +8,15 @@ const Aggrement = ({ documentDetails, companyAddress, gstNumber, billingInfo }) 
 
   const userInfo = gstNumber
     ? `${companyAddress} [GSTIN: ${gstNumber}]`
-    : `${documentDetails.name} [Aadhar No: ${documentDetails.aadharNo}]`;
+    : `${documentDetails.name}${documentDetails.address ? `, ${documentDetails.address}` : ""}${documentDetails.pan ? ` [PAN: ${documentDetails.pan}]` : ` [Aadhar No: ${documentDetails.aadharNo}]`}`;
 
   return (
     <div className="space-y-4">
+      {userInfo && (
+        <p className="text-[10px] sm:text-[12px] text-gray-700 leading-relaxed font-semibold border-b pb-2 mb-2">
+          {userInfo}
+        </p>
+      )}
       <p className="text-[10px] sm:text-[12px] text-gray-700 leading-relaxed font-bold">
         This Merchant Agreement ("Agreement") is between you (company/individual/firm/partnership/body corporate), together with any company or other business entity you are representing, if any (hereinafter collectively referred to as "Merchant" or "you" or "User"); and QUICKPOST, originally known as QUICKPOST360 Services Private Limited, a company registered under the Companies Act, 1956, having its registered office at House No 87 Singhal Panna, Gali No2 Near Shiv Mandir, Badesera, Bhiwani, Bhiwani, Haryana, India, 127031, offering 'Logistics Management Services', under the name QUICKPOST (hereinafter referred to as "QUICKPOST" or "we" or "Company", and together with the User referred jointly as the "Parties" and individually as a "Party").
       </p>

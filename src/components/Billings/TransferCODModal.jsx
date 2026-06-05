@@ -17,6 +17,7 @@ const TranseferCODModal = ({ id, onClose, selectedRemittanceIds = [] }) => {
   const [creditLimit, setCreditLimit] = useState(0);
 
   const [adjustMode, setAdjustMode] = useState("full"); // "full" | "negative_only" | null
+  const [bypassHold, setBypassHold] = useState(false);
 
   const REACT_APP_BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -99,7 +100,7 @@ const TranseferCODModal = ({ id, onClose, selectedRemittanceIds = [] }) => {
   // HOLD LOGIC (unchanged)
   // ======================================================================
   const holdResolved = useMemo(() => {
-    if (!holdAmount || holdAmount <= 0)
+    if (bypassHold || !holdAmount || holdAmount <= 0)
       return { heldIds: [], heldAmount: 0 };
 
     const sortedAsc = [...remittanceEntries].sort(
@@ -134,7 +135,7 @@ const TranseferCODModal = ({ id, onClose, selectedRemittanceIds = [] }) => {
       heldIds: chosen.map((c) => String(c.remittanceId || c._id)),
       heldAmount: total,
     };
-  }, [holdAmount, remittanceEntries]);
+  }, [holdAmount, remittanceEntries, bypassHold]);
 
   // ======================================================================
   // WALLET TOPUP LOGIC
@@ -451,7 +452,25 @@ const TranseferCODModal = ({ id, onClose, selectedRemittanceIds = [] }) => {
                 </div>
               </div>
 
-
+              {/* Bypass Hold Option if holdAmount > 0 */}
+              {holdAmount > 0 && (
+                <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg flex items-center justify-between">
+                  <div className="text-[12px] text-yellow-700 font-semibold">
+                    ⚠️ This user has a Hold Amount of ₹{holdAmount.toFixed(2)}. Some or all remittances are currently held.
+                  </div>
+                  <label className="flex items-center gap-2 cursor-pointer bg-white px-3 py-1.5 rounded-lg border shadow-sm hover:bg-gray-50 transition">
+                    <input
+                      type="checkbox"
+                      className="cursor-pointer h-4 w-4 text-[#0CBB7D] border-gray-300 rounded focus:ring-[#0CBB7D]"
+                      checked={bypassHold}
+                      onChange={(e) => setBypassHold(e.target.checked)}
+                    />
+                    <span className="text-[12px] font-semibold text-gray-700 select-none">
+                      Bypass Hold & Pay Client
+                    </span>
+                  </label>
+                </div>
+              )}
 
               {/* If Wallet Negative → same UI + checkbox */}
               {balance < 0 && (

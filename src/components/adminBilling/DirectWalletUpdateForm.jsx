@@ -1,31 +1,24 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
-// import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { IoChevronDown } from "react-icons/io5";
-import { Notification } from "../../Notification"
+import { Notification } from "../../Notification";
 
-const WalletUpdateForm = ({ onClose }) => {
+const DirectWalletUpdateForm = ({ onClose }) => {
     const [searchUser, setSearchUser] = useState("");
     const [userSuggestions, setUserSuggestions] = useState([]);
     const [selectedUserId, setSelectedUserId] = useState(null);
+    const [selectedUserMongoId, setSelectedUserMongoId] = useState(null);
     const [formData, setFormData] = useState({
         amount: "",
         description: "",
-        awbNumber: "",
-        orderId: "",
-        category: "",
+        category: "", // "credit" | "debit"
     });
 
-    // For dropdowns
     const [descOpen, setDescOpen] = useState(false);
     const [catOpen, setCatOpen] = useState(false);
-    const [awbOpen, setAwbOpen] = useState(false);
-    const [awbSuggestions, setAwbSuggestions] = useState([]);
-
     const descRef = useRef(null);
     const catRef = useRef(null);
-    const awbRef = useRef(null);
 
     const navigate = useNavigate();
     const REACT_APP_BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -36,12 +29,6 @@ const WalletUpdateForm = ({ onClose }) => {
             ...prev,
             [e.target.name]: e.target.value,
         }));
-        // For awbNumber, fetch suggestions if length > 2
-        if (e.target.name === "awbNumber" && e.target.value.trim().length > 2) {
-            setAwbOpen(true);
-        } else if (e.target.name === "awbNumber") {
-            setAwbOpen(false);
-        }
     };
 
     // Fetch users for user search
@@ -71,40 +58,15 @@ const WalletUpdateForm = ({ onClose }) => {
             selectedUserId !== userSuggestions.userId
         ) {
             setSelectedUserId(userSuggestions.userId);
+            setSelectedUserMongoId(userSuggestions._id);
         }
     }, [searchUser, userSuggestions, selectedUserId]);
 
-
-    // Fetch AWB suggestions based on input
-    useEffect(() => {
-        const fetchAwb = async () => {
-            if (formData.awbNumber.trim().length < 3) return setAwbSuggestions([]);
-            try {
-                const res = await axios.get(
-                    `${REACT_APP_BACKEND_URL}/adminBilling/searchAwb?query=${formData.awbNumber}`
-                );
-                if (res.data && res.data.awbs && Array.isArray(res.data.awbs)) {
-                    setAwbSuggestions(res.data.awbs);
-                } else {
-                    setAwbSuggestions([]);
-                }
-                console.log(res)
-            } catch (err) {
-                console.log("error", err)
-                setAwbSuggestions([]);
-            }
-        };
-        if (awbOpen) {
-            fetchAwb();
-        }
-    }, [formData.awbNumber, awbOpen]);
-
-    // Close dropdowns on outside click
+    // Close dropdown on outside click
     useEffect(() => {
         const handleClickOutside = (e) => {
             if (descRef.current && !descRef.current.contains(e.target)) setDescOpen(false);
             if (catRef.current && !catRef.current.contains(e.target)) setCatOpen(false);
-            if (awbRef.current && !awbRef.current.contains(e.target)) setAwbOpen(false);
         };
         document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
@@ -115,22 +77,23 @@ const WalletUpdateForm = ({ onClose }) => {
         e.preventDefault();
         try {
             await axios.post(
-                `${REACT_APP_BACKEND_URL}/adminBilling/walletUpdation`,
+                `${REACT_APP_BACKEND_URL}/adminBilling/add-passbook`,
                 {
-                    ...formData,
-                    userId: selectedUserId,
+                    userId: selectedUserMongoId,
+                    amount: parseFloat(formData.amount),
+                    transactionType: formData.category,
+                    description: formData.description,
                 }
             );
-            Notification("Wallet transaction updated successfully.", "success");
+            Notification("Wallet updated successfully.", "success");
             navigate("/finance/billing/passbook");
             if (onClose) onClose();
         } catch (err) {
             console.log("Error updating wallet:", err);
-            Notification(err.response?.data?.message || "Server Error", "error");
+            Notification(err.response?.data?.message || err.response?.data?.error || "Server Error", "error");
         }
     };
 
-    // Static options
     const descriptionOptions = [
         "Freight Charges",
         "COD Charges",
@@ -143,26 +106,19 @@ const WalletUpdateForm = ({ onClose }) => {
         "Wallet to bank",
         "GST Charges"
     ];
+
     const categoryOptions = ["credit", "debit"];
 
-    if(formData.description === "Wallet to bank"){
+    if (formData.description === "Wallet to bank") {
         formData.category = "debit";
     }
 
-    const requiresShipment =
-        formData.description !== "Cashback" &&
-        formData.description !== "Credit Note" &&
-        formData.description !== "Wallet to bank";
-
     const isFormValid =
-        selectedUserId &&
-        formData.description &&
+        selectedUserMongoId &&
+        formData.description.trim() &&
         formData.category &&
-        formData.amount &&
-        (!requiresShipment || (formData.awbNumber && formData.orderId));
+        formData.amount;
 
-
-    // Render
     return (
         <form onSubmit={handleSubmit} className="space-y-3">
             {/* User Search */}
@@ -175,7 +131,10 @@ const WalletUpdateForm = ({ onClose }) => {
                     onChange={(e) => {
                         const val = e.target.value;
                         setSearchUser(val);
-                        if (!val.trim()) setSelectedUserId(null);
+                        if (!val.trim()) {
+                            setSelectedUserId(null);
+                            setSelectedUserMongoId(null);
+                        }
                     }}
                 />
                 {userSuggestions.length > 0 && (
@@ -186,6 +145,7 @@ const WalletUpdateForm = ({ onClose }) => {
                                 className="flex cursor-pointer group border-b border-gray-200 hover:bg-gray-100"
                                 onClick={() => {
                                     setSelectedUserId(user.userId);
+                                    setSelectedUserMongoId(user._id);
                                     setSearchUser(`${user.fullname} (${user.email})`);
                                     setUserSuggestions([]);
                                 }}
@@ -208,104 +168,46 @@ const WalletUpdateForm = ({ onClose }) => {
                 )}
             </div>
 
-            {/* Description & Category */}
-            <div className="flex gap-2">
-                {/* Description Dropdown */}
-                <div className="relative w-full" ref={descRef}>
-                    <div
-                        className="flex items-center justify-between w-full h-9 px-3 border-2 rounded-lg cursor-pointer bg-white"
-                        onClick={() => setDescOpen((prev) => !prev)}
-                    >
-                        <input
-                            type="text"
-                            name="description"
-                            placeholder="Select description"
-                            value={formData.description}
-                            readOnly
-                            className="flex-1 text-[12px] font-[600] text-gray-700 focus:outline-none cursor-pointer"
-                        />
-                        <IoChevronDown
-                            className={`ml-2 text-gray-500 transition-transform ${descOpen ? "rotate-180" : "rotate-0"}`}
-                        />
-                    </div>
-                    {descOpen && (
-                        <div className="absolute left-0 right-0 bg-white shadow-lg rounded-lg mt-1 z-40 max-h-36 overflow-y-auto">
-                            {descriptionOptions.map((desc, index) => (
-                                <div
-                                    key={index}
-                                    className="px-3 py-2 text-[12px] text-gray-700 cursor-pointer hover:bg-green-100"
-                                    onClick={() => {
-                                        setFormData((prev) => ({
-                                            ...prev,
-                                            description: desc,
-                                            ...(desc === "Cashback" || desc === "Credit Note"
-                                                ? { awbNumber: "", orderId: "" }
-                                                : {}),
-                                        }));
-                                        setDescOpen(false);
-                                    }}
-
-                                >
-                                    {desc}
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                </div>
-            </div>
-
-            {/* AWB & Order ID, Amount */}
-            <div className="flex gap-2">
-                {/* AWB Dropdown */}
-                {formData.description !== "Cashback" && formData.description !== "Credit Note" && formData.description !== "Wallet to bank" && (
-                    <div className="relative w-1/2" ref={awbRef}>
-                        <input
-                            type="text"
-                            name="awbNumber"
-                            placeholder="AWB Number"
-                            value={formData.awbNumber}
-                            onChange={handleChange}
-                            onFocus={() => formData.awbNumber.length > 2 && setAwbOpen(true)}
-                            autoComplete="off"
-                            className="w-full h-9 py-2 px-3 placeholder:text-[12px] text-[12px] font-[600]
-      border-2 rounded-lg placeholder:text-gray-400 focus:outline-none"
-                        />
-                        {awbOpen && awbSuggestions.length > 0 && (
-                            <div className="absolute left-0 right-0 bg-white shadow-lg rounded-lg mt-1 z-40 max-h-48 overflow-y-auto">
-                                {awbSuggestions.map((awb) => (
-                                    <div
-                                        key={awb.awbNumber}
-                                        className="px-3 py-2 text-[12px] text-gray-700 cursor-pointer hover:bg-green-100"
-                                        onClick={() => {
-                                            setFormData((prev) => ({
-                                                ...prev,
-                                                awbNumber: awb.awbNumber,
-                                                orderId: awb.orderId,
-                                            }));
-                                            setAwbOpen(false);
-                                        }}
-                                    >
-                                        {awb.awbNumber} <span className="text-gray-400">({awb.orderId})</span>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-                    </div>
-                )}
-
-                {/* Order ID */}
-                {formData.description !== "Cashback" && formData.description !== "Credit Note" && formData.description !== "Wallet to bank" && (
+            {/* Description Dropdown */}
+            <div className="relative w-full" ref={descRef}>
+                <div
+                    className="flex items-center justify-between w-full h-9 px-3 border-2 rounded-lg cursor-pointer bg-white"
+                    onClick={() => setDescOpen((prev) => !prev)}
+                >
                     <input
                         type="text"
-                        name="orderId"
-                        placeholder="Order ID"
-                        value={formData.orderId}
-                        onChange={handleChange}
-                        className="w-1/2 h-9 py-2 px-3 placeholder:text-[12px] text-[12px] font-[600] border-2 rounded-lg placeholder:text-gray-400 focus:outline-none"
-                        readOnly // always readOnly, auto-set by AWB selection
+                        name="description"
+                        placeholder="Select description"
+                        value={formData.description}
+                        readOnly
+                        className="flex-1 text-[12px] font-[600] text-gray-700 focus:outline-none cursor-pointer"
                     />
+                    <IoChevronDown
+                        className={`ml-2 text-gray-500 transition-transform ${descOpen ? "rotate-180" : "rotate-0"}`}
+                    />
+                </div>
+                {descOpen && (
+                    <div className="absolute left-0 right-0 bg-white shadow-lg rounded-lg mt-1 z-40 max-h-36 overflow-y-auto">
+                        {descriptionOptions.map((desc, index) => (
+                            <div
+                                key={index}
+                                className="px-3 py-2 text-[12px] text-gray-700 cursor-pointer hover:bg-green-100"
+                                onClick={() => {
+                                    setFormData((prev) => ({
+                                        ...prev,
+                                        description: desc,
+                                    }));
+                                    setDescOpen(false);
+                                }}
+                            >
+                                {desc}
+                            </div>
+                        ))}
+                    </div>
                 )}
             </div>
+
+            {/* Amount & Category */}
             <div className="flex gap-2">
                 {/* Amount */}
                 <input
@@ -314,9 +216,12 @@ const WalletUpdateForm = ({ onClose }) => {
                     placeholder="Amount"
                     value={formData.amount}
                     onChange={handleChange}
-                    className="w-full h-9 py-2 px-3 placeholder:text-[12px] text-[12px] font-[600] border-2 rounded-lg placeholder:text-gray-400 focus:outline-none"
+                    className="w-1/2 h-9 py-2 px-3 placeholder:text-[12px] text-[12px] font-[600] border-2 rounded-lg placeholder:text-gray-400 focus:outline-none"
+                    required
                 />
-                <div className="relative w-full" ref={catRef}>
+                
+                {/* Category Dropdown */}
+                <div className="relative w-1/2" ref={catRef}>
                     <div
                         className="flex items-center justify-between w-full h-9 px-3 border-2 rounded-lg cursor-pointer bg-white"
                         onClick={() => setCatOpen((prev) => !prev)}
@@ -327,7 +232,6 @@ const WalletUpdateForm = ({ onClose }) => {
                         >
                             {formData.category || "Category"}
                         </span>
-
                         <IoChevronDown
                             className={`ml-2 text-gray-500 transition-transform ${catOpen ? "rotate-180" : "rotate-0"}`}
                         />
@@ -373,4 +277,4 @@ const WalletUpdateForm = ({ onClose }) => {
     );
 };
 
-export default WalletUpdateForm;
+export default DirectWalletUpdateForm;
