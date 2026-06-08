@@ -6,6 +6,7 @@ import {
   faShoppingCart,
   faExclamationTriangle,
   faFileInvoiceDollar,
+  faChartBar,
   faTools,
   faUserCog,
   faTruck,
@@ -159,6 +160,7 @@ const accessMap = {
   "Billing": "finance",
   "Rate Card": "ratecard",
   "Agreement": "agreement",
+  "MIS Report": "finance",
   // "Operations": "operations",
   // Add more mappings as needed
 };
@@ -179,6 +181,8 @@ const sidebarItems = [
     ],
   },
   { icon: faExclamationTriangle, text: "NDR", path: "/adminDashboard/ndr" },
+  { icon: faChartBar, text: "MIS Report", path: "/dashboard/mis-report" },
+  { icon: faChartBar, text: "MIS Report", path: "/adminDashboard/mis-report" },
   { icon: faFileInvoiceDollar, text: "Billing", path: "/dashboard/billing" },
   {
     icon: faMoneyBillWave,
@@ -377,6 +381,20 @@ const Sidebar = ({ isAdmin: isAdminProp, adminTab: adminTabProp }) => {
             }
             return null;
           }
+          // Show only one MIS Report (adminDashboard) for employees
+          if (
+            (item.text === "MIS Report" && item.path === "/dashboard/mis-report") ||
+            (item.text === "MIS Report" && item.path === "/adminDashboard/mis-report")
+          ) {
+            const section = employeeAccessRights["finance"] || employeeAccessRights["tools"];
+            if (section && (section.view === true || Object.values(section).some(v => v?.view === true))) {
+              return {
+                ...item,
+                path: "/adminDashboard/mis-report"
+              };
+            }
+            return null;
+          }
           // Remove any other Orders/NDR entries
           if (
             (item.text === "B2C" && item.path === "/dashboard/b2c/order") ||
@@ -384,7 +402,9 @@ const Sidebar = ({ isAdmin: isAdminProp, adminTab: adminTabProp }) => {
             (item.text === "B2B" && item.path === "/dashboard/b2b/order") ||
             (item.text === "B2B" && item.path === "/adminDashboard/b2b/order") ||
             (item.text === "NDR" && item.path === "/dashboard/ndr") ||
-            (item.text === "NDR" && item.path === "/adminDashboard/ndr")
+            (item.text === "NDR" && item.path === "/adminDashboard/ndr") ||
+            (item.text === "MIS Report" && item.path === "/dashboard/mis-report") ||
+            (item.text === "MIS Report" && item.path === "/adminDashboard/mis-report")
           ) {
             return null;
           }
@@ -437,6 +457,9 @@ const Sidebar = ({ isAdmin: isAdminProp, adminTab: adminTabProp }) => {
           if (item.text === "NDR" && item.path === "/adminDashboard/ndr") {
             return arr.findIndex(i => i.text === "NDR" && i.path === "/adminDashboard/ndr") === idx;
           }
+          if (item.text === "MIS Report" && item.path === "/adminDashboard/mis-report") {
+            return arr.findIndex(i => i.text === "MIS Report" && i.path === "/adminDashboard/mis-report") === idx;
+          }
           return true;
         });
     }
@@ -462,6 +485,7 @@ const Sidebar = ({ isAdmin: isAdminProp, adminTab: adminTabProp }) => {
               item.path === "/adminDashboard/b2c/order" ||
               item.path === "/adminDashboard/b2b/order" ||
               item.path === "/adminDashboard/ndr" ||
+              item.path === "/adminDashboard/mis-report" ||
               item.text === "Operations" ||
               item.text === "Referral" ||
               (item.text === "Agreement" && item.path === "/adminDashboard/agreement")
@@ -512,6 +536,7 @@ const Sidebar = ({ isAdmin: isAdminProp, adminTab: adminTabProp }) => {
               item.path === "/adminDashboard/b2c/order" ||
               item.path === "/adminDashboard/b2b/order" ||
               item.path === "/adminDashboard/ndr" ||
+              item.path === "/adminDashboard/mis-report" ||
               item.text === "Operations" ||
               item.text === "Referral" ||
               item.path === "/adminDashboard/agreement"

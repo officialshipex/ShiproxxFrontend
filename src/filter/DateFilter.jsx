@@ -3,7 +3,7 @@ import { Calendar } from "lucide-react";
 import dayjs from "dayjs";
 import { DateRange } from "react-date-range";
 
-const DateFilter = ({ onDateChange, clearTrigger, noInitialFilter }) => {
+const DateFilter = ({ onDateChange, clearTrigger, noInitialFilter, className }) => {
     const dateRef = useRef(null);
     const [showCustom, setShowCustom] = useState(false);
     const [showDropdown, setShowDropdown] = useState(false);
@@ -140,8 +140,8 @@ const DateFilter = ({ onDateChange, clearTrigger, noInitialFilter }) => {
     };
 
     return (
-        <div className="">
-            <div className="relative sm:w-[200px] w-full" ref={dateRef}>
+        <div className="w-full">
+            <div className={`relative w-full ${className || "sm:w-[200px]"}`} ref={dateRef}>
                 {/* Button */}
                 <button
                     className={`w-full bg-white py-2 px-3 sm:text-[12px] text-[10px] font-[600] border rounded-lg focus:outline-none text-left flex items-center justify-between text-gray-400 ${showDropdown ? "border-[#0CBB7D]" : "border-gray-300"}`}

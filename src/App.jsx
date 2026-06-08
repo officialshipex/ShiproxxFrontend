@@ -68,6 +68,7 @@ import WooCommerceIntegration from "./components/Set-up&Mannage/WooCommerceInteg
 import AdminWeightDiscrepancy from "./component/Toolss/WeightDiscrepancy/AdminDiscrepancy/WeightDiscrepancy.jsx";
 import LabelCustomize from "./component/All setting/Label customization/LabelCustomize.jsx";
 import Profile from "./components/Users/Profile.jsx"; // adjust path if needed
+import MisReportPage from "./component/Toolss/MisReport/MisReport.jsx";
 
 import Tracking from "./component/All setting/Tracking/Tracking.jsx";
 import Webhook from "./component/All setting/Webhook/Webhook.jsx";
@@ -723,6 +724,31 @@ function App() {
                       isAuthenticated || employeeAuthenticated ? (
                         <AdminWeightDiscrepancy
                           isSidebarAdmin={isAuthenticated && user?.adminTab}
+                        />
+                      ) : (
+                        <Navigate to="/login" />
+                      )
+                    }
+                  />
+                  <Route
+                    path="/dashboard/mis-report"
+                    element={
+                      isAuthenticated || employeeAuthenticated ? (
+                        <MisReportPage
+                          isSidebarAdmin={false}
+                        />
+                      ) : (
+                        <Navigate to="/login" />
+                      )
+                    }
+                  />
+                  <Route
+                    path="/adminDashboard/mis-report"
+                    element={
+                      employeeAuthenticated ||
+                        (isAuthenticated && (user?.isAdmin || user?.adminTab)) ? (
+                        <MisReportPage
+                          isSidebarAdmin={true}
                         />
                       ) : (
                         <Navigate to="/login" />
