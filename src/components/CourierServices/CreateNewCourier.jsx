@@ -105,9 +105,7 @@ export default function CreateNewCourier({ isSidebarAdmin }) {
       }
     };
 
-    fetchCouriers();
-
-    if (location.state?.courierToEdit) {
+    fetchCouriers();    if (location.state?.courierToEdit) {
       const editCourier = location.state.courierToEdit;
       setFormData({
         _id: editCourier._id || null,
@@ -117,6 +115,7 @@ export default function CreateNewCourier({ isSidebarAdmin }) {
         courierType: editCourier.courierType || "",
         name: editCourier.name || "",
         status: editCourier.status || "",
+        courier_id: editCourier.courier_id || "",
       });
       setSelectedProvider(editCourier.provider);
       fetchServicesForProvider(editCourier.provider);
@@ -147,17 +146,40 @@ export default function CreateNewCourier({ isSidebarAdmin }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.provider || !formData.name || !formData.status || !formData.courierType || (providerServices.length > 0 && !formData.courier)) {
+    const isLosung = formData.provider === "Losung360";
+    const isBoxd = formData.provider === "BoxdLogistics";
+
+    if (!formData.provider || !formData.name || !formData.status || !formData.courierType) {
       Notification("Please fill all required fields", "info");
+      return;
+    }
+
+    if (isLosung && !formData.courier_id) {
+      Notification("Please enter Courier ID", "info");
+      return;
+    }
+
+    if (isBoxd && !formData.courier) {
+      Notification("Please enter Courier Service ID", "info");
+      return;
+    }
+
+    if (providerServices.length > 0 && !isLosung && !isBoxd && !formData.courier) {
+      Notification("Please select a Courier", "info");
       return;
     }
 
     try {
       setLoading(true);
+      const dataToSubmit = { ...formData };
+      if (isLosung) {
+        dataToSubmit.courier = formData.courier_id;
+      }
+
       if (formData._id) {
-        await axios.put(`${REACT_APP_BACKEND_URL}/courierServices/couriers/${formData._id}`, formData);
+        await axios.put(`${REACT_APP_BACKEND_URL}/courierServices/couriers/${formData._id}`, dataToSubmit);
       } else {
-        await axios.post(`${REACT_APP_BACKEND_URL}/courierServices/couriers`, formData);
+        await axios.post(`${REACT_APP_BACKEND_URL}/courierServices/couriers`, dataToSubmit);
       }
       Notification("Courier saved successfully!", "success");
       setRefresh(prev => !prev);
@@ -233,7 +255,7 @@ export default function CreateNewCourier({ isSidebarAdmin }) {
               />
 
               {/* Courier / Service ID */}
-              {(providerServices.length > 0 || selectedProvider === "BoxdLogistics") && (
+              {(providerServices.length > 0 || selectedProvider === "BoxdLogistics" || selectedProvider === "Losung360") && (
                 selectedProvider === "BoxdLogistics" ? (
                   <div className="flex flex-col gap-1.5">
                     <label className="text-[10px] sm:text-[12px] font-[600] text-gray-700">Courier Service ID</label>
@@ -242,6 +264,18 @@ export default function CreateNewCourier({ isSidebarAdmin }) {
                       name="courier"
                       placeholder="Enter Courier Service ID"
                       value={formData.courier}
+                      onChange={handleChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-[10px] sm:text-[12px] focus:outline-none focus:border-[#0CBB7D] transition-all font-[600] text-gray-700"
+                    />
+                  </div>
+                ) : selectedProvider === "Losung360" ? (
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-[10px] sm:text-[12px] font-[600] text-gray-700">Courier ID</label>
+                    <input
+                      type="text"
+                      name="courier_id"
+                      placeholder="Enter Courier ID"
+                      value={formData.courier_id}
                       onChange={handleChange}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg text-[10px] sm:text-[12px] focus:outline-none focus:border-[#0CBB7D] transition-all font-[600] text-gray-700"
                     />

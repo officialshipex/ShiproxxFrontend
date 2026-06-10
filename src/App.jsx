@@ -877,6 +877,17 @@ function App() {
                       )
                     }
                   />
+                  <Route
+                    path="/adminDashboard/Setup&Manage/Pickup_address"
+                    element={
+                      employeeAuthenticated ||
+                      (isAuthenticated && user?.adminTab) ? (
+                        <PickupAddress isAdminView={true} />
+                      ) : (
+                        <Navigate to="/login" />
+                      )
+                    }
+                  />
 
                   <Route
                     path="/dashboard/Setup&Manage/Courier"

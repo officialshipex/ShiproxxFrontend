@@ -211,7 +211,6 @@ const sidebarItems = [
     text: "Setup & Manage",
     extent: true,
     list: [
-      { name: "Pickup Address", path: "/dashboard/Setup&Manage/Pickup_address" },
       { name: "Users", path: "/dashboard/user" },
       { name: "Channels", path: "/dashboard/Setup&Manage/Channel" },
       { name: "Courier", path: "/dashboard/Setup&Manage/Courier" },
@@ -222,7 +221,8 @@ const sidebarItems = [
       { name: "EPD Mapping", path: "/adminDashboard/Setup&Manage/EPD-map" },
       { name: "Pincode Information", path: "/adminDashboard/Setup&Manage/pincode-information" },
       { name: "Agreement", path: "/adminDashboard/agreement" },
-      { name: "Agreement", path: "/dashboard/agreement" }
+      { name: "Agreement", path: "/dashboard/agreement" },
+      { name: "Pickup Address", path: "/dashboard/Setup&Manage/Pickup_address" },
     ],
   },
   {
@@ -409,24 +409,45 @@ const Sidebar = ({ isAdmin: isAdminProp, adminTab: adminTabProp }) => {
             return null;
           }
 
-          // Remove adminDashboard items for other sections
-          if (
-            (item.path && item.path.startsWith("/adminDashboard")) ||
-            (item.list && item.list.some(sub => sub.path && sub.path.startsWith("/adminDashboard")))
-          ) {
-            return null;
-          }
-
-          if (item.text === "Dashboard") return item;
-
           // Map sidebar text to accessRights key
           const sectionKey = accessMap[item.text];
           const section = employeeAccessRights[sectionKey];
 
+          // Remove adminDashboard items for other unmapped sections
+          if (!sectionKey) {
+            if (
+              (item.path && item.path.startsWith("/adminDashboard")) ||
+              (item.list && item.list.some(sub => sub.path && sub.path.startsWith("/adminDashboard")))
+            ) {
+              return null;
+            }
+          }
+
+          if (item.text === "Dashboard") {
+            return { ...item, path: "/adminDashboard" };
+          }
+
           // For extent (submenu) items
           if (item.extent && Array.isArray(item.list)) {
+            let listToProcess = item.list;
+            if (item.text === "Setup & Manage") {
+              listToProcess = item.list.map((subItem) => {
+                if (subItem.name === "Pickup Address") {
+                  return { ...subItem, path: "/adminDashboard/Setup&Manage/Pickup_address" };
+                }
+                if (subItem.name === "Agreement") {
+                  return { ...subItem, path: "/adminDashboard/agreement" };
+                }
+                return subItem;
+              });
+            } else if (item.text === "Tools") {
+              listToProcess = item.list.filter((subItem) =>
+                subItem.path && subItem.path.startsWith("/adminDashboard")
+              );
+            }
+
             // Filter subitems by view access
-            const filteredList = item.list.filter((subItem) => {
+            const filteredList = listToProcess.filter((subItem) => {
               if (subItem.name === "Important Announcement") return false;
               if (!section) return false;
               const subAccess = section[subItem.name];
@@ -505,11 +526,20 @@ const Sidebar = ({ isAdmin: isAdminProp, adminTab: adminTabProp }) => {
             }
 
             if (item.text === "Setup & Manage") {
-              const filteredList = item.list.filter((subItem) => {
-                if (subItem.name === "Agreement") return subItem.path === "/adminDashboard/agreement";
-                return ["Users", "Roles", "Status Map", "EDD Mapping", "EPD Mapping", "Pincode Information"].includes(subItem.name) ||
-                  (subItem.name === "Allocate Sellers" && isAdmin === true && adminTab === true);
-              });
+              const filteredList = item.list
+                .map((subItem) => {
+                  if (subItem.name === "Pickup Address") {
+                    return { ...subItem, path: "/adminDashboard/Setup&Manage/Pickup_address" };
+                  }
+                  if (subItem.name === "Agreement") {
+                    return { ...subItem, path: "/adminDashboard/agreement" };
+                  }
+                  return subItem;
+                })
+                .filter((subItem) => {
+                  return ["Pickup Address", "Users", "Roles", "Status Map", "EDD Mapping", "EPD Mapping", "Pincode Information"].includes(subItem.name) ||
+                    (subItem.name === "Allocate Sellers" && isAdmin === true && adminTab === true);
+                });
               return filteredList.length > 0 ? { ...item, list: filteredList } : null;
             }
             if (item.text === "Operations") {

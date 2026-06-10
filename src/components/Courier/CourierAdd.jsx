@@ -112,6 +112,13 @@ const courierConfigs = {
       { name: "apiKey", label: "API Token", placeholder: "Enter Shadowfax Production Token", type: "text" },
     ],
   },
+  Losung360: {
+    endpoint: "/Losung360/getAuthToken",
+    fields: [
+      { name: "username", label: "User/Email", placeholder: "Username/Email", type: "text" },
+      { name: "password", label: "Password", placeholder: "Password", type: "password" },
+    ],
+  },
 };
 
 const CourierAdd = ({ provider, onCourierSaved, canAction, existingCouriers }) => {
