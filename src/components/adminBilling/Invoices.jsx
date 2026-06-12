@@ -359,7 +359,7 @@ const Invoices = () => {
                       <div className="flex items-center gap-2">
                         {inv.invoiceUrl && (
                           <a
-                            href={inv.invoiceUrl}
+                            href={`${inv.invoiceUrl}${inv.invoiceUrl.includes("?") ? "&" : "?"}t=${Date.now()}`}
                             target="_blank"
                             rel="noreferrer"
                             className="inline-flex items-center justify-center bg-[#0CBB7D] text-white w-8 h-8 rounded-lg hover:shadow-md hover:bg-opacity-90 transition-all shadow-sm"
@@ -502,7 +502,7 @@ const Invoices = () => {
                     <div className="flex gap-2 ml-2">
                       {inv.invoiceUrl && (
                         <a
-                          href={inv.invoiceUrl}
+                          href={`${inv.invoiceUrl}${inv.invoiceUrl.includes("?") ? "&" : "?"}t=${Date.now()}`}
                           target="_blank"
                           rel="noreferrer"
                           className="p-1.5 bg-[#0CBB7D] text-white rounded-lg flex items-center justify-center shadow active:scale-95 transition-transform"

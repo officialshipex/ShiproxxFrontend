@@ -194,7 +194,7 @@ const Dashboard = ({ selectedUserId, selectedDateRange }) => {
                     {/* <p className="text-[10px] sm:text-[12px] text-gray-500">Last 30 days</p> */}
                 </div>
                 <div className="grid grid-cols-2 text-[14px] sm:grid-cols-3 md:grid-cols-6 gap-2">
-                    <StatBox label="Total Shipments" value={data?.shipmentStats?.total || 0} icon={FaBox} onClick={handleShipmentClick} />
+                    <StatBox label="Booked" value={data?.shipmentStats?.booked || 0} icon={FaBox} onClick={handleShipmentClick} />
                     <StatBox label="Ready To Ship" value={data?.shipmentStats?.readyToShip || 0} icon={FaTruckLoading} onClick={handleShipmentClick} />
                     <StatBox label="In-Transit" value={data?.shipmentStats?.inTransit || 0} icon={FaShippingFast} onClick={handleShipmentClick} />
                     <StatBox label="Out for Delivery" value={data?.shipmentStats?.outForDelivery || 0} icon={FaMapMarkedAlt} onClick={handleShipmentClick} />

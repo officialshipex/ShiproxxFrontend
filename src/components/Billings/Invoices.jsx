@@ -375,7 +375,7 @@ const Invoices = ({
                       <div className="flex justify-center gap-2">
                         {inv.invoiceUrl && (
                           <a
-                            href={inv.invoiceUrl}
+                            href={`${inv.invoiceUrl}${inv.invoiceUrl.includes("?") ? "&" : "?"}t=${Date.now()}`}
                             target="_blank"
                             rel="noreferrer"
                             className="inline-flex items-center justify-center bg-[#0CBB7D] text-white w-8 h-8 rounded-lg hover:shadow-md hover:bg-opacity-90 transition-all shadow-sm"
@@ -542,7 +542,7 @@ const Invoices = ({
                 <div className="flex justify-end gap-2">
                   {inv.invoiceUrl && (
                     <a
-                      href={inv.invoiceUrl}
+                      href={`${inv.invoiceUrl}${inv.invoiceUrl.includes("?") ? "&" : "?"}t=${Date.now()}`}
                       target="_blank"
                       rel="noreferrer"
                       className="px-3 py-1.5 bg-green-50 text-[#0CBB7D] border border-green-100 rounded-lg flex items-center gap-2 font-[600] text-[10px] hover:bg-green-100 transition-colors"
