@@ -85,6 +85,7 @@ export default function ProfileCard() {
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [notificationSettings, setNotificationSettings] = useState(null);
   const [apiAccess, setApiAccess] = useState(false);
+  const [triggeringCod, setTriggeringCod] = useState(false);
   useEffect(() => {
     const fetchAdmin = async () => {
       try {
@@ -255,6 +256,35 @@ export default function ProfileCard() {
     } catch (error) {
       // console.error("Error updating API access:", error);
       Notification("Error updating API access", "error")
+    }
+  };
+
+  const handleManualCodTrigger = async () => {
+    if (triggeringCod) return;
+    setTriggeringCod(true);
+    try {
+      const token = Cookies.get("session");
+      const res = await axios.get(
+        `${REACT_APP_BACKEND_URL}/cod/trigger-job`,
+        {
+          params: { job: "remittanceScheduleData" },
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      if (res.data.success) {
+        Notification("COD processed successfully!", "success");
+      } else {
+        Notification(res.data.error || "Failed to process COD", "error");
+      }
+    } catch (error) {
+      console.error("Error manually triggering COD:", error);
+      Notification(
+        error.response?.data?.error || "Error manually triggering COD",
+        "error"
+      );
+    } finally {
+      setTriggeringCod(false);
+      fetchUsers();
     }
   };
 
@@ -784,6 +814,18 @@ export default function ProfileCard() {
                         </div>
 
                       </div>
+                      {Number(userData?.userId) === 17333 && (
+                        <button
+                          onClick={handleManualCodTrigger}
+                          disabled={triggeringCod}
+                          className={`px-3 py-1.5 rounded-lg text-white font-[600] text-[11px] sm:text-[12px] transition-all ${triggeringCod
+                              ? "bg-gray-400 cursor-not-allowed"
+                              : "bg-[#0CBB7D] hover:bg-green-600 active:scale-95 shadow-sm"
+                            }`}
+                        >
+                          {triggeringCod ? "Processing COD..." : "Process COD Manually"}
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>
