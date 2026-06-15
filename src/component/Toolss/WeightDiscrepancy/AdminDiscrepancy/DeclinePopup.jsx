@@ -13,6 +13,7 @@ const DeclinePopup = ({ isOpen, onClose, awbNumber, setRefresh }) => {
 
   // ✅ New bulk decline function
   const handleBulkDecline = async () => {
+    if (loading) return;
     if (!Array.isArray(awbNumber) || awbNumber.length === 0) {
       Notification("No AWB numbers selected.", "info");
       return;
@@ -42,6 +43,7 @@ const DeclinePopup = ({ isOpen, onClose, awbNumber, setRefresh }) => {
 
   // ✅ Existing single decline function (keep both)
   const handleConfirm = async () => {
+    if (loading) return;
     setLoading(true);
     try {
       const token = Cookies.get("session");

@@ -19,6 +19,7 @@ const UploadDiscrepancyPopup = ({ onClose, setRefresh }) => {
   };
 
   const handleSubmit = async () => {
+    if (isUploading) return; // Prevent multiple uploads from rapid clicking
     if (!selectedFile) {
       Notification("Please select a file first!", "info");
       return;

@@ -9,6 +9,7 @@ const AcceptDiscrepancy = ({ isOpen, onClose, awbNumber, setRefresh }) => {
   if (!isOpen) return null;
 
   const handleConfirm = async () => {
+    if (isUploading) return;
     setIsUploading(true); // Freeze button
     try {
 
@@ -47,14 +48,16 @@ const AcceptDiscrepancy = ({ isOpen, onClose, awbNumber, setRefresh }) => {
         </h2>
         <div className="flex justify-center space-x-4">
           <button
-            className="px-4 py-2 bg-[#0CBB7D] text-white rounded-md transition"
+            className={`px-4 py-2 bg-[#0CBB7D] text-white rounded-md transition ${isUploading ? "opacity-50 cursor-not-allowed" : ""}`}
             onClick={handleConfirm} // Call local function
+            disabled={isUploading}
           >
-            Yes
+            {isUploading ? "Processing..." : "Yes"}
           </button>
           <button
             className="px-4 py-2 bg-gray-400 text-white rounded-md hover:bg-gray-500 transition"
             onClick={onClose}
+            disabled={isUploading}
           >
             No
           </button>

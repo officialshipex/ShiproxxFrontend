@@ -116,7 +116,13 @@ const CarrierSelection = () => {
       // setShowScheduleModal(true);
       navigate("/dashboard/b2c/order");
     } catch (error) {
-      Notification(error.response?.data?.message || "Something went wrong", "error");
+      const errorMsg =
+        error.response?.data?.error?.message ||
+        error.response?.data?.error ||
+        error.response?.data?.message ||
+        error.message ||
+        "Something went wrong";
+      Notification(errorMsg, "error");
       console.log("service error", error);
     } finally {
       setLoadingButtons((prev) => ({ ...prev, [courierServiceName]: false }));
