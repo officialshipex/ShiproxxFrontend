@@ -228,7 +228,7 @@ const ShopifyIntegration = () => {
               name="multiSeller"
               checked={storeDetails.multiSeller}
               onChange={handleChange}
-              className="mr-2 accent-[#0CBB7D]"
+              className="mr-2 accent-[#10BE3B]"
             />
             <label className="font-[600] block text-[10px] sm:text-[12px] text-gray-500">Enable Multi Seller</label>
           </div>
@@ -242,7 +242,7 @@ const ShopifyIntegration = () => {
                 name="syncInventory"
                 checked={storeDetails.syncInventory}
                 onChange={handleChange}
-                className="mr-2 accent-[#0CBB7D]"
+                className="mr-2 accent-[#10BE3B]"
               />
               <label className="font-[600] block text-[10px] sm:text-[12px] text-gray-500">Enable Inventory Sync</label>
             </div>
@@ -276,7 +276,7 @@ const ShopifyIntegration = () => {
               !storeDetails.storeClientId ||
               !storeDetails.storeClientSecret
               ? "bg-gray-400 cursor-not-allowed text-gray-700"
-              : "bg-[#0CBB7D] text-white"
+              : "bg-[#10BE3B] text-white"
               }`}
           >
             {id ? "Update Channel" : "Add Channel"}
@@ -291,7 +291,7 @@ const ShopifyIntegration = () => {
             Steps to Integrate Shopify
           </h3>
           <ul className="list-decimal list-inside mt-2 text-gray-700 space-y-2 font-[400] text-[10px] sm:text-[12px]">
-            <li>Fill in your Shopify Store name, Store URL, Store Client ID and Store client secret. Enter the details and click on add Channel to connect Shopify with Shipex.</li>
+            <li>Fill in your Shopify Store name, Store URL, Store Client ID and Store client secret. Enter the details and click on add Channel to connect Shopify with Shiproxx.</li>
             <li>
               If you do not have these details available, Login to your Shopify account and copy the URL link in the address bar. This is the store URL. Store name is the name of your store.
             </li>

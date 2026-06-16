@@ -29,7 +29,7 @@ const SmsNotification = () => {
     { key: "Delivered", label: "Delivered", defaultTemplate: "Success! Your order {order_id} has been delivered. Enjoy!" },
     { key: "Undelivered", label: "Undelivered", defaultTemplate: "Delivery attempt for {order_id} was unsuccessful. We will retry soon." },
     { key: "RTO", label: "RTO Initiated", defaultTemplate: "Order {order_id} is being returned to sender. Track: {tracking_link}" },
-    { key: "Cancelled", label: "Cancelled", defaultTemplate: "Your order {order_id} has been cancelled. Team Shipex." },
+    { key: "Cancelled", label: "Cancelled", defaultTemplate: "Your order {order_id} has been cancelled. Team Shiproxx." },
   ];
 
   const formatDate = (dateString) => {
@@ -184,7 +184,7 @@ const SmsNotification = () => {
             <Switch
               checked={mainEnabled}
               onChange={handleMainToggle}
-              className={`${mainEnabled ? "bg-[#0CBB7D]" : "bg-gray-300"
+              className={`${mainEnabled ? "bg-[#10BE3B]" : "bg-gray-300"
                 } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none`}
             >
               <span
@@ -199,7 +199,7 @@ const SmsNotification = () => {
       <div className="hidden sm:block bg-white overflow-hidden">
         <div className="h-[calc(100vh-220px)] overflow-y-auto custom-scrollbar">
           <table className="min-w-full text-[12px] border-collapse">
-            <thead className="bg-[#0CBB7D] text-white sticky top-0 z-10 shadow-sm">
+            <thead className="bg-[#10BE3B] text-white sticky top-0 z-10 shadow-sm">
               <tr>
                 <th className="text-left px-3 py-2 font-bold tracking-wider">Status</th>
                 <th className="text-left px-3 py-2 font-bold tracking-wider">Enable/Disable</th>
@@ -221,7 +221,7 @@ const SmsNotification = () => {
                       onChange={() => handleToggle(status.key)}
                       disabled={!mainEnabled || loading}
                       className={`${statusToggles[status.key]
-                          ? "bg-[#0CBB7D]"
+                          ? "bg-[#10BE3B]"
                           : "bg-gray-300"
                         } ${!mainEnabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
                         } relative inline-flex h-5 w-10 items-center rounded-full transition-colors focus:outline-none`}
@@ -245,7 +245,7 @@ const SmsNotification = () => {
                   <td className="px-3 py-2 text-center">
                     <button 
                       onClick={() => openEditModal(status)}
-                      className="text-[10px] text-[#0CBB7D] font-bold hover:bg-green-50 px-3 py-2 border border-green-100 rounded-lg transition-all"
+                      className="text-[10px] text-[#10BE3B] font-bold hover:bg-green-50 px-3 py-2 border border-green-100 rounded-lg transition-all"
                     >
                       Edit
                     </button>
@@ -272,7 +272,7 @@ const SmsNotification = () => {
                 checked={!!statusToggles[status.key]}
                 onChange={() => handleToggle(status.key)}
                 disabled={!mainEnabled || loading}
-                className={`${statusToggles[status.key] ? "bg-[#0CBB7D]" : "bg-gray-300"
+                className={`${statusToggles[status.key] ? "bg-[#10BE3B]" : "bg-gray-300"
                   } relative inline-flex h-5 w-10 items-center rounded-full transition-colors`}
               >
                 <span
@@ -292,7 +292,7 @@ const SmsNotification = () => {
               </span>
               <button 
                 onClick={() => openEditModal(status)}
-                className="text-[#0CBB7D] font-bold text-[12px] px-4 py-1.5 border border-green-100 rounded-lg shadow-sm"
+                className="text-[#10BE3B] font-bold text-[12px] px-4 py-1.5 border border-green-100 rounded-lg shadow-sm"
               >
                 Edit
               </button>

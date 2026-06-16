@@ -111,7 +111,7 @@ const Elogin = ({ setEmployeeAuthenticated }) => {
               <img src="/LOGO.svg" alt="Logo" className="h-10 md:h-12" />
             </div>
 
-            <h1 className="text-2xl md:text-3xl font-bold mb-3 text-left text-[#0CBB7D]">
+            <h1 className="text-2xl md:text-3xl font-bold mb-3 text-left text-[#10BE3B]">
               Welcome Team
             </h1>
             <p className="text-gray-600 mb-4 text-xs md:text-sm">
@@ -188,14 +188,14 @@ const Elogin = ({ setEmployeeAuthenticated }) => {
               {/* Login Button */}
               <button
                 type="submit"
-                className="bg-[#0CBB7D] text-white py-[8px]  px-3 rounded-lg w-full mt-6 hover:bg-green-700 transition"
+                className="bg-[#10BE3B] text-white py-[8px]  px-3 rounded-lg w-full mt-6 hover:bg-green-700 transition"
               >
                 Log In
               </button>
 
               {/* Signup Link */}
               {/* <p className="text-xs md:text-sm text-gray-700 text-left mt-2">
-                New to ShipexIndia?{" "}
+                New to Shiproxx?{" "}
                 <Link
                   to="/register"
                   className="text-[#2D054B] underline hover:text-[#e8cafe]"
@@ -221,7 +221,7 @@ const Elogin = ({ setEmployeeAuthenticated }) => {
       <div className="w-full bg-white border-gray-300">
         <footer className="w-full bg-white px-6 py-8 flex flex-col md:flex-row md:justify-between md:items-center text-[#2D054B] text-xs md:text-sm mt-6 md:mt-0 text-justify">
           <p className="mt-0 md:mb-0 text-left w-full md:w-auto">
-            © 2025 Shipex. All rights reserved.
+            © 2025 Shiproxx. All rights reserved.
           </p>
           <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 text-left w-full md:w-auto">
             <a href="#" className="text-[#2D054B] hover:text-gray-900">

@@ -22,7 +22,7 @@ const OrderAwbFilter = ({
         className={`flex w-full ${heightClass}
           border rounded-lg border-gray-300
           bg-white transition-colors
-          focus-within:border-[#0CBB7D]`}
+          focus-within:border-[#10BE3B]`}
       >
         {/* Dropdown */}
         <div className="relative w-[35%]">

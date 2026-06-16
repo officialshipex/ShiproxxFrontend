@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import { ChevronDown, ChevronUp, Copy, Check } from "lucide-react";
 import axios from "axios";
 import Cookies from "js-cookie";
-import Shipex from "../../../assets/shipexNoBG.png";
+import Shiproxx from "../../../assets/shiproxxNoBG.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBoxOpen,
@@ -140,13 +140,13 @@ function Tracing2() {
         title={`Copy ${label}`}
       >
         {label} :{" "}
-        <span className="font-[600] text-[#0CBB7D] truncate max-w-[150px] sm:max-w-full">
+        <span className="font-[600] text-[#10BE3B] truncate max-w-[150px] sm:max-w-full">
           {text || "-"}
         </span>
         {copiedField === copyKey ? (
           <Check size={14} className="text-green-500 flex-shrink-0" />
         ) : (
-          <Copy size={14} className="text-[#0CBB7D] hover:text-green-500 flex-shrink-0" />
+          <Copy size={14} className="text-[#10BE3B] hover:text-green-500 flex-shrink-0" />
         )}
       </span>
     );
@@ -156,7 +156,7 @@ function Tracing2() {
     <div className="relative bg-[#f7fafc] min-h-screen py-4 px-1 sm:px-4">
       <div className="max-w-4xl mx-auto flex flex-col items-center">
         <div className="my-4 flex flex-col gap-2 w-full items-center">
-          <img className="w-40 h-14 -mt-[15px]" src={Shipex} alt="Shipex" />
+          <img className="w-40 h-14 -mt-[15px]" src={Shiproxx} alt="Shiproxx" />
           {admin && adminTab && (
             <div className="w-full">
               <div className="flex w-full flex-col">
@@ -169,7 +169,7 @@ function Tracing2() {
                     disabled={loading}
                   />
                   <button
-                    className="px-3 py-2 sm:w-[14%] w-[28%] border border-gray-100 bg-[#0CBB7D] sm:h-12 h-10 text-white font-[600] text-[10px] sm:text-[12px] rounded-lg hover:bg-green-500 transition"
+                    className="px-3 py-2 sm:w-[14%] w-[28%] border border-gray-100 bg-[#10BE3B] sm:h-12 h-10 text-white font-[600] text-[10px] sm:text-[12px] rounded-lg hover:bg-green-500 transition"
                     onClick={handleTrack}
                     disabled={loading}
                   >
@@ -214,7 +214,7 @@ function Tracing2() {
         Powered by{" "}
         <span className="font-bold">
           <span className="text-black">Ship</span>
-          <span className="text-[#0cbb7d]">ex</span>
+          <span className="text-[#10BE3B]">ex</span>
         </span>
       </div>
     </div>
@@ -314,7 +314,7 @@ function TrackingCard({ trackingAwb, statusSteps, CopyableText }) {
           <span>
             Status :{" "}
             <span
-              className={`text-[10px] px-2 py-0.5 rounded ${isCancelled ? "bg-red-100 text-red-600" : "text-[#0CBB7D] bg-green-100"
+              className={`text-[10px] px-2 py-0.5 rounded ${isCancelled ? "bg-red-100 text-red-600" : "text-[#10BE3B] bg-green-100"
                 }`}
             >
               {trackingAwb.status}
@@ -386,7 +386,7 @@ function TrackingCard({ trackingAwb, statusSteps, CopyableText }) {
                 className={`rounded-full flex items-center justify-center w-6 h-6 sm:w-10 sm:h-10 border-2 transition-all ${idx <= currentStep
                   ? isCancelled && idx === 0
                     ? "bg-red-600 border-red-600"
-                    : "bg-[#0CBB7D] border-[#0CBB7D]"
+                    : "bg-[#10BE3B] border-[#10BE3B]"
                   : "bg-gray-100 border-gray-300"
                   }`}
               >
@@ -404,7 +404,7 @@ function TrackingCard({ trackingAwb, statusSteps, CopyableText }) {
                 className={`mt-2 text-[9px] sm:text-[12px] font-[600] text-center max-w-[80px] sm:max-w-[120px] ${idx <= currentStep
                   ? isCancelled && idx === 0
                     ? "text-red-600"
-                    : "text-[#0CBB7D]"
+                    : "text-[#10BE3B]"
                   : "text-gray-500"
                   }`}
               >
@@ -416,7 +416,7 @@ function TrackingCard({ trackingAwb, statusSteps, CopyableText }) {
                 className={`h-1 w-[40px] sm:w-[150px] self-center ${idx < currentStep
                   ? isCancelled && idx === 0
                     ? "bg-red-600"
-                    : "bg-[#0CBB7D]"
+                    : "bg-[#10BE3B]"
                   : "bg-gray-300"
                   } rounded`}
               />
@@ -428,7 +428,7 @@ function TrackingCard({ trackingAwb, statusSteps, CopyableText }) {
       {/* Tracking details */}
       <div className="px-3 pb-4">
         <div className="font-[600] text-gray-700 text-[12px] sm:text-[14px] my-2 flex items-center gap-2">
-          <FontAwesomeIcon icon={faMapMarkerAlt} className="text-[#0cbb7d]" />
+          <FontAwesomeIcon icon={faMapMarkerAlt} className="text-[#10BE3B]" />
           Tracking Details
         </div>
 
@@ -475,17 +475,17 @@ function TrackingCard({ trackingAwb, statusSteps, CopyableText }) {
                   ${showCancelledRed
                           ? "bg-red-600 border-red-600"
                           : idx === 0
-                            ? "bg-[#0CBB7D] border-[#0CBB7D]"
-                            : "bg-green-200 border-[#0CBB7D]"
+                            ? "bg-[#10BE3B] border-[#10BE3B]"
+                            : "bg-green-200 border-[#10BE3B]"
                         }
-                  hover:scale-110 hover:ring-2 hover:ring-[#0CBB7D] cursor-pointer`}
+                  hover:scale-110 hover:ring-2 hover:ring-[#10BE3B] cursor-pointer`}
                     ></button>
 
                     {/* Vertical Line */}
                     {idx < arr.length - 1 && (
                       <div
                         className={`w-0.5 flex-1 mt-1 mb-1 transition-colors rounded 
-                    ${showCancelledRed ? "bg-red-600" : "bg-[#0CBB7D]"}`}
+                    ${showCancelledRed ? "bg-red-600" : "bg-[#10BE3B]"}`}
                       ></div>
                     )}
                   </div>

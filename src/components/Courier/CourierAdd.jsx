@@ -241,7 +241,7 @@ const CourierAdd = ({ provider, onCourierSaved, canAction, existingCouriers }) =
           <input
             type="text"
             placeholder={`${provider} Name`}
-            className="w-full px-2 h-9 text-[10px] sm:text-[12px] text-gray-700 border border-gray-300 rounded-lg focus:outline-none focus:border-[#0CBB7D] focus:ring-1 focus:ring-[#0CBB7D]/20 transition-all placeholder:text-gray-300"
+            className="w-full px-2 h-9 text-[10px] sm:text-[12px] text-gray-700 border border-gray-300 rounded-lg focus:outline-none focus:border-[#10BE3B] focus:ring-1 focus:ring-[#10BE3B]/20 transition-all placeholder:text-gray-300"
             value={courierName}
             onChange={(e) => setCourierName(e.target.value)}
           />
@@ -255,7 +255,7 @@ const CourierAdd = ({ provider, onCourierSaved, canAction, existingCouriers }) =
           <input
             type="number"
             placeholder="0"
-            className="w-full px-2 h-9 text-[10px] sm:text-[12px] text-gray-700 border border-gray-300 rounded-lg focus:outline-none focus:border-[#0CBB7D] focus:ring-1 focus:ring-[#0CBB7D]/20 transition-all placeholder:text-gray-300"
+            className="w-full px-2 h-9 text-[10px] sm:text-[12px] text-gray-700 border border-gray-300 rounded-lg focus:outline-none focus:border-[#10BE3B] focus:ring-1 focus:ring-[#10BE3B]/20 transition-all placeholder:text-gray-300"
             value={codDays}
             onChange={(e) => setCodDays(e.target.value)}
           />
@@ -275,7 +275,7 @@ const CourierAdd = ({ provider, onCourierSaved, canAction, existingCouriers }) =
             <input
               type={field.type || "text"}
               placeholder={field.placeholder}
-              className="w-full px-2 h-9 text-[10px] sm:text-[12px] text-gray-700 border border-gray-300 rounded-lg focus:outline-none focus:border-[#0CBB7D] focus:ring-1 focus:ring-[#0CBB7D]/20 transition-all placeholder:text-gray-300"
+              className="w-full px-2 h-9 text-[10px] sm:text-[12px] text-gray-700 border border-gray-300 rounded-lg focus:outline-none focus:border-[#10BE3B] focus:ring-1 focus:ring-[#10BE3B]/20 transition-all placeholder:text-gray-300"
               value={credentials[field.name] || ""}
               onChange={(e) => handleCredentialChange(field.name, e.target.value)}
             />
@@ -287,7 +287,7 @@ const CourierAdd = ({ provider, onCourierSaved, canAction, existingCouriers }) =
           onClick={handleSave}
           disabled={!canAction || loading}
           className={`h-9 px-4 rounded-lg text-[11px] font-[700] transition-all flex items-center justify-center gap-2 whitespace-nowrap min-w-[100px] col-span-2 xl:col-span-1 ${canAction && !loading
-              ? "bg-[#0CBB7D] text-white hover:bg-[#0aa66e] active:scale-[0.98] shadow-sm"
+              ? "bg-[#10BE3B] text-white hover:bg-[#0aa66e] active:scale-[0.98] shadow-sm"
               : "bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200"
             }`}
         >

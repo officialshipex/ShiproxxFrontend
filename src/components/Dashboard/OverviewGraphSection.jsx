@@ -18,13 +18,13 @@ const COLORS = {
     'Ecom Express': '#8dd1e1',
     'Amazon Shipping': '#82ca9d',
     'Bluedart': '#ffc658',
-    'Dtdc': '#0CBB7D',
+    'Dtdc': '#10BE3B',
     'Xpressbees': '#2d1ba4ff',
     'Shree Maruti': "#82ca9D",
     'Ekart': '#84930eff',
     'COD': '#FF8042',
-    'Prepaid': '#0CBB7D',
-    'On-Time': '#0CBB7D',
+    'Prepaid': '#10BE3B',
+    'On-Time': '#10BE3B',
     'Late': '#FF8042',
 };
 

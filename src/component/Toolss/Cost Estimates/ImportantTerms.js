@@ -15,8 +15,8 @@ const ImportantTerms = () => {
     "Lost or damaged products claims will be handled as per the carrier terms and conditions.",
     "The Customer/Seller shall not book/handover or allows to be handed over any Product which is banned, restricted, illegal, prohibited, stolen, infringing of any third-party rights, liquid materials, hazardous or dangerous or in breach of any law or regulation in force in India for the purpose of the logistics or delivery services.",
     "Additional government rules and norms can be applicable while shipping to certain states and subject to change without prior intimation and will abide by them.",
-    "Detailed terms and conditions can be reviewed on <span style='color: blue;'>Shipex's Terms of services</span>.",
-    "For any queries reach out to us at https://carrier.shipex.in/support or write to us at <a href='mailto:support@shipex.in' style='color: blue; text-decoration: underline;'>support@shipex.in</a>."
+    "Detailed terms and conditions can be reviewed on <span style='color: blue;'>Shiproxx's Terms of services</span>.",
+    "For any queries reach out to us at https://carrier.shiproxx.com/support or write to us at <a href='mailto:support@shiproxx.com' style='color: blue; text-decoration: underline;'>support@shiproxx.com</a>."
   ];
 
   return (

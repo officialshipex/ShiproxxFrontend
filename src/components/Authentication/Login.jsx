@@ -3,7 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import axios from "axios";
 import { createSession, getSession } from "../../utils/session";
-import ShipexLogo from '../../assets/Shipex.jpg'; // adjust path as needed
+import ShiproxxLogo from '../../assets/Shiproxx.jpg'; // adjust path as needed
 import illustrationimage from '../../assets/Login.png'; // adjust path as needed
 import { Notification } from "../../Notification"
 
@@ -177,11 +177,11 @@ const LoginPage = ({ setIsAuthenticated }) => {
           <div className="w-full max-w-sm md:max-w-md p-4 md:p-6 rounded-lg shadow-sm bg-white">
             {/* Logo */}
             <div className="flex justify-start mb-4 md:mb-4">
-              <img src={ShipexLogo} alt="Logo" className="h-10 md:h-12" />
+              <img src={ShiproxxLogo} alt="Logo" className="h-10 md:h-12" />
             </div>
 
             {/* Heading */}
-            <h1 className="text-[18px] md:text-[24px] font-[600] mb-2 md:mb-3 text-left text-[#0CBB7D]">
+            <h1 className="text-[18px] md:text-[24px] font-[600] mb-2 md:mb-3 text-left text-[#10BE3B]">
               Welcome Back!
             </h1>
             <p className="text-gray-500 mb-4 text-[12px] md:text-[12px] font-[600]">
@@ -206,7 +206,7 @@ const LoginPage = ({ setIsAuthenticated }) => {
                   placeholder="Enter Email"
                   value={formData.email}
                   onChange={handleChange}
-                  className="border rounded-lg px-3 py-2 w-full text-[12px] font-[600] text-gray-700 outline-none focus:ring-1 focus:ring-[#0CBB7D]"
+                  className="border rounded-lg px-3 py-2 w-full text-[12px] font-[600] text-gray-700 outline-none focus:ring-1 focus:ring-[#10BE3B]"
                 />
                 {error.email && (
                   <p className="text-[12px] text-red-500 mt-1">{error.email}</p>
@@ -218,7 +218,7 @@ const LoginPage = ({ setIsAuthenticated }) => {
                 <label className="w-full text-[12px] font-[600] flex justify-end">
                   <span
                     onClick={handleForgotPassword}
-                    className="text-[12px] text-[#0CBB7D] hover:underline cursor-pointer"
+                    className="text-[12px] text-[#10BE3B] hover:underline cursor-pointer"
                   >
                     Forgot Password?
                   </span>
@@ -234,11 +234,11 @@ const LoginPage = ({ setIsAuthenticated }) => {
                     placeholder="Password"
                     value={formData.password}
                     onChange={handleChange}
-                    className="border rounded-lg px-3 py-2 w-full pr-10 text-[12px] font-[600] text-gray-700 outline-none focus:ring-1 focus:ring-[#0CBB7D]"
+                    className="border rounded-lg px-3 py-2 w-full pr-10 text-[12px] font-[600] text-gray-700 outline-none focus:ring-1 focus:ring-[#10BE3B]"
                   />
                   <span
                     onClick={togglePasswordVisibility}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-[#0CBB7D]"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-[#10BE3B]"
                   >
                     {showPassword ? <FaEye /> : <FaEyeSlash />}
                   </span>
@@ -253,7 +253,7 @@ const LoginPage = ({ setIsAuthenticated }) => {
 
               {/* Remember Me */}
               <div className="flex items-center space-x-2">
-                <input type="checkbox" className="h-3 w-3 accent-[#0CBB7D] cursor-pointer" />
+                <input type="checkbox" className="h-3 w-3 accent-[#10BE3B] cursor-pointer" />
                 <p className="text-[10px] font-[600] text-gray-700">Remember me</p>
               </div>
 
@@ -264,7 +264,7 @@ const LoginPage = ({ setIsAuthenticated }) => {
                 disabled={isLoading}
                 className={`py-2 px-3 text-[12px] font-[600] rounded-lg w-full mt-4 transition ${isLoading
                   ? "bg-gray-400 text-gray-200 cursor-not-allowed"
-                  : "bg-[#0CBB7D] text-white hover:bg-opacity-90"
+                  : "bg-[#10BE3B] text-white hover:bg-opacity-90"
                   }`}
               >
                 {isLoading ? (
@@ -282,10 +282,10 @@ const LoginPage = ({ setIsAuthenticated }) => {
 
               {/* Signup Link */}
               <p className="text-[10px] font-[600] text-gray-500 text-left mt-3">
-                New to ShipexIndia?{" "}
+                New to Shiproxx?{" "}
                 <Link
                   to="/register"
-                  className="text-[#0CBB7D] underline hover:font-[600] hover:text-[#0CBB7D]"
+                  className="text-[#10BE3B] underline hover:font-[600] hover:text-[#10BE3B]"
                 >
                   Create new account
                 </Link>
@@ -306,7 +306,7 @@ const LoginPage = ({ setIsAuthenticated }) => {
             <div className="absolute w-full h-full rounded-full border-2 border-dashed border-black" />
 
             {/* Inner Light Circle with Center Text */}
-            <div className="w-[180px] h-[180px] rounded-full border border-bg-[#0CBB7D] bg-white flex items-center justify-center text-center px-4">
+            <div className="w-[180px] h-[180px] rounded-full border border-bg-[#10BE3B] bg-white flex items-center justify-center text-center px-4">
               <p className="text-[14px] font-[600] text-gray-700 leading-snug">
                 Start shipping<br />in 3 easy steps
               </p>
@@ -315,13 +315,13 @@ const LoginPage = ({ setIsAuthenticated }) => {
             {/* Step 1 - Top */}
             <div className="absolute -top-5 left-1/2 transform -translate-x-1/2 text-center">
               <p className="text-[12px] text-gray-700 -mt-7 font-[600]">Sign Up</p>
-              <div className="bg-[#0CBB7D] text-white w-10 h-10 rounded-full flex items-center justify-center font-[600] text-[12px] shadow-md mt-3">1</div>
+              <div className="bg-[#10BE3B] text-white w-10 h-10 rounded-full flex items-center justify-center font-[600] text-[12px] shadow-md mt-3">1</div>
             </div>
 
             {/* Step 2 - Right (FIXED ALIGNMENT) */}
             <div className="absolute top-1/2 right-[-40px] transform -translate-y-1/2 text-center">
               <div className="flex flex-row items-center -ml-[70px]">
-                <div className="bg-[#0CBB7D] text-white w-10 h-10 rounded-full flex items-center justify-center font-[600] text-[12px] shadow-sm ml-2">
+                <div className="bg-[#10BE3B] text-white w-10 h-10 rounded-full flex items-center justify-center font-[600] text-[12px] shadow-sm ml-2">
                   2
                 </div>
                 <p className="text-[12px] text-gray-700 mt-4 ml-3 font-[600] leading-snug text-center -mr-32">
@@ -332,7 +332,7 @@ const LoginPage = ({ setIsAuthenticated }) => {
 
             {/* Step 3 - Bottom */}
             <div className="absolute -bottom-14 left-1/2 transform -translate-x-1/2 text-center w-28">
-              <div className="bg-[#0CBB7D] text-white w-10 h-10 rounded-full flex items-center justify-center font-[600] text-[12px] shadow-sm mx-auto">3</div>
+              <div className="bg-[#10BE3B] text-white w-10 h-10 rounded-full flex items-center justify-center font-[600] text-[12px] shadow-sm mx-auto">3</div>
               <p className="text-[12px] text-gray-700 mt-1 font-[600] leading-snug">
                 Recharge Your<br />Account
               </p>
@@ -344,7 +344,7 @@ const LoginPage = ({ setIsAuthenticated }) => {
                 <p className="text-[12px] text-gray-700 mt-0 font-[600] leading-snug text-center mr-3">
                   Start Shipping
                 </p>
-                <div className="bg-[#0CBB7D] text-white w-10 h-10 rounded-full flex items-center justify-center font-[600] text-[12px] shadow-sm mx-auto">
+                <div className="bg-[#10BE3B] text-white w-10 h-10 rounded-full flex items-center justify-center font-[600] text-[12px] shadow-sm mx-auto">
                   4
                 </div>
               </div>
@@ -358,17 +358,17 @@ const LoginPage = ({ setIsAuthenticated }) => {
       <div className="w-full bg-white">
         <footer className="w-full bg-green-50 px-4 py-4 flex flex-col sm:flex-row sm:justify-between sm:items-center text-gray-500 text-[10px] text-center sm:text-left space-y-2 sm:space-y-0 ">
           <p className="w-full sm:w-auto font-[600]">
-            © 2025 Shipex. All rights reserved.
+            © 2025 Shiproxx. All rights reserved.
           </p>
 
           <div className="sm:flex flex-col font-[600] sm:flex-row sm:space-x-4 space-y-1 sm:space-y-0 w-full sm:w-auto hidden md:block">
-            <a href="https://www.shipexindia.com/privacy-policy" target="blank" className="text-gray-500 hover:text-gray-900">
+            <a href="https://www.shiproxx.com/privacy-policy" target="blank" className="text-gray-500 hover:text-gray-900">
               Privacy Policy
             </a>
-            <a href="https://www.shipexindia.com/refund-cancellation" target="blank" className="text-gray-500 hover:text-gray-900">
+            <a href="https://www.shiproxx.com/refund-cancellation" target="blank" className="text-gray-500 hover:text-gray-900">
               Refund & Cancellation Policy
             </a>
-            <a href="https://www.shipexindia.com/terms-conditions" target="blank" className="text-gray-500 hover:text-gray-900">
+            <a href="https://www.shiproxx.com/terms-conditions" target="blank" className="text-gray-500 hover:text-gray-900">
               Terms & Conditions
             </a>
           </div>

@@ -74,7 +74,7 @@ const Home = () => {
     },
     {
       step: "Step 6",
-      description: "Integrate your marketplace accounts with Shipex",
+      description: "Integrate your marketplace accounts with Shiproxx",
       title: "Manage all your accounts from one place",
       status: "Pending",
       statusColor: "bg-red-100 text-red-700",

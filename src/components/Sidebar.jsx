@@ -27,7 +27,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { LuBoxes } from "react-icons/lu";
 
-import ShipexLogo from "../assets/Shipex.jpg";
+import ShiproxxLogo from "../assets/Shiproxx.jpg";
 import grouplogo from "../assets/Group.png";
 
 import axios from "axios";
@@ -77,7 +77,7 @@ const SidebarItem = ({
     <div className="transition-all duration-300 ease-in-out">
       <div
         className={`group relative flex items-center px-3 py-2 my-1 text-[14px] font-[600] cursor-pointer select-none
-      ${isActive ? "bg-[#0CBB7D] text-white" : "text-gray-500 hover:bg-[#0CBB7D]"} 
+      ${isActive ? "bg-[#10BE3B] text-white" : "text-gray-500 hover:bg-[#10BE3B]"} 
       transition-all h-9 duration-200 ease-in-out`}
         onClick={(e) => {
           e.stopPropagation();
@@ -129,7 +129,7 @@ const SidebarItem = ({
           {list.map((item, index) => (
             <li
               key={index}
-              className="cursor-pointer hover:text-white hover:bg-[#0CBB7D] transition-colors duration-300 p-1"
+              className="cursor-pointer hover:text-white hover:bg-[#10BE3B] transition-colors duration-300 p-1"
               onClick={() => {
                 setOpenDropdowns({});   // close dropdown
                 if (isMobile) setExpanded(false);
@@ -694,7 +694,7 @@ const Sidebar = ({ isAdmin: isAdminProp, adminTab: adminTabProp }) => {
     <>
       {isMobile && (
         <button
-          className={`fixed left-2 z-50 text-[#0CBB7D] p-2 transition-all duration-300 ${localStorage.getItem("admin_token_backup") ? "top-[40px]" : "top-[8px]"}`}
+          className={`fixed left-2 z-50 text-[#10BE3B] p-2 transition-all duration-300 ${localStorage.getItem("admin_token_backup") ? "top-[40px]" : "top-[8px]"}`}
           onClick={toggleSidebar}
         >
           <FontAwesomeIcon icon={expanded ? faTimes : faBars} className="text-lg" />
@@ -741,7 +741,7 @@ const Sidebar = ({ isAdmin: isAdminProp, adminTab: adminTabProp }) => {
 
           {/* Main Logo (Visible only when expanded) */}
           <img
-            src={ShipexLogo}
+            src={ShiproxxLogo}
             alt="Logo"
             className={`transition-all duration-300 
       ${expanded ? "w-20 opacity-100" : "w-0 opacity-0"}

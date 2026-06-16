@@ -20,7 +20,7 @@ const Customers = () => {
     {
       name: "Prikshit Singh",
       phone: "7988474769",
-      email: "buyer.contact@shipex.in",
+      email: "buyer.contact@shiproxx.com",
       address:
         "Flat 302, 3rd floor, Vinayak Heights, Near D Mart, Mumbai, Maharashtra - 400001",
       channel: "CUSTOM",
@@ -28,7 +28,7 @@ const Customers = () => {
     {
       name: "Harish Sharma",
       phone: "9810225726",
-      email: "buyer.contact@shipex.in",
+      email: "buyer.contact@shiproxx.com",
       address:
         "B-5/104, Near Little Angel School, Paschim Vihar, Delhi, New Delhi, Delhi - 110063",
       channel: "CUSTOM",

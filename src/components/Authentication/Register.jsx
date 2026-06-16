@@ -3,7 +3,7 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { createSession, getSession } from "../../utils/session";
-import ShipexLogo from "../../assets/Shipex.jpg";
+import ShiproxxLogo from "../../assets/Shiproxx.jpg";
 import illustrationimage from "../../assets/Login.png";
 import { Notification } from "../../Notification";
 
@@ -148,12 +148,12 @@ export default function Signup({ setIsAuthenticated }) {
       <div className="w-full flex flex-row px-2 py-6 md:p-6 justify-center items-center">
         <div className="w-full max-w-sm md:max-w-md lg:max-w-xl p-4 md:p-6 rounded-lg shadow-sm bg-white">
           <div className="flex justify-between items-center mb-2">
-            <img src={ShipexLogo} alt="Logo" className="h-10 md:h-12" />
-            <Link to="/login" className="text-[12px] font-[600] text-[#0CBB7D]">
+            <img src={ShiproxxLogo} alt="Logo" className="h-10 md:h-12" />
+            <Link to="/login" className="text-[12px] font-[600] text-[#10BE3B]">
               &lt; <strong>Back</strong>
             </Link>
           </div>
-          <h1 className="text-[18px] md:text-[24px] font-[600] mb-2 md:mb-3 text-left text-[#0CBB7D]">
+          <h1 className="text-[18px] md:text-[24px] font-[600] mb-2 md:mb-3 text-left text-[#10BE3B]">
             Sign Up Today!
           </h1>
           <p className="text-gray-500 mb-2 text-[12px] font-[600]">
@@ -246,7 +246,7 @@ export default function Signup({ setIsAuthenticated }) {
               />
               <span
                 onClick={togglePasswordVisibility}
-                className="absolute right-3 top-[34px] cursor-pointer text-[#0CBB7D]"
+                className="absolute right-3 top-[34px] cursor-pointer text-[#10BE3B]"
               >
                 {showPassword ? <FaEye /> : <FaEyeSlash />}
               </span>
@@ -266,7 +266,7 @@ export default function Signup({ setIsAuthenticated }) {
               />
               {/* <span
                 onClick={togglePasswordVisibility}
-                className="absolute right-3 top-[34px] cursor-pointer text-[#0CBB7D]"
+                className="absolute right-3 top-[34px] cursor-pointer text-[#10BE3B]"
               >
                 {showPassword ? <FaEye /> : <FaEyeSlash />}
               </span> */}
@@ -276,15 +276,15 @@ export default function Signup({ setIsAuthenticated }) {
                 type="checkbox"
                 checked={isTermsAccepted}
                 onChange={handleTermsChange}
-                className="accent-[#0CBB7D] mt-2.5 cursor-pointer"
+                className="accent-[#10BE3B] mt-2.5 cursor-pointer"
               />
               <label className="text-[10px] text-gray-700 font-[600] my-2">
-                By clicking this check box, you accept Shipex&apos;s{" "}
-                <a href="#" className="text-[#0CBB7D] underline">
+                By clicking this check box, you accept Shiproxx&apos;s{" "}
+                <a href="#" className="text-[#10BE3B] underline">
                   Terms & Conditions
                 </a>{" "}
                 &{" "}
-                <a href="#" className="text-[#0CBB7D] underline">
+                <a href="#" className="text-[#10BE3B] underline">
                   Privacy Policy
                 </a>
               </label>
@@ -293,7 +293,7 @@ export default function Signup({ setIsAuthenticated }) {
               type="submit"
               disabled={!isTermsAccepted || loadingRegister}
               className={`w-full py-2 px-3 text-[12px] font-[600] rounded-lg transition ${isTermsAccepted && !loadingRegister
-                ? "bg-[#0CBB7D] text-white hover:bg-opacity-90"
+                ? "bg-[#10BE3B] text-white hover:bg-opacity-90"
                 : "bg-gray-400 text-gray-200 cursor-not-allowed"
                 }`}
             >
@@ -323,7 +323,7 @@ export default function Signup({ setIsAuthenticated }) {
       <div className="w-full bg-white">
         <footer className="w-full bg-green-50 font-[600] px-3 py-2 flex flex-col sm:flex-row sm:justify-between sm:items-center text-gray-500 text-[10px] text-center sm:text-left sm:space-y-0">
           <p className="w-full sm:w-auto font-[600]">
-            © 2025 Shipex. All rights reserved.
+            © 2025 Shiproxx. All rights reserved.
           </p>
           <div className="flex flex-col sm:flex-row sm:space-x-4 space-y-1 sm:space-y-0 w-full sm:w-auto md:block">
             <a href="#" className="text-gray-500 hover:text-gray-900">

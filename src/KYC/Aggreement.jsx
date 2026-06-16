@@ -173,7 +173,7 @@ const Aggrement = ({ documentDetails, companyAddress, gstNumber, billingInfo }) 
 
       <ol className="text-[10px] sm:text-[12px] text-gray-700 leading-relaxed space-y-2">
         <li>i.	In consideration of the Company providing the Services to the Customer, the Customer agreesto pay the Company, valid consideration, the details of which are mentioned on Billing section on QUICKPOST online panel to this Agreement (“Consideration”) or in the billing section of the
-          QUICKPOST panel. In addition to the Consideration, the Customer shall also be required to pay applicable fees for shipping the consignment, which shall again be provided on the billing section of Shipex
+          QUICKPOST panel. In addition to the Consideration, the Customer shall also be required to pay applicable fees for shipping the consignment, which shall again be provided on the billing section of Shiproxx
           India panel to this Agreement (“Shipping fees")
         </li>
         <li>ii.	The Consideration specified in this Agreement is exclusive of all applicable taxes. TheCustomer shall be required to pay applicable goods and service tax and fuel surcharge etc. The same shall be stated as separate items in the invoice raised by the Company on the Customer on or before 07th of the succeeding month for the Services that have been rendered in previous month as per the terms of this Agreement.</li>
