@@ -17,6 +17,7 @@
     "axios": "^1.7.9",
     "buffer": "^6.0.3",
     "cookie": "^1.0.2",
+    "cors": "^2.8.6",
     "cra-template": "1.2.0",
     "crypto": "^1.0.1",
     "crypto-browserify": "^3.12.1",
