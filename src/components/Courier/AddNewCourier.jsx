@@ -28,7 +28,7 @@ const courierOptions = [
   { value: "BoxdLogistics", label: "BoxdLogistics" },
   {value:"Proship",label:"Proship"},
   { value: "Shadowfax", label: "Shadowfax" },
-  { value: "Losung360", label: "Losung360" }
+  // { value: "Losung360", label: "Losung360" }
 ];
 
 const AddNewCourier = ({ isSidebarAdmin }) => {
