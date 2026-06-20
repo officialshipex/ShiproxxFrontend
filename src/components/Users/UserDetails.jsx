@@ -1148,16 +1148,11 @@ export default function ProfileCard() {
                 </h3>
               </div>
               <div className="p-4 sm:p-4 space-y-2">
-                <div className="flex items-center gap-2 text-[10px] sm:text-[12px] font-[600]">
-                  <p>Check latest version of API documentation</p>
-                  <button onClick={() => window.open("https://api-docs.shiproxx.com/", "_blank")} className="hover:text-green-500 text-[#10BE3B] transition-colors">
-                    <ExternalLink size={16} />
-                  </button>
-                </div>
+                
                 <div className="flex items-center gap-2 text-[10px] sm:text-[12px] font-[600]">
                   <p>Download Postman Collection <span className="text-[#10BE3B] text-[9px]">(Recommended)</span></p>
                   <button
-                    onClick={() => window.open("https://documenter.getpostman.com/view/32361120/2sB3HetiH6", "_blank")}
+                    onClick={() => window.open("https://documenter.getpostman.com/view/32361120/2sBXwvJoso", "_blank")}
                     className="hover:text-green-500 text-[#10BE3B] transition-colors"
                   >
                     <Download size={16} />
