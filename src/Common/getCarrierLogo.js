@@ -11,6 +11,7 @@ import Smartship from "../assets/bluedart.png";
 import DTDC from "../assets/dtdc.png";
 import Ekart from "../assets/ekart.png";
 import Shiproxx from "../assets/shiproxxNoBG.png"
+import ShipexIndia from "../assets/shipexindia.png"
 
 export const getCarrierLogo = (courierServiceName = "") => {
   const name = courierServiceName?.toLowerCase();
@@ -28,6 +29,7 @@ export const getCarrierLogo = (courierServiceName = "") => {
   if (name?.includes("smartship")) return Smartship;
   if (name?.includes("ekart")) return Ekart;
   if (name?.includes("shiproxx")) return Shiproxx;
+  if (name?.includes("shipex")) return ShipexIndia;
   if (name?.includes("boxd")) return "";   // BoxdLogistics – add logo asset when available
 
   return ""; // default fallback

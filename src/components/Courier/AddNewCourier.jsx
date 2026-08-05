@@ -28,6 +28,7 @@ const courierOptions = [
   { value: "BoxdLogistics", label: "BoxdLogistics" },
   {value:"Proship",label:"Proship"},
   { value: "Shadowfax", label: "Shadowfax" },
+  { value: "ShipexIndia", label: "ShipexIndia" },
   // { value: "Losung360", label: "Losung360" }
 ];
 

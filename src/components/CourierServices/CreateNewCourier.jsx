@@ -53,6 +53,53 @@ export default function CreateNewCourier({ isSidebarAdmin }) {
         case "Dtdc":
           services = ["B2C SMART EXPRESS", "B2C PRIORITY", "B2C GROUND ECONOMY"];
           break;
+        case "ShipexIndia":
+          services = [
+            "Dtdc Surface 0.5KG",
+            "Dtdc Surface 1KG",
+            "Shree Maruti Surface 0.25KG",
+            "Shree Maruti Surface 0.5KG",
+            "Shree Maruti Surface 1KG",
+            "Amazon Surface 0.5KG",
+            "Amazon Surface 1KG",
+            "Dtdc Air 0.5KG",
+            "Dtdc Air 1KG",
+            "Delhivery Air 0.25KG",
+            "Delhivery Air 0.5KG",
+            "Delhivery Air 1KG",
+            "Delhivery Surface 0.25KG",
+            "Delhivery Surface 0.5KG",
+            "Delhivery Surface 1KG",
+            "Dtdc Surface 3KG",
+            "Dtdc Surface 5KG",
+            "Shree Maruti Surface 2KG",
+            "Amazon Surface 2KG",
+            "Amazon Surface 5KG",
+            "Delhivery Surface 2KG",
+            "Delhivery Surface 5KG",
+            "Dtdc Surface 10KG",
+            "Dtdc Surface 20KG",
+            "Amazon Surface 10KG",
+            "Amazon Surface 20KG",
+            "Delhivery Surface 10KG",
+            "Bluedart Surface 0.5KG",
+            "Bluedart Surface 1KG",
+            "Ekart Surface",
+            "Ekart Surface 1KG",
+            "Ekart Surface 2KG",
+            "Xpressbees Surface 5KG",
+            "Xpressbees Surface 10KG",
+            "Shadowfax Surface",
+            "Shadowfax Surface 1KG",
+            "Shadowfax Surface 2KG",
+            "Shadowfax Surface 5KG",
+            "Bluedart Air 0.5KG",
+            "Ekart Surface 3KG",
+            "Ekart Surface 5KG",
+            "Ekart Surface 10KG",
+            "Dtdc Surface 0.75KG",
+          ];
+          break;
         default:
           services = [];
           break;
@@ -141,6 +188,21 @@ export default function CreateNewCourier({ isSidebarAdmin }) {
       if (selectedService) {
         setFormData(prev => ({ ...prev, courier_id: selectedService.courier_id }));
       }
+    }
+
+    if (name === "courier" && selectedProvider === "ShipexIndia") {
+      const courierLower = value.toLowerCase();
+      let cId = "";
+      if (courierLower.includes("delhivery")) cId = "02";
+      else if (courierLower.includes("dtdc")) cId = "03";
+      else if (courierLower.includes("bluedart")) cId = "13";
+      else if (courierLower.includes("amazon")) cId = "05";
+      else if (courierLower.includes("maruti")) cId = "06";
+      else if (courierLower.includes("ekart")) cId = "08";
+      else if (courierLower.includes("xpressbees")) cId = "09";
+      else if (courierLower.includes("shadowfax")) cId = "12";
+
+      setFormData(prev => ({ ...prev, courier_id: cId }));
     }
   };
 
