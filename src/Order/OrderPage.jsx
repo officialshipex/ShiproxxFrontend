@@ -33,8 +33,6 @@ const OrdersPage = () => {
 
   const tabs = [
     "New",
-    "Booked",
-    "Pickup & Manifest",
     "Ready to Ship",
     "In Transit",
     "Out for Delivery",
@@ -57,6 +55,13 @@ const OrdersPage = () => {
   useEffect(() => {
     localStorage.setItem(tabStorageKey, activeTab);
   }, [activeTab, tabStorageKey]);
+
+  useEffect(() => {
+    if (!allTabs.includes(activeTab)) {
+      setActiveTab("New");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     function handleClickOutside(event) {

@@ -151,7 +151,7 @@ const AddReceiverAddress = ({ setReceiverAddress, setRefresh, initialData }) => 
           </div>
           <div>
             <label className="block font-[600] text-[12px]">
-              Email <span className="text-red-500">*</span>
+              Email
             </label>
             <input
               type="email"
@@ -160,7 +160,6 @@ const AddReceiverAddress = ({ setReceiverAddress, setRefresh, initialData }) => 
               onChange={handleChange}
               placeholder="receiver.contact@shiproxx.com"
               className="w-full border font-[600] rounded-lg px-3 py-2 text-[12px]  outline-none focus:ring-1 focus:ring-[#10BE3B]"
-              required
             />
           </div>
           <div>

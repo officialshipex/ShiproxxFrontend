@@ -42,7 +42,7 @@ const ReadyToShipOrders = ({ userId: initialUserId }) => {
 
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(20);
+  const [limit, setLimit] = useState(100);
   const [totalPages, setTotalPages] = useState(1);
   const [loadingOrderId, setLoadingOrderId] = useState(null);
 
@@ -122,7 +122,7 @@ const ReadyToShipOrders = ({ userId: initialUserId }) => {
       const params = {
         page,
         limit,
-        status: ["Not Picked", "Ready To Ship"],
+        status: ["Booked", "Not Picked", "Ready To Ship"],
         searchQuery: searchQuery || undefined,
         orderId: orderId || undefined,
         awbNumber: awbNumber || undefined,

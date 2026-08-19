@@ -196,10 +196,9 @@ const PackageTypes = () => {
   </div>
 
   <select className="ml-2 px-2 py-1 border border-gray-300 rounded-lg text-sm">
-    <option>10</option>
-    <option>20</option>
-    <option>50</option>
     <option>100</option>
+    <option>500</option>
+    <option>1000</option>
   </select>
 </div>
 

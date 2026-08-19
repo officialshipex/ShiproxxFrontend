@@ -168,7 +168,7 @@ const AddPickupAddress = ({
         </div>
         <div>
           <label className="block font-[600] text-[12px]">
-            Email <span className="text-red-500">*</span>
+            Email
           </label>
           <input
             type="email"

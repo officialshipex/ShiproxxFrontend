@@ -48,7 +48,7 @@ const ReadyToShipOrders = (filterOrder) => {
   const [copiedOrderId, setCopiedOrderId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(20);
+  const [limit, setLimit] = useState(100);
   const [totalPages, setTotalPages] = useState(1);
   const [loadingOrderId, setLoadingOrderId] = useState(null);
   const [dropdownDirection, setDropdownDirection] = useState({});
@@ -121,7 +121,7 @@ const ReadyToShipOrders = (filterOrder) => {
         id,
         page,
         limit,
-        status: ["Not Picked", "Ready To Ship"],
+        status: ["Booked", "Not Picked", "Ready To Ship"],
         searchQuery,
         orderId: orderId || undefined,
         awbNumber: awbNumber || undefined,

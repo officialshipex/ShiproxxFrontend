@@ -18,7 +18,7 @@ const StatusMaping = () => {
     // Pagination state
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
-    const [limit] = useState(20);
+    const [limit, setLimit] = useState(100);
 
     const REACT_APP_BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -259,6 +259,8 @@ const StatusMaping = () => {
                     page={page}
                     setPage={setPage}
                     totalPages={totalPages}
+                    limit={limit}
+                    setLimit={setLimit}
                 />
             )}
 

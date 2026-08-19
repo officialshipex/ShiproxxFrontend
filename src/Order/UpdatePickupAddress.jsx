@@ -158,7 +158,7 @@ const AddPickupAddress = ({ onClose, setRefresh, setPickupAddress, userId }) => 
                     </div>
                     <div className="flex flex-col gap-1">
                         <label className="block">
-                            Email <span className="text-red-500">*</span>
+                            Email
                         </label>
                         <input
                             type="email"

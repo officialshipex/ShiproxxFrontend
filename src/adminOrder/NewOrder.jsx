@@ -21,7 +21,8 @@ import {
   handleBulkDownloadManifests,
   handleClone,
   SavePackageDetails,
-  BulkCancel
+  BulkCancel,
+  submitBulkShip
 } from "../Common/orderActions";
 import OrdersTable from "../Common/OrdersTable";
 import MobileOrderCard from "../Common/MobileOrderCard";
@@ -44,7 +45,7 @@ const NewOrder = (filterOrder) => {
 
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(20);
+  const [limit, setLimit] = useState(100);
   const [totalPages, setTotalPages] = useState(1);
   const [loadingOrderId, setLoadingOrderId] = useState(null);
 
@@ -234,16 +235,7 @@ const NewOrder = (filterOrder) => {
       });
       const { showPopup, orders: popupOrders } = checkResponse.data;
       if (!showPopup) {
-        Notification("Processing bulk shipment. Please wait...", "success");
-        const shipResponse = await axios.post(`${REACT_APP_BACKEND_URL}/bulk/create-bulk-order`, { selectedOrders }, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        if (shipResponse.data.success) {
-          Notification(shipResponse.data.message || "Bulk shipment successful.", "success");
-        } else {
-          Notification(shipResponse.data.message || "Failed to create bulk shipment.", "error");
-        }
-        fetchOrders();
+        await submitBulkShip({ selectedOrders, fetchOrders });
         return;
       }
       setTitle("Bulk Ship");
@@ -503,27 +495,14 @@ const NewOrder = (filterOrder) => {
           setRefresh={setRefresh}
           refresh={refresh}
           userId={selectedData?.[0]?.userId?._id || selectedData?.[0]?.userId}
-          onPickupSelected={async (formData) => {
+          onPickupSelected={async () => {
             if (title !== "Bulk Ship") {
               setRefresh(prev => !prev);
               setShowBulkShipModal(false);
               return;
             }
-            try {
-              setShowBulkShipModal(false);
-              Notification("Processing bulk shipment. Please wait...", "info");
-              const token = Cookies.get("session");
-              const shipResponse = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/bulk/create-bulk-order`, { selectedOrders, wh: formData }, {
-                headers: { Authorization: `Bearer ${token}` }
-              });
-              if (shipResponse.data.success) Notification(shipResponse.data.message || `${shipResponse.data.successCount} orders shipped.`, "success");
-              else Notification(shipResponse.data.message || "Failed to create bulk shipment.", "error");
-              fetchOrders();
-            } catch (error) {
-              Notification("Something went wrong while processing bulk shipment.", "error");
-            } finally {
-              setShowBulkShipModal(false);
-            }
+            setShowBulkShipModal(false);
+            await submitBulkShip({ selectedOrders, fetchOrders });
           }}
         />
       )}

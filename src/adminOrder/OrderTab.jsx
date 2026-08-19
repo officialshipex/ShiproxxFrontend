@@ -50,8 +50,6 @@ const OrderTab = ({ isSidebarAdmin }) => {
 
     const tabs = [
         "New",
-        "Booked",
-        "Pickup & Manifest",
         "Ready to Ship",
         "In Transit",
         "Out for Delivery",
@@ -60,6 +58,13 @@ const OrderTab = ({ isSidebarAdmin }) => {
 
     const moreTabs = ["Cancelled", "Lost", "Damaged", "RTO Initiated", "RTO In Transit", "RTO Delivered", "RTO Lost", "RTO Damaged", "All"];
     const allTabs = [...tabs, ...moreTabs];
+
+    useEffect(() => {
+        if (!allTabs.includes(activeTab)) {
+            setActiveTab("New");
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     useEffect(() => {
         function handleClickOutside(event) {
