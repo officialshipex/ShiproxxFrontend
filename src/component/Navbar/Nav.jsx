@@ -70,7 +70,7 @@ const Navbar = () => {
   const [pendingAgreement, setPendingAgreement] = useState(null);
   const [showNotifications, setShowNotifications] = useState(false);
   const notificationRef = useRef(null);
-  const notificationDropdownRef = useRef(null);
+  const notificationRefDesktop = useRef(null);
   const { notifications, dismiss } = useNotificationList();
   const [openNotificationId, setOpenNotificationId] = useState(null);
   const [showNotificationHistory, setShowNotificationHistory] = useState(false);
@@ -219,10 +219,12 @@ const Navbar = () => {
         setIsMobileSearchOpen(false);
       }
 
-      // 6) Notification dropdown
+      // 6) Notification dropdown — dropdown itself is nested inside each bell's
+      // own wrapper now (absolute, not viewport-fixed), so isInside() on the
+      // wrapper already covers clicks on the dropdown's contents too.
       if (
         !isInside(notificationRef) &&
-        !isInside(notificationDropdownRef)
+        !isInside(notificationRefDesktop)
       ) {
         setShowNotifications(false);
       }
@@ -470,6 +472,122 @@ const Navbar = () => {
     };
   }, [isBalanceDropdownOpen]);
 
+  // Anchored inside each bell's own `relative` wrapper (mobile + desktop) so it
+  // always sits right under whichever icon is actually visible, instead of a
+  // viewport-fixed pixel guess that drifted out of place at the sm: breakpoint
+  // and under the admin-impersonation banner.
+  const notificationDropdownPanel = showNotifications && (
+    <div className="absolute right-0 top-full mt-2 w-80 max-w-[92vw] bg-white rounded-xl shadow-lg border border-gray-200 z-50 animate-popup-in">
+      <div className="p-3 border-b border-gray-100">
+        <h3 className="text-[13px] font-bold text-gray-800">Notifications</h3>
+      </div>
+      <div className="max-h-80 overflow-y-auto">
+        {pendingAgreement && (
+          <div
+            onClick={() => {
+              setShowNotifications(false);
+              const userInfo = getUserInfoFromToken();
+              navigate(userInfo?.type === "user" ? "/dashboard/agreement" : "/adminDashboard/agreement");
+            }}
+            className="p-3 border-b border-gray-50 hover:bg-gray-50 cursor-pointer transition"
+          >
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                <IoNotifications className="text-red-500 text-[14px]" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-[12px] font-semibold text-gray-800">New Agreement</p>
+                <p className="text-[11px] text-gray-500 mt-0.5 leading-relaxed">
+                  New version <strong>"{pendingAgreement.versionName}"</strong> published. Tap to review & accept.
+                </p>
+                <p className="text-[10px] text-gray-400 mt-1">
+                  {new Date(pendingAgreement.createdAt).toLocaleDateString("en-US", {
+                    day: "numeric",
+                    month: "short",
+                    year: "numeric",
+                  })}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {notifications.map((n) => {
+          const ref = n.refId;
+          const isBulkShip = n.refModel === "BulkShipJob";
+          const isRunning = isBulkShip && ref?.status === "running";
+          let summary = "";
+          if (ref) {
+            if (isBulkShip) {
+              const done = (ref.successCount || 0) + (ref.failureCount || 0);
+              summary = isRunning
+                ? `Processing… ${done}/${ref.totalOrders}`
+                : `${ref.successCount || 0} succeeded, ${ref.failureCount || 0} failed`;
+            } else {
+              summary = `${ref.successfullyUploaded || 0}/${ref.noOfOrders || 0} rows uploaded${ref.errorOrders ? `, ${ref.errorOrders} failed` : ""}`;
+            }
+          }
+          return (
+            <div
+              key={n._id}
+              onClick={() => {
+                setShowNotifications(false);
+                setOpenNotificationId(n._id);
+              }}
+              className="p-3 border-b border-gray-50 hover:bg-gray-50 cursor-pointer transition flex items-start gap-3"
+            >
+              <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                {isRunning ? (
+                  <Loader2 className="w-3.5 h-3.5 text-[#10BE3B] animate-spin" />
+                ) : isBulkShip ? (
+                  <Package className="w-3.5 h-3.5 text-[#10BE3B]" />
+                ) : (
+                  <UploadCloud className="w-3.5 h-3.5 text-[#10BE3B]" />
+                )}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-[12px] font-semibold text-gray-800 truncate">{n.title}</p>
+                <p className="text-[11px] text-gray-500 mt-0.5">{summary}</p>
+              </div>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  dismiss(n._id);
+                }}
+                className="p-1 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-full transition-colors flex-shrink-0"
+                title="Dismiss"
+              >
+                <XIcon className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          );
+        })}
+
+        {!pendingAgreement && notifications.length === 0 && (
+          <div className="p-8 text-center text-gray-400">
+            <IoNotifications className="text-[28px] mx-auto mb-2 opacity-50" />
+            <p className="text-[12px] font-medium">No notifications</p>
+          </div>
+        )}
+      </div>
+
+      {notifications.length > 0 && (
+        <div className="p-2 border-t border-gray-100 text-right">
+          <button
+            type="button"
+            onClick={() => {
+              setShowNotifications(false);
+              setShowNotificationHistory(true);
+            }}
+            className="text-[11px] font-[600] text-[#10BE3B] hover:underline px-2 py-1"
+          >
+            Show All
+          </button>
+        </div>
+      )}
+    </div>
+  );
 
   return (
     <div className={localStorage.getItem("admin_token_backup") ? "pb-[88px] sm:pb-[92px]" : "pb-[55px] sm:pb-[60px]"}>
@@ -725,6 +843,7 @@ const Navbar = () => {
                   </span>
                 )}
               </button>
+              {notificationDropdownPanel}
             </div>
 
             <button
@@ -841,7 +960,7 @@ const Navbar = () => {
 
             {/* Divider */}
             {/* Notification Bell */}
-            <div className="relative" ref={notificationRef}>
+            <div className="relative" ref={notificationRefDesktop}>
               <button
                 onClick={() => setShowNotifications((p) => !p)}
                 className={`relative p-2 rounded-full transition group ${
@@ -860,6 +979,7 @@ const Navbar = () => {
                   Notification
                 </span>
               </button>
+              {notificationDropdownPanel}
             </div>
 
             <hr className="w-0 h-6 border-l border-gray-500" />
@@ -960,121 +1080,6 @@ const Navbar = () => {
           </div>
         </div>
       </div>
-
-      {/* Notification Dropdown (shared between mobile & desktop) */}
-      {showNotifications && (
-        <div ref={notificationDropdownRef} className="fixed top-[55px] right-4 z-50 w-80 bg-white rounded-xl shadow-lg border border-gray-200 animate-popup-in">
-          <div className="absolute -top-2 right-6 w-3 h-3 bg-white rotate-45 border-l border-t border-gray-200"></div>
-          <div className="p-3 border-b border-gray-100">
-            <h3 className="text-[13px] font-bold text-gray-800">Notifications</h3>
-          </div>
-          <div className="max-h-80 overflow-y-auto">
-            {pendingAgreement && (
-              <div
-                onClick={() => {
-                  setShowNotifications(false);
-                  const userInfo = getUserInfoFromToken();
-                  navigate(userInfo?.type === "user" ? "/dashboard/agreement" : "/adminDashboard/agreement");
-                }}
-                className="p-3 border-b border-gray-50 hover:bg-gray-50 cursor-pointer transition"
-              >
-                <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <IoNotifications className="text-red-500 text-[14px]" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-[12px] font-semibold text-gray-800">New Agreement</p>
-                    <p className="text-[11px] text-gray-500 mt-0.5 leading-relaxed">
-                      New version <strong>"{pendingAgreement.versionName}"</strong> published. Tap to review & accept.
-                    </p>
-                    <p className="text-[10px] text-gray-400 mt-1">
-                      {new Date(pendingAgreement.createdAt).toLocaleDateString("en-US", {
-                        day: "numeric",
-                        month: "short",
-                        year: "numeric",
-                      })}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {notifications.map((n) => {
-              const ref = n.refId;
-              const isBulkShip = n.refModel === "BulkShipJob";
-              const isRunning = isBulkShip && ref?.status === "running";
-              let summary = "";
-              if (ref) {
-                if (isBulkShip) {
-                  const done = (ref.successCount || 0) + (ref.failureCount || 0);
-                  summary = isRunning
-                    ? `Processing… ${done}/${ref.totalOrders}`
-                    : `${ref.successCount || 0} succeeded, ${ref.failureCount || 0} failed`;
-                } else {
-                  summary = `${ref.successfullyUploaded || 0}/${ref.noOfOrders || 0} rows uploaded${ref.errorOrders ? `, ${ref.errorOrders} failed` : ""}`;
-                }
-              }
-              return (
-                <div
-                  key={n._id}
-                  onClick={() => {
-                    setShowNotifications(false);
-                    setOpenNotificationId(n._id);
-                  }}
-                  className="p-3 border-b border-gray-50 hover:bg-gray-50 cursor-pointer transition flex items-start gap-3"
-                >
-                  <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                    {isRunning ? (
-                      <Loader2 className="w-3.5 h-3.5 text-[#10BE3B] animate-spin" />
-                    ) : isBulkShip ? (
-                      <Package className="w-3.5 h-3.5 text-[#10BE3B]" />
-                    ) : (
-                      <UploadCloud className="w-3.5 h-3.5 text-[#10BE3B]" />
-                    )}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-[12px] font-semibold text-gray-800 truncate">{n.title}</p>
-                    <p className="text-[11px] text-gray-500 mt-0.5">{summary}</p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      dismiss(n._id);
-                    }}
-                    className="p-1 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-full transition-colors flex-shrink-0"
-                    title="Dismiss"
-                  >
-                    <XIcon className="w-3.5 h-3.5" />
-                  </button>
-                </div>
-              );
-            })}
-
-            {!pendingAgreement && notifications.length === 0 && (
-              <div className="p-8 text-center text-gray-400">
-                <IoNotifications className="text-[28px] mx-auto mb-2 opacity-50" />
-                <p className="text-[12px] font-medium">No notifications</p>
-              </div>
-            )}
-          </div>
-
-          {notifications.length > 0 && (
-            <div className="p-2 border-t border-gray-100 text-right">
-              <button
-                type="button"
-                onClick={() => {
-                  setShowNotifications(false);
-                  setShowNotificationHistory(true);
-                }}
-                className="text-[11px] font-[600] text-[#10BE3B] hover:underline px-2 py-1"
-              >
-                Show All
-              </button>
-            </div>
-          )}
-        </div>
-      )}
 
       <JobDetailModal notificationId={openNotificationId} onClose={() => setOpenNotificationId(null)} />
       <NotificationHistoryModal open={showNotificationHistory} onClose={() => setShowNotificationHistory(false)} />
