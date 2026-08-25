@@ -13,6 +13,10 @@ import { FaPlus, FaWallet, FaSyncAlt, FaCaretDown, FaEllipsisV } from "react-ico
 import { FiUser, FiCreditCard, FiShield, FiLogOut } from "react-icons/fi";
 import { FiUserCheck } from "react-icons/fi";
 import { IoNotifications } from "react-icons/io5";
+import { X as XIcon, Package, UploadCloud, Loader2 } from "lucide-react";
+import { useNotificationList } from "../../utils/NotificationListProvider";
+import JobDetailModal from "../../Common/JobDetailModal";
+import NotificationHistoryModal from "../../Common/NotificationHistoryModal";
 
 
 import {
@@ -67,6 +71,9 @@ const Navbar = () => {
   const [showNotifications, setShowNotifications] = useState(false);
   const notificationRef = useRef(null);
   const notificationDropdownRef = useRef(null);
+  const { notifications, dismiss } = useNotificationList();
+  const [openNotificationId, setOpenNotificationId] = useState(null);
+  const [showNotificationHistory, setShowNotificationHistory] = useState(false);
 
   // --- User Login As (admin impersonation) ---
   const [showUserLoginPopup, setShowUserLoginPopup] = useState(false);
@@ -706,15 +713,15 @@ const Navbar = () => {
               <button
                 onClick={() => setShowNotifications((p) => !p)}
                 className={`relative h-8 w-8 flex items-center justify-center rounded-full transition ${
-                  pendingAgreement
+                  pendingAgreement || notifications.length > 0
                     ? "bg-red-50 text-red-500 animate-pulse"
                     : "text-gray-400 hover:bg-gray-100"
                 }`}
               >
                 <IoNotifications className="text-[14px]" />
-                {pendingAgreement && (
-                  <span className="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 bg-red-500 text-white text-[7px] font-bold rounded-full flex items-center justify-center">
-                    1
+                {(pendingAgreement ? 1 : 0) + notifications.length > 0 && (
+                  <span className="absolute -top-0.5 -right-0.5 min-w-[14px] h-3.5 px-0.5 bg-red-500 text-white text-[7px] font-bold rounded-full flex items-center justify-center">
+                    {(pendingAgreement ? 1 : 0) + notifications.length}
                   </span>
                 )}
               </button>
@@ -838,15 +845,15 @@ const Navbar = () => {
               <button
                 onClick={() => setShowNotifications((p) => !p)}
                 className={`relative p-2 rounded-full transition group ${
-                  pendingAgreement
+                  pendingAgreement || notifications.length > 0
                     ? "bg-red-50 text-red-500 animate-pulse"
                     : "text-gray-400 hover:bg-gray-100"
                 }`}
               >
                 <IoNotifications className="text-[18px]" />
-                {pendingAgreement && (
-                  <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-red-500 text-white text-[8px] font-bold rounded-full flex items-center justify-center">
-                    1
+                {(pendingAgreement ? 1 : 0) + notifications.length > 0 && (
+                  <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 px-0.5 bg-red-500 text-white text-[8px] font-bold rounded-full flex items-center justify-center">
+                    {(pendingAgreement ? 1 : 0) + notifications.length}
                   </span>
                 )}
                 <span className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-[10px] bg-gray-800 text-white px-2 py-0.5 rounded opacity-0 group-hover:opacity-100 transition whitespace-nowrap pointer-events-none">
@@ -962,7 +969,7 @@ const Navbar = () => {
             <h3 className="text-[13px] font-bold text-gray-800">Notifications</h3>
           </div>
           <div className="max-h-80 overflow-y-auto">
-            {pendingAgreement ? (
+            {pendingAgreement && (
               <div
                 onClick={() => {
                   setShowNotifications(false);
@@ -990,15 +997,87 @@ const Navbar = () => {
                   </div>
                 </div>
               </div>
-            ) : (
+            )}
+
+            {notifications.map((n) => {
+              const ref = n.refId;
+              const isBulkShip = n.refModel === "BulkShipJob";
+              const isRunning = isBulkShip && ref?.status === "running";
+              let summary = "";
+              if (ref) {
+                if (isBulkShip) {
+                  const done = (ref.successCount || 0) + (ref.failureCount || 0);
+                  summary = isRunning
+                    ? `Processing… ${done}/${ref.totalOrders}`
+                    : `${ref.successCount || 0} succeeded, ${ref.failureCount || 0} failed`;
+                } else {
+                  summary = `${ref.successfullyUploaded || 0}/${ref.noOfOrders || 0} rows uploaded${ref.errorOrders ? `, ${ref.errorOrders} failed` : ""}`;
+                }
+              }
+              return (
+                <div
+                  key={n._id}
+                  onClick={() => {
+                    setShowNotifications(false);
+                    setOpenNotificationId(n._id);
+                  }}
+                  className="p-3 border-b border-gray-50 hover:bg-gray-50 cursor-pointer transition flex items-start gap-3"
+                >
+                  <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                    {isRunning ? (
+                      <Loader2 className="w-3.5 h-3.5 text-[#10BE3B] animate-spin" />
+                    ) : isBulkShip ? (
+                      <Package className="w-3.5 h-3.5 text-[#10BE3B]" />
+                    ) : (
+                      <UploadCloud className="w-3.5 h-3.5 text-[#10BE3B]" />
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[12px] font-semibold text-gray-800 truncate">{n.title}</p>
+                    <p className="text-[11px] text-gray-500 mt-0.5">{summary}</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      dismiss(n._id);
+                    }}
+                    className="p-1 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-full transition-colors flex-shrink-0"
+                    title="Dismiss"
+                  >
+                    <XIcon className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              );
+            })}
+
+            {!pendingAgreement && notifications.length === 0 && (
               <div className="p-8 text-center text-gray-400">
                 <IoNotifications className="text-[28px] mx-auto mb-2 opacity-50" />
                 <p className="text-[12px] font-medium">No notifications</p>
               </div>
             )}
           </div>
+
+          {notifications.length > 0 && (
+            <div className="p-2 border-t border-gray-100 text-right">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowNotifications(false);
+                  setShowNotificationHistory(true);
+                }}
+                className="text-[11px] font-[600] text-[#10BE3B] hover:underline px-2 py-1"
+              >
+                Show All
+              </button>
+            </div>
+          )}
         </div>
       )}
+
+      <JobDetailModal notificationId={openNotificationId} onClose={() => setOpenNotificationId(null)} />
+      <NotificationHistoryModal open={showNotificationHistory} onClose={() => setShowNotificationHistory(false)} />
 
       {isMobileMenuOpen && (
         <div ref={mobileMenuRef} className="fixed top-[50px] animate-popup-in right-2 z-50 bg-white shadow-lg rounded p-4 w-44">

@@ -4,18 +4,16 @@ import { PDFDocument } from "pdf-lib";
 import { saveAs } from "file-saver";
 import * as XLSX from "xlsx";
 import { Notification } from "../Notification";
-import { startBulkShipJob, hasActiveBulkShipJob } from "../utils/BulkShipJobProvider";
+import { refreshNotifications } from "../utils/NotificationListProvider";
 const REACT_APP_BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
 // Shared by both the user-side (Order/Orders.jsx) and admin-side
 // (adminOrder/NewOrder.jsx) "Bulk Ship" action so the two never drift.
-// Kicks off the backend job and hands tracking off to the BulkShipTray;
-// does not wait for shipments to finish creating.
+// Kicks off the backend job; progress/results surface via the navbar
+// notification bell (JobDetailModal), not an inline popup — the server's
+// partial-unique index on BulkShipJob.activeSlot is the sole duplicate-
+// prevention mechanism (409 below), no client-side tracking needed.
 export const submitBulkShip = async ({ selectedOrders, fetchOrders }) => {
-  if (hasActiveBulkShipJob()) {
-    Notification("A bulk shipment is already in progress or awaiting review. Open the tray to view it.", "info");
-    return;
-  }
   try {
     const token = Cookies.get("session");
     const response = await axios.post(
@@ -23,12 +21,12 @@ export const submitBulkShip = async ({ selectedOrders, fetchOrders }) => {
       { selectedOrders },
       { headers: { authorization: `Bearer ${token}` } }
     );
-    if (response.data?.jobId) startBulkShipJob(response.data.jobId, response.data.totalOrders);
+    if (response.data?.jobId) refreshNotifications();
     fetchOrders && fetchOrders();
   } catch (error) {
     if (error.response?.status === 409) {
-      const { existingJobId, totalOrders, message } = error.response.data || {};
-      if (existingJobId) startBulkShipJob(existingJobId, totalOrders);
+      const { message } = error.response.data || {};
+      refreshNotifications();
       Notification(message || "A bulk shipment is already in progress.", "info");
     } else {
       Notification(error.response?.data?.message || "Something went wrong while processing bulk shipment.", "error");
