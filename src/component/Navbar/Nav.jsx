@@ -572,20 +572,21 @@ const Navbar = () => {
         )}
       </div>
 
-      {notifications.length > 0 && (
-        <div className="p-2 border-t border-gray-100 text-right">
-          <button
-            type="button"
-            onClick={() => {
-              setShowNotifications(false);
-              setShowNotificationHistory(true);
-            }}
-            className="text-[11px] font-[600] text-[#10BE3B] hover:underline px-2 py-1"
-          >
-            Show All
-          </button>
-        </div>
-      )}
+      {/* Always visible, even with zero active notifications — this is the
+          recovery path for anything dismissed by mistake, so hiding it once
+          the active list empties out would defeat its entire purpose. */}
+      <div className="p-2 border-t border-gray-100 text-right">
+        <button
+          type="button"
+          onClick={() => {
+            setShowNotifications(false);
+            setShowNotificationHistory(true);
+          }}
+          className="text-[11px] font-[600] text-[#10BE3B] hover:underline px-2 py-1"
+        >
+          Show All
+        </button>
+      </div>
     </div>
   );
 

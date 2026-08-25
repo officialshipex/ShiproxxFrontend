@@ -154,30 +154,61 @@ const BulkShipDetail = ({ job }) => {
     );
 };
 
+const formatDateTime = (value) => {
+    if (!value) return null;
+    return new Date(value).toLocaleString("en-IN", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true,
+    });
+};
+
 const BulkUploadDetail = ({ file }) => {
     if (!file) return null;
     const rowResults = file.rowResults || [];
+    const uploadedAt = formatDateTime(file.createdAt);
 
     return (
         <>
             <SummaryBar
                 items={[
                     { label: file.status, className: "bg-green-50 text-[#10BE3B] border border-green-200" },
+                    { label: `${file.noOfOrders || 0} total`, className: "bg-white text-gray-600 border border-gray-200" },
                     { label: `${file.successfullyUploaded || 0} succeeded`, className: "bg-green-50 text-green-700 border border-green-200" },
                     { label: `${file.errorOrders || 0} failed`, className: file.errorOrders ? "bg-red-50 text-red-600 border border-red-200" : "bg-white text-gray-500 border border-gray-200" },
+                    ...(uploadedAt ? [{ label: `Uploaded ${uploadedAt}`, className: "bg-white text-gray-500 border border-gray-200" }] : []),
                 ]}
             />
             <div className="flex-1 overflow-y-auto divide-y divide-gray-100">
                 {rowResults.length > 0 ? (
-                    rowResults.map((r, idx) => (
-                        <div key={idx} className="flex items-start gap-3 px-5 py-3">
-                            <XCircle className="w-4 h-4 text-red-500 flex-shrink-0" />
-                            <div className="flex-1 min-w-0 text-[12px]">
-                                <div className="text-gray-700 font-[600]">Row {r.row}</div>
-                                <div className="text-[11px] text-red-500 mt-0.5 whitespace-pre-wrap break-words">{r.message}</div>
+                    rowResults.map((r, idx) => {
+                        const isSuccess = r.status === "success";
+                        return (
+                            <div key={idx} className="flex items-start gap-3 px-5 py-3">
+                                {isSuccess ? (
+                                    <CheckCircle2 className="w-4 h-4 text-[#10BE3B] flex-shrink-0" />
+                                ) : (
+                                    <XCircle className="w-4 h-4 text-red-500 flex-shrink-0" />
+                                )}
+                                <div className="flex-1 min-w-0 text-[12px]">
+                                    <div className="text-gray-700 font-[600]">
+                                        Row {r.row}
+                                        {isSuccess && r.orderId != null && (
+                                            <span className="text-[#10BE3B]"> — Order #{r.orderId}</span>
+                                        )}
+                                    </div>
+                                    {isSuccess ? (
+                                        <div className="text-[11px] text-gray-400 mt-0.5">Uploaded successfully</div>
+                                    ) : (
+                                        <div className="text-[11px] text-red-500 mt-0.5 whitespace-pre-wrap break-words">{r.message}</div>
+                                    )}
+                                </div>
                             </div>
-                        </div>
-                    ))
+                        );
+                    })
                 ) : (
                     <div className="p-10 text-center text-[#10BE3B] text-[12px] flex flex-col items-center gap-2">
                         <CheckCircle2 className="w-8 h-8" />
