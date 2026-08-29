@@ -68,7 +68,7 @@ const SelectPickupPopup = ({ onClose, setSelectedData, title, setRefresh, refres
                     }
                 );
                 const rateCard = response.data?.data?.rateCard || [];
-                setCourierServices(rateCard.filter((c) => c.status === "Enable"));
+                setCourierServices(rateCard.filter((c) => c.status === "Active"));
             } catch (error) {
                 console.error("Error fetching courier services:", error);
                 setCourierServices([]);
