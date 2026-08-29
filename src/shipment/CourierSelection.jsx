@@ -116,10 +116,16 @@ const CarrierSelection = () => {
       // setShowScheduleModal(true);
       navigate("/dashboard/b2c/order");
     } catch (error) {
+      // Prefer the top-level message/detail string first — some couriers put
+      // a plain object (e.g. BoxdLogistics: { detail: "..." }) in the `error`
+      // field, and picking that over the string fields crashes the toast
+      // (an object isn't a valid message) instead of just showing it.
+      const data = error.response?.data;
+      const errField = data?.error;
       const errorMsg =
-        error.response?.data?.error?.message ||
-        error.response?.data?.error ||
-        error.response?.data?.message ||
+        data?.message ||
+        data?.detail ||
+        (typeof errField === "string" ? errField : errField?.message || errField?.detail) ||
         error.message ||
         "Something went wrong";
       Notification(errorMsg, "error");

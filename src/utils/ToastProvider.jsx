@@ -4,6 +4,21 @@ import { CheckCircle, X, AlertTriangle, Info, XCircle } from "lucide-react";
 const ToastContext = createContext(null);
 export const useToast = () => useContext(ToastContext);
 
+// Callers across the app build this message from courier/API error responses
+// via ad-hoc fallback chains (error.response?.data?.error || ...), which can
+// resolve to a raw object when a provider's error shape doesn't use the
+// expected field name (e.g. BoxdLogistics uses `detail` instead of
+// `message`). Rendering an object as a React child throws and crashes the
+// whole app since this provider sits near the root — coerce to a safe
+// string here so that's never possible, regardless of what callers pass.
+const toDisplayMessage = (message) => {
+    if (typeof message === "string" || typeof message === "number") return String(message);
+    if (message && typeof message === "object") {
+        return message.message || message.detail || message.error || JSON.stringify(message);
+    }
+    return "Something went wrong";
+};
+
 export const ToastProvider = ({ children }) => {
     const [toasts, setToasts] = useState([]);
 
@@ -11,7 +26,7 @@ export const ToastProvider = ({ children }) => {
         (message, { type = "success", duration = 3000 } = {}) => {
             console.log("showToast called with:", message, type);
             const id = Date.now();
-            setToasts((prev) => [...prev, { id, message, type }]);
+            setToasts((prev) => [...prev, { id, message: toDisplayMessage(message), type }]);
 
             setTimeout(() => {
                 setToasts((prev) => prev.filter((t) => t.id !== id));
