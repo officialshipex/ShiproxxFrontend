@@ -236,7 +236,7 @@ export default function RateCardForm() {
 
         if (response.status === 201) {
           Notification(response.data.message, "success")
-          navigate("/dashboard/ratecard")
+          navigate(-1)
 
         } else {
           Notification("Something went wrong. Please try again.", "error")

@@ -100,7 +100,10 @@ const AsignPopup = ({ isOpen, onClose, initialSellerId }) => {
     };
 
     try {
-      const response = await axios.put(`${REACT_APP_BACKEND_URL}/users/assignPlan`, data);
+      const token = Cookies.get("session");
+      const response = await axios.put(`${REACT_APP_BACKEND_URL}/users/assignPlan`, data, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       if (response.status >= 200 && response.status < 300) {
         Notification("Assigned Successfully", "success");
         onClose();
