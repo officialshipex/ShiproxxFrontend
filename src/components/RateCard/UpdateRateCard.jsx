@@ -230,7 +230,7 @@ const RateCardUpdateForm = () => {
       )
       .then(() => {
         Notification("Rate Card updated successfully!", "success");
-        navigate("/dashboard/rateCard");
+        navigate(-1);
       })
       .catch((error) => console.error("Error updating rate card:", error));
   };
