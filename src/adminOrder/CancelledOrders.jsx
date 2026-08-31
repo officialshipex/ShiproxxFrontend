@@ -24,6 +24,7 @@ import {
 } from "../Common/orderActions";
 import OrdersTable from "../Common/OrdersTable";
 import MobileOrderCard from "../Common/MobileOrderCard";
+import QuickActionButtons from "../Common/QuickActionButtons";
 import NotFound from "../assets/nodatafound.png";
 
 const CancelledOrders = (filterOrder) => {
@@ -184,6 +185,11 @@ const CancelledOrders = (filterOrder) => {
     setRefresh(prev => !prev);
   };
 
+  const quickActions = [
+    { label: "Export", onClick: () => ExportExcel({ selectedOrders, orders }) },
+    { label: "Download Invoice", onClick: () => handleBulkDownloadInvoice({ selectedOrders }) },
+  ];
+
   return (
     <div className="w-full">
       {/* Filter Bar */}
@@ -217,6 +223,7 @@ const CancelledOrders = (filterOrder) => {
         </div>
 
         <div className="flex items-center gap-2 w-auto justify-end">
+          <QuickActionButtons selectedCount={selectedOrders.length} className="hidden md:flex" actions={quickActions} />
           <div className="hidden md:block relative" ref={desktopActionRef}>
             <button
               disabled={selectedOrders.length === 0}
@@ -229,7 +236,7 @@ const CancelledOrders = (filterOrder) => {
               Actions <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${desktopDropdownOpen ? 'rotate-180' : ''}`} />
             </button>
             {desktopDropdownOpen && (
-              <div className="absolute right-0 mt-1 w-48 text-[10px] bg-white border border-gray-200 shadow-sm z-[60] font-[600] overflow-hidden animate-popup-in">
+              <div className="absolute right-0 mt-1 w-48 text-[12px] bg-white border border-gray-200 shadow-sm z-[60] font-[600] overflow-hidden animate-popup-in">
                 <ul className="py-1">
                   <li className="px-3 py-2 text-gray-700 hover:bg-green-50 cursor-pointer flex items-center gap-2"
                     onClick={() => { ExportExcel({ selectedOrders, orders }); setDesktopDropdownOpen(false); }}>
@@ -287,27 +294,30 @@ const CancelledOrders = (filterOrder) => {
             <span className="text-[10px] font-[600]">Select All</span>
           </div>
 
-          <div className="relative" ref={mobileActionRef}>
-            <button
-              disabled={selectedOrders.length === 0}
-              className={`h-7 px-3 rounded-lg text-[12px] font-[600] flex items-center gap-1 transition-all border ${selectedOrders.length === 0
-                ? "border-gray-200 text-gray-400 cursor-not-allowed bg-gray-50"
-                : "border-[#10BE3B] text-[#10BE3B] bg-white shadow-sm"
-                }`}
-              onClick={() => setMobileDropdownOpen(!mobileDropdownOpen)}
-            >
-              <FaBars className={selectedOrders.length === 0 ? "text-gray-400" : "text-[#10BE3B]"} />
-              <span className="hidden sm:inline">Actions▼</span>
-            </button>
-            {mobileDropdownOpen && (
-              <div className="absolute right-0 mt-2 w-40 bg-white border rounded-lg shadow-sm z-[60] text-[10px] font-[600] overflow-hidden animate-popup-in">
-                <ul className="py-1">
-                  <li className="px-3 py-2 text-gray-700 hover:bg-green-50 cursor-pointer" onClick={() => { ExportExcel({ selectedOrders, orders }); setMobileDropdownOpen(false); }}>Export Excel</li>
-                  <li className="px-3 py-2 text-gray-700 hover:bg-green-50 cursor-pointer" onClick={() => { handleBulkDownloadInvoice({ selectedOrders }); setMobileDropdownOpen(false); }}>Download Invoices</li>
-                  <li className="px-3 py-2 text-gray-700 hover:bg-green-50 cursor-pointer" onClick={() => { handleBulkClone({ selectedOrders, setRefresh }); setMobileDropdownOpen(false); }}>Bulk Clone</li>
-                </ul>
-              </div>
-            )}
+          <div className="flex items-center gap-2">
+            <QuickActionButtons selectedCount={selectedOrders.length} actions={quickActions} />
+            <div className="relative" ref={mobileActionRef}>
+              <button
+                disabled={selectedOrders.length === 0}
+                className={`h-7 px-3 rounded-lg text-[12px] font-[600] flex items-center gap-1 transition-all border ${selectedOrders.length === 0
+                  ? "border-gray-200 text-gray-400 cursor-not-allowed bg-gray-50"
+                  : "border-[#10BE3B] text-[#10BE3B] bg-white shadow-sm"
+                  }`}
+                onClick={() => setMobileDropdownOpen(!mobileDropdownOpen)}
+              >
+                <FaBars className={selectedOrders.length === 0 ? "text-gray-400" : "text-[#10BE3B]"} />
+                <span className="hidden sm:inline">Actions▼</span>
+              </button>
+              {mobileDropdownOpen && (
+                <div className="absolute right-0 mt-2 w-40 bg-white border rounded-lg shadow-sm z-[60] text-[10px] font-[600] overflow-hidden animate-popup-in">
+                  <ul className="py-1">
+                    <li className="px-3 py-2 text-gray-700 hover:bg-green-50 cursor-pointer" onClick={() => { ExportExcel({ selectedOrders, orders }); setMobileDropdownOpen(false); }}>Export Excel</li>
+                    <li className="px-3 py-2 text-gray-700 hover:bg-green-50 cursor-pointer" onClick={() => { handleBulkDownloadInvoice({ selectedOrders }); setMobileDropdownOpen(false); }}>Download Invoices</li>
+                    <li className="px-3 py-2 text-gray-700 hover:bg-green-50 cursor-pointer" onClick={() => { handleBulkClone({ selectedOrders, setRefresh }); setMobileDropdownOpen(false); }}>Bulk Clone</li>
+                  </ul>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 

@@ -199,7 +199,7 @@ const ActionRequested = ({ userId: selectedUserId }) => {
               Actions <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${desktopDropdownOpen ? 'rotate-180' : ''}`} />
             </button>
             {desktopDropdownOpen && (
-              <div className="absolute right-0 mt-1 w-56 text-[10px] bg-white border border-gray-200 shadow-sm z-[60] font-[600] overflow-hidden animate-popup-in">
+              <div className="absolute right-0 mt-1 w-56 text-[12px] bg-white border border-gray-200 shadow-sm z-[60] font-[600] overflow-hidden animate-popup-in">
                 <ul className="py-1">
                   <li className="px-3 py-2 text-gray-700 hover:bg-green-50 cursor-pointer flex items-center gap-2"
                     onClick={() => { ExportExcel({ selectedOrders, orders }); setDesktopDropdownOpen(false); }}>

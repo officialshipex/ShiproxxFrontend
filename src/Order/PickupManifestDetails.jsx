@@ -359,7 +359,7 @@ const PickupManifestDetails = () => {
                             Actions
                         </button>
                         {desktopDropdownOpen && (
-                            <div className="absolute right-0 mt-1 w-48 text-[10px] bg-white border border-gray-200 shadow-sm z-[60] font-[600] overflow-hidden animate-popup-in">
+                            <div className="absolute right-0 mt-1 w-48 text-[12px] bg-white border border-gray-200 shadow-sm z-[60] font-[600] overflow-hidden animate-popup-in">
                                 <ul className="">
                                     <li className="px-3 py-2 text-gray-700 hover:bg-green-50 cursor-pointer flex items-center gap-2"
                                         onClick={() => { ExportExcel({ selectedOrders, orders }); setDesktopDropdownOpen(false); }}>

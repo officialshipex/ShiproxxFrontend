@@ -19,10 +19,12 @@ import {
   SavePackageDetails,
   BulkCancel,
   cancelOrder,
-  handleClone
+  handleClone,
+  submitBulkShip
 } from "../../Common/orderActions";
 import OrdersTable from "../../Common/OrdersTable";
 import MobileOrderCard from "../../Common/MobileOrderCard";
+import QuickActionButtons from "../../Common/QuickActionButtons";
 
 const NewOrders = (filterOrder) => {
   const [dropdownOpen, setDropdownOpen] = useState(null);
@@ -195,21 +197,7 @@ const NewOrders = (filterOrder) => {
         params: { orderIds: selectedOrders },
         headers: { Authorization: `Bearer ${token}` },
       });
-      const { showPopup, orders: popupOrders } = checkResponse.data;
-      if (!showPopup) {
-        Notification("Processing bulk shipment. Please wait...", "success");
-        // B2B uses a different bulk ship endpoint? Let's assume common for now or check backend
-        const shipResponse = await axios.post(`${REACT_APP_BACKEND_URL}/bulk/create-bulk-order`, { selectedOrders }, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        if (shipResponse.data.success) {
-          Notification(shipResponse.data.message || "Bulk shipment successful.", "success");
-        } else {
-          Notification(shipResponse.data.message || "Failed to create bulk shipment.", "error");
-        }
-        fetchOrders();
-        return;
-      }
+      const { orders: popupOrders } = checkResponse.data;
       setTitle("Bulk Ship");
       setShowBulkShipModal(true);
       setSelectedData(popupOrders);
@@ -217,6 +205,12 @@ const NewOrders = (filterOrder) => {
       Notification("Something went wrong while processing bulk shipment.", "error");
     }
   };
+
+  const quickActions = [
+    { label: "Bulk Ship", onClick: handleBulkShip },
+    { label: "Export", onClick: () => ExportExcel({ selectedOrders, orders }) },
+    { label: "Bulk Delete", onClick: () => BulkCancel({ selectedOrders, setRefresh }) },
+  ];
 
   return (
     <div className="w-full">
@@ -243,6 +237,7 @@ const NewOrders = (filterOrder) => {
         </div>
 
         <div className="flex items-center gap-2 w-auto justify-end">
+          <QuickActionButtons selectedCount={selectedOrders.length} className="hidden md:flex" actions={quickActions} />
           <div className="hidden md:block relative" ref={desktopActionRef}>
             <button
               disabled={selectedOrders.length === 0}
@@ -255,7 +250,7 @@ const NewOrders = (filterOrder) => {
               Actions <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${desktopDropdownOpen ? 'rotate-180' : ''}`} />
             </button>
             {desktopDropdownOpen && (
-              <div className="absolute right-0 mt-1 w-48 text-[10px] font-[600] bg-white border border-gray-200 shadow-xl z-[60] overflow-hidden animate-popup-in">
+              <div className="absolute right-0 mt-1 w-48 text-[12px] font-[600] bg-white border border-gray-200 shadow-xl z-[60] overflow-hidden animate-popup-in">
                 <ul className="">
                   <li className="px-3 py-3 text-gray-700 hover:bg-green-50 cursor-pointer flex items-center gap-2"
                     onClick={() => { handleBulkShip(); setDesktopDropdownOpen(false); }}>
@@ -323,30 +318,33 @@ const NewOrders = (filterOrder) => {
             <span className="text-[10px] font-[600]">Select All</span>
           </div>
 
-          <div className="relative" ref={mobileActionRef}>
-            <button
-              disabled={selectedOrders.length === 0}
-              className={`h-7 px-3 rounded-lg text-[12px] font-[600] flex items-center gap-1 transition-all border ${selectedOrders.length === 0
-                ? "border-gray-200 text-gray-400 cursor-not-allowed bg-gray-50"
-                : "border-[#10BE3B] text-[#10BE3B] bg-white shadow-sm"
-                }`}
-              onClick={() => setMobileDropdownOpen(!mobileDropdownOpen)}
-            >
-              <FaBars className={selectedOrders.length === 0 ? "text-gray-400" : "text-[#10BE3B]"} />
-              <span className="hidden sm:inline">Actions▼</span>
-            </button>
-            {mobileDropdownOpen && (
-              <div className="absolute right-0 mt-2 w-40 text-[10px] font-[600] bg-white border rounded-lg shadow-sm z-[60] overflow-hidden animate-popup-in">
-                <ul className="py-1">
-                  <li className="px-3 py-2 text-gray-700 hover:bg-green-50 cursor-pointer" onClick={() => { handleBulkShip(); setMobileDropdownOpen(false); }}>Bulk Ship</li>
-                  <li className="px-3 py-2 text-gray-700 hover:bg-green-50 cursor-pointer" onClick={() => { setShowPackageModal(true); setMobileDropdownOpen(false); }}>Update Package Details</li>
-                  <li className="px-3 py-2 text-gray-700 hover:bg-green-50 cursor-pointer" onClick={() => { setTitle("Update Address"); setShowBulkShipModal(true); setMobileDropdownOpen(false); }}>Update Pickup Address</li>
-                  <li className="px-3 py-2 text-gray-700 hover:bg-green-50 cursor-pointer" onClick={() => { ExportExcel({ selectedOrders, orders }); setMobileDropdownOpen(false); }}>Export Excel</li>
-                  <li className="px-3 py-2 text-gray-700 hover:bg-green-50 cursor-pointer" onClick={() => { handleBulkDownloadInvoice({ selectedOrders }); setMobileDropdownOpen(false); }}>Download Invoices</li>
-                  <li className="px-3 py-2 text-red-600 hover:bg-red-100 cursor-pointer" onClick={() => { BulkCancel({ selectedOrders, setRefresh }); setMobileDropdownOpen(false); }}>Bulk Delete</li>
-                </ul>
-              </div>
-            )}
+          <div className="flex items-center gap-2">
+            <QuickActionButtons selectedCount={selectedOrders.length} actions={quickActions} />
+            <div className="relative" ref={mobileActionRef}>
+              <button
+                disabled={selectedOrders.length === 0}
+                className={`h-7 px-3 rounded-lg text-[12px] font-[600] flex items-center gap-1 transition-all border ${selectedOrders.length === 0
+                  ? "border-gray-200 text-gray-400 cursor-not-allowed bg-gray-50"
+                  : "border-[#10BE3B] text-[#10BE3B] bg-white shadow-sm"
+                  }`}
+                onClick={() => setMobileDropdownOpen(!mobileDropdownOpen)}
+              >
+                <FaBars className={selectedOrders.length === 0 ? "text-gray-400" : "text-[#10BE3B]"} />
+                <span className="hidden sm:inline">Actions▼</span>
+              </button>
+              {mobileDropdownOpen && (
+                <div className="absolute right-0 mt-2 w-40 text-[12px] font-[600] bg-white border rounded-lg shadow-sm z-[60] overflow-hidden animate-popup-in">
+                  <ul className="py-1">
+                    <li className="px-3 py-2 text-gray-700 hover:bg-green-50 cursor-pointer" onClick={() => { handleBulkShip(); setMobileDropdownOpen(false); }}>Bulk Ship</li>
+                    <li className="px-3 py-2 text-gray-700 hover:bg-green-50 cursor-pointer" onClick={() => { setShowPackageModal(true); setMobileDropdownOpen(false); }}>Update Package Details</li>
+                    <li className="px-3 py-2 text-gray-700 hover:bg-green-50 cursor-pointer" onClick={() => { setTitle("Update Address"); setShowBulkShipModal(true); setMobileDropdownOpen(false); }}>Update Pickup Address</li>
+                    <li className="px-3 py-2 text-gray-700 hover:bg-green-50 cursor-pointer" onClick={() => { ExportExcel({ selectedOrders, orders }); setMobileDropdownOpen(false); }}>Export Excel</li>
+                    <li className="px-3 py-2 text-gray-700 hover:bg-green-50 cursor-pointer" onClick={() => { handleBulkDownloadInvoice({ selectedOrders }); setMobileDropdownOpen(false); }}>Download Invoices</li>
+                    <li className="px-3 py-2 text-red-600 hover:bg-red-100 cursor-pointer" onClick={() => { BulkCancel({ selectedOrders, setRefresh }); setMobileDropdownOpen(false); }}>Bulk Delete</li>
+                  </ul>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
@@ -433,8 +431,13 @@ const NewOrders = (filterOrder) => {
           setRefresh={setRefresh}
           refresh={refresh}
           userId={id}
-          onPickupSelected={async (formData) => {
-            // Bulk ship logic...
+          onPickupSelected={async () => {
+            setShowBulkShipModal(false);
+            if (title === "Bulk Ship") {
+              await submitBulkShip({ selectedOrders, fetchOrders });
+            } else {
+              setRefresh((prev) => !prev);
+            }
           }}
         />
       )}

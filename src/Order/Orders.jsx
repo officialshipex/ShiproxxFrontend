@@ -32,6 +32,7 @@ import {
 } from "../Common/orderActions";
 import OrdersTable from "../Common/OrdersTable";
 import MobileOrderCard from "../Common/MobileOrderCard";
+import QuickActionButtons from "../Common/QuickActionButtons";
 
 const Orders = (filterOrder) => {
   const [dropdownOpen, setDropdownOpen] = useState(null);
@@ -241,19 +242,22 @@ const Orders = (filterOrder) => {
         params: { orderIds: selectedOrders },
         headers: { Authorization: `Bearer ${token}` },
       });
-      const { showPopup, orders: popupOrders } = checkResponse.data;
-      if (!showPopup) {
-        await submitBulkShip({ selectedOrders, fetchOrders });
-        return;
-      }
+      const { orders: popupOrders } = checkResponse.data;
       setTitle("Bulk Ship");
       setShowBulkShipModal(true);
       setSelectedData(popupOrders);
     } catch (error) {
-      
+
       Notification("Something went wrong while processing bulk shipment.", "error");
     }
   };
+
+  const quickActions = [
+    { label: "Bulk Ship", onClick: handleBulkShip },
+    { label: "Export", onClick: () => ExportExcel({ selectedOrders, orders }) },
+    { label: "Download Invoice", onClick: () => handleBulkDownloadInvoice({ selectedOrders }) },
+    { label: "Bulk Delete", onClick: () => BulkCancel({ selectedOrders, setRefresh }) },
+  ];
 
   return (
     <div className="w-full">
@@ -286,6 +290,7 @@ const Orders = (filterOrder) => {
           )}
         </div>
         <div className="flex items-center gap-2 w-auto justify-end">
+          <QuickActionButtons selectedCount={selectedOrders.length} className="hidden md:flex" actions={quickActions} />
           <div className="hidden md:block relative" ref={desktopActionRef}>
             <button
               disabled={selectedOrders.length === 0}
@@ -298,7 +303,7 @@ const Orders = (filterOrder) => {
               Actions <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${desktopDropdownOpen ? 'rotate-180' : ''}`} />
             </button>
             {desktopDropdownOpen && (
-              <div className="absolute right-0 mt-1 w-48 text-[10px] font-[600] bg-white border border-gray-200 shadow-xl z-[60] overflow-hidden animate-popup-in">
+              <div className="absolute right-0 mt-1 w-48 text-[12px] font-[600] bg-white border border-gray-200 shadow-xl z-[60] overflow-hidden animate-popup-in">
                 <ul className="">
                   <li className="px-3 py-3 text-gray-700 hover:bg-green-50 cursor-pointer flex items-center gap-2"
                     onClick={() => { handleBulkShip(); setDesktopDropdownOpen(false); }}>
@@ -372,40 +377,43 @@ const Orders = (filterOrder) => {
             <span className="text-[10px] font-[600]">Select All</span>
           </div>
 
-          <div className="relative" ref={mobileActionRef}>
-            <button
-              disabled={selectedOrders.length === 0}
-              className={`h-7 px-3 rounded-lg text-[12px] font-[600] flex items-center gap-1 transition-all border ${selectedOrders.length === 0
-                ? "border-gray-200 text-gray-400 cursor-not-allowed bg-gray-50"
-                : "border-[#10BE3B] text-[#10BE3B] bg-white shadow-sm"
-                }`}
-              onClick={() => setMobileDropdownOpen(!mobileDropdownOpen)}
-            >
-              <FaBars className={selectedOrders.length === 0 ? "text-gray-400" : "text-[#10BE3B]"} />
-              <span className="hidden sm:inline">Actions▼</span>
-            </button>
-            {mobileDropdownOpen && (
-              <div className="absolute right-0 mt-2 w-40 text-[10px] font-[600] bg-white border rounded-lg shadow-sm z-[60] overflow-hidden animate-popup-in">
-                <ul className="py-1">
-                  <li className="px-3 py-2 text-gray-700 hover:bg-green-50 cursor-pointer" onClick={() => { handleBulkShip(); setMobileDropdownOpen(false); }}>Bulk Ship</li>
-                  <li className="px-3 py-2 text-gray-700 hover:bg-green-50 cursor-pointer" onClick={() => { setShowPackageModal(true); setMobileDropdownOpen(false); }}>Update Package Details</li>
-                  <li className="px-3 py-2 text-gray-700 hover:bg-green-50 cursor-pointer"
-                    onClick={() => {
-                      const fullOrders = orders.filter(o => selectedOrders.includes(o._id));
-                      setSelectedData(fullOrders);
-                      setTitle("Update Address");
-                      setShowBulkShipModal(true);
-                      setMobileDropdownOpen(false);
-                    }}>
-                    Update Pickup Address
-                  </li>
-                  <li className="px-3 py-2 text-gray-700 hover:bg-green-50 cursor-pointer" onClick={() => { ExportExcel({ selectedOrders, orders }); setMobileDropdownOpen(false); }}>Export Excel</li>
-                  <li className="px-3 py-2 text-gray-700 hover:bg-green-50 cursor-pointer" onClick={() => { handleBulkDownloadInvoice({ selectedOrders }); setMobileDropdownOpen(false); }}>Download Invoices</li>
-                  {/* <li className="px-3 py-2 text-gray-700 hover:bg-green-50 cursor-pointer text-[10px] font-medium" onClick={() => { handleBulkDownloadLabel({ selectedOrders }); setMobileDropdownOpen(false); }}>Download Labels</li> */}
-                  <li className="px-3 py-2 text-red-600 hover:bg-red-100 cursor-pointer" onClick={() => { BulkCancel({ selectedOrders, setRefresh }); setMobileDropdownOpen(false); }}>Bulk Delete</li>
-                </ul>
-              </div>
-            )}
+          <div className="flex items-center gap-2">
+            <QuickActionButtons selectedCount={selectedOrders.length} actions={quickActions} />
+            <div className="relative" ref={mobileActionRef}>
+              <button
+                disabled={selectedOrders.length === 0}
+                className={`h-7 px-3 rounded-lg text-[12px] font-[600] flex items-center gap-1 transition-all border ${selectedOrders.length === 0
+                  ? "border-gray-200 text-gray-400 cursor-not-allowed bg-gray-50"
+                  : "border-[#10BE3B] text-[#10BE3B] bg-white shadow-sm"
+                  }`}
+                onClick={() => setMobileDropdownOpen(!mobileDropdownOpen)}
+              >
+                <FaBars className={selectedOrders.length === 0 ? "text-gray-400" : "text-[#10BE3B]"} />
+                <span className="hidden sm:inline">Actions▼</span>
+              </button>
+              {mobileDropdownOpen && (
+                <div className="absolute right-0 mt-2 w-40 text-[12px] font-[600] bg-white border rounded-lg shadow-sm z-[60] overflow-hidden animate-popup-in">
+                  <ul className="py-1">
+                    <li className="px-3 py-2 text-gray-700 hover:bg-green-50 cursor-pointer" onClick={() => { handleBulkShip(); setMobileDropdownOpen(false); }}>Bulk Ship</li>
+                    <li className="px-3 py-2 text-gray-700 hover:bg-green-50 cursor-pointer" onClick={() => { setShowPackageModal(true); setMobileDropdownOpen(false); }}>Update Package Details</li>
+                    <li className="px-3 py-2 text-gray-700 hover:bg-green-50 cursor-pointer"
+                      onClick={() => {
+                        const fullOrders = orders.filter(o => selectedOrders.includes(o._id));
+                        setSelectedData(fullOrders);
+                        setTitle("Update Address");
+                        setShowBulkShipModal(true);
+                        setMobileDropdownOpen(false);
+                      }}>
+                      Update Pickup Address
+                    </li>
+                    <li className="px-3 py-2 text-gray-700 hover:bg-green-50 cursor-pointer" onClick={() => { ExportExcel({ selectedOrders, orders }); setMobileDropdownOpen(false); }}>Export Excel</li>
+                    <li className="px-3 py-2 text-gray-700 hover:bg-green-50 cursor-pointer" onClick={() => { handleBulkDownloadInvoice({ selectedOrders }); setMobileDropdownOpen(false); }}>Download Invoices</li>
+                    {/* <li className="px-3 py-2 text-gray-700 hover:bg-green-50 cursor-pointer text-[10px] font-medium" onClick={() => { handleBulkDownloadLabel({ selectedOrders }); setMobileDropdownOpen(false); }}>Download Labels</li> */}
+                    <li className="px-3 py-2 text-red-600 hover:bg-red-100 cursor-pointer" onClick={() => { BulkCancel({ selectedOrders, setRefresh }); setMobileDropdownOpen(false); }}>Bulk Delete</li>
+                  </ul>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 

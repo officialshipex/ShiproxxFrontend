@@ -22,10 +22,12 @@ import {
   handleManifest,
   SavePackageDetails,
   cancelOrder,
-  BulkCancel
+  BulkCancel,
+  submitBulkShip
 } from "../../Common/orderActions";
 import OrdersTable from "../../Common/OrdersTable";
 import MobileOrderCard from "../../Common/MobileOrderCard";
+import QuickActionButtons from "../../Common/QuickActionButtons";
 import NotFound from "../../assets/nodatafound.png";
 
 const NewOrder = ({ userId: initialUserId }) => {
@@ -68,6 +70,7 @@ const NewOrder = ({ userId: initialUserId }) => {
   const [showBulkShipModal, setShowBulkShipModal] = useState(false);
   const [selectedData, setSelectedData] = useState([]);
   const [bulkUserId, setBulkUserId] = useState(null);
+  const [title, setTitle] = useState("Update Pickup Address");
 
   const REACT_APP_BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -216,32 +219,9 @@ const NewOrder = ({ userId: initialUserId }) => {
         }
       );
 
-      const { showPopup, orders: pickupOrders } = pickupCheckResponse.data;
+      const { orders: pickupOrders } = pickupCheckResponse.data;
 
-      if (!showPopup) {
-        Notification("Processing bulk shipment. Please wait...", "success");
-
-        const shipResponse = await axios.post(
-          `${REACT_APP_BACKEND_URL}/bulk/create-bulk-order`,
-          { selectedOrders },
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-
-        const { success, message, successCount, failureCount } = shipResponse.data;
-
-        if (success) {
-          Notification(
-            message || `${successCount} orders shipped successfully, ${failureCount} failed.`,
-            "success"
-          );
-        } else {
-          Notification(message || "Failed to create bulk shipment.", "error");
-        }
-
-        setRefresh(prev => !prev);
-        return;
-      }
-
+      setTitle("Bulk Ship");
       setShowBulkShipModal(true);
       setSelectedData(pickupOrders);
 
@@ -256,6 +236,7 @@ const NewOrder = ({ userId: initialUserId }) => {
   };
 
   const handleBulkUpdatePickup = () => {
+    setTitle("Update Pickup Address");
     setShowBulkShipModal(true);
     setSelectedData(selectedOrders);
   };
@@ -267,6 +248,12 @@ const NewOrder = ({ userId: initialUserId }) => {
   const handleCancel = (orderId) => {
     cancelOrder({ orderId, refresh, setRefresh });
   };
+
+  const quickActions = [
+    { label: "Bulk Ship", onClick: handleBulkShip },
+    { label: "Export", onClick: () => ExportExcel({ selectedOrders, orders }) },
+    { label: "Bulk Delete", onClick: handleBulkDelete },
+  ];
 
   return (
     <div className="w-full">
@@ -292,6 +279,7 @@ const NewOrder = ({ userId: initialUserId }) => {
         </div>
 
         <div className="flex items-center gap-2 w-auto justify-end">
+          <QuickActionButtons selectedCount={selectedOrders.length} className="hidden md:flex" actions={quickActions} />
           <div className="hidden md:block relative" ref={desktopActionRef}>
             <button
               disabled={selectedOrders.length === 0}
@@ -304,7 +292,7 @@ const NewOrder = ({ userId: initialUserId }) => {
               Actions <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${desktopDropdownOpen ? 'rotate-180' : ''}`} />
             </button>
             {desktopDropdownOpen && (
-              <div className="absolute right-0 mt-1 w-56 text-[10px] bg-white border border-gray-200 shadow-sm z-[60] font-[600] overflow-hidden animate-popup-in">
+              <div className="absolute right-0 mt-1 w-56 text-[12px] bg-white border border-gray-200 shadow-sm z-[60] font-[600] overflow-hidden animate-popup-in">
                 <ul className="py-1">
                   <li className="px-3 py-2 text-gray-700 hover:bg-green-50 cursor-pointer flex items-center gap-2"
                     onClick={() => { ExportExcel({ selectedOrders, orders }); setDesktopDropdownOpen(false); }}>
@@ -375,30 +363,33 @@ const NewOrder = ({ userId: initialUserId }) => {
             <span className="text-[10px] font-[600]">Select All</span>
           </div>
 
-          <div className="relative" ref={mobileActionRef}>
-            <button
-              disabled={selectedOrders.length === 0}
-              className={`h-7 px-3 rounded-lg text-[12px] font-[600] flex items-center gap-1 transition-all border ${selectedOrders.length === 0
-                ? "border-gray-200 text-gray-400 cursor-not-allowed bg-gray-50"
-                : "border-[#10BE3B] text-[#10BE3B] bg-white shadow-sm"
-                }`}
-              onClick={() => setMobileDropdownOpen(!mobileDropdownOpen)}
-            >
-              <FaBars className={selectedOrders.length === 0 ? "text-gray-400" : "text-[#10BE3B]"} />
-              <span className="hidden sm:inline">Actions▼</span>
-            </button>
-            {mobileDropdownOpen && (
-              <div className="absolute right-0 mt-2 w-48 bg-white border rounded-lg shadow-sm z-[60] text-[10px] font-[600] overflow-hidden animate-popup-in">
-                <ul className="py-1">
-                  <li className="px-3 py-2 text-gray-700 hover:bg-green-50 cursor-pointer" onClick={() => { ExportExcel({ selectedOrders, orders }); setMobileDropdownOpen(false); }}>Export Excel</li>
-                  <li className="px-3 py-2 text-gray-700 hover:bg-green-50 cursor-pointer" onClick={() => { handleBulkDownloadInvoice({ selectedOrders }); setMobileDropdownOpen(false); }}>Download Invoices</li>
-                  <li className="px-3 py-2 text-gray-700 hover:bg-green-50 cursor-pointer" onClick={() => { setShowPackageModal(true); setMobileDropdownOpen(false); }}>Update Package Details</li>
-                  <li className="px-3 py-2 text-gray-700 hover:bg-green-50 cursor-pointer" onClick={() => { handleBulkShip(); setMobileDropdownOpen(false); }}>Bulk Ship</li>
-                  <li className="px-3 py-2 text-gray-700 hover:bg-green-50 cursor-pointer" onClick={() => { handleBulkUpdatePickup(); setMobileDropdownOpen(false); }}>Update Pickup Address</li>
-                  <li className="px-3 py-2 text-red-600 hover:bg-red-50 cursor-pointer" onClick={() => { handleBulkDelete(); setMobileDropdownOpen(false); }}>Bulk Delete</li>
-                </ul>
-              </div>
-            )}
+          <div className="flex items-center gap-2">
+            <QuickActionButtons selectedCount={selectedOrders.length} actions={quickActions} />
+            <div className="relative" ref={mobileActionRef}>
+              <button
+                disabled={selectedOrders.length === 0}
+                className={`h-7 px-3 rounded-lg text-[12px] font-[600] flex items-center gap-1 transition-all border ${selectedOrders.length === 0
+                  ? "border-gray-200 text-gray-400 cursor-not-allowed bg-gray-50"
+                  : "border-[#10BE3B] text-[#10BE3B] bg-white shadow-sm"
+                  }`}
+                onClick={() => setMobileDropdownOpen(!mobileDropdownOpen)}
+              >
+                <FaBars className={selectedOrders.length === 0 ? "text-gray-400" : "text-[#10BE3B]"} />
+                <span className="hidden sm:inline">Actions▼</span>
+              </button>
+              {mobileDropdownOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-white border rounded-lg shadow-sm z-[60] text-[10px] font-[600] overflow-hidden animate-popup-in">
+                  <ul className="py-1">
+                    <li className="px-3 py-2 text-gray-700 hover:bg-green-50 cursor-pointer" onClick={() => { ExportExcel({ selectedOrders, orders }); setMobileDropdownOpen(false); }}>Export Excel</li>
+                    <li className="px-3 py-2 text-gray-700 hover:bg-green-50 cursor-pointer" onClick={() => { handleBulkDownloadInvoice({ selectedOrders }); setMobileDropdownOpen(false); }}>Download Invoices</li>
+                    <li className="px-3 py-2 text-gray-700 hover:bg-green-50 cursor-pointer" onClick={() => { setShowPackageModal(true); setMobileDropdownOpen(false); }}>Update Package Details</li>
+                    <li className="px-3 py-2 text-gray-700 hover:bg-green-50 cursor-pointer" onClick={() => { handleBulkShip(); setMobileDropdownOpen(false); }}>Bulk Ship</li>
+                    <li className="px-3 py-2 text-gray-700 hover:bg-green-50 cursor-pointer" onClick={() => { handleBulkUpdatePickup(); setMobileDropdownOpen(false); }}>Update Pickup Address</li>
+                    <li className="px-3 py-2 text-red-600 hover:bg-red-50 cursor-pointer" onClick={() => { handleBulkDelete(); setMobileDropdownOpen(false); }}>Bulk Delete</li>
+                  </ul>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
@@ -484,7 +475,15 @@ const NewOrder = ({ userId: initialUserId }) => {
           userId={bulkUserId}
           setRefresh={setRefresh}
           refresh={refresh}
-          title="Update Pickup Address"
+          title={title}
+          onPickupSelected={async () => {
+            setShowBulkShipModal(false);
+            if (title === "Bulk Ship") {
+              await submitBulkShip({ selectedOrders, fetchOrders });
+            } else {
+              setRefresh((prev) => !prev);
+            }
+          }}
         />
       )}
     </div>
