@@ -72,7 +72,10 @@ const RateCard = ({ isSidebarAdmin }) => {
     if (window.confirm("Are you sure you want to delete this ratecard?")) {
       setIsLoading(true);
       try {
-        await axios.delete(`${REACT_APP_BACKEND_URL}/saveRate/deleteRateCard/${id}`);
+        const token = Cookies.get("session");
+        await axios.delete(`${REACT_APP_BACKEND_URL}/saveRate/deleteRateCard/${id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
         await refreshRates();
       } catch (error) {
         alert("Failed to delete ratecard.");
