@@ -11,6 +11,7 @@ import { FaEdit, FaTrash } from "react-icons/fa";
 import { FiChevronDown, FiArrowLeft, FiSearch } from "react-icons/fi";
 import { getCarrierLogo } from "../../Common/getCarrierLogo";
 import NotFound from "../../assets/nodatafound.png";
+import ConfirmModal from "../../Common/ConfirmModal";
 
 
 const REACT_APP_BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -68,20 +69,20 @@ const RateCard = ({ isSidebarAdmin }) => {
     setIsLoading(false);
   };
 
+  const [confirmDeleteId, setConfirmDeleteId] = useState(null);
+
   const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this ratecard?")) {
-      setIsLoading(true);
-      try {
-        const token = Cookies.get("session");
-        await axios.delete(`${REACT_APP_BACKEND_URL}/saveRate/deleteRateCard/${id}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        await refreshRates();
-      } catch (error) {
-        alert("Failed to delete ratecard.");
-      }
-      setIsLoading(false);
+    setIsLoading(true);
+    try {
+      const token = Cookies.get("session");
+      await axios.delete(`${REACT_APP_BACKEND_URL}/saveRate/deleteRateCard/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      await refreshRates();
+    } catch (error) {
+      alert("Failed to delete ratecard.");
     }
+    setIsLoading(false);
   };
 
 
@@ -315,7 +316,7 @@ const RateCard = ({ isSidebarAdmin }) => {
                           </button>
                           <button
                             className={`text-red-500 transition-all ${canUpdate ? "" : "opacity-30 cursor-not-allowed"}`}
-                            onClick={() => canUpdate && handleDelete(card._id)}
+                            onClick={() => canUpdate && setConfirmDeleteId(card._id)}
                             disabled={!canUpdate}
                             title="Delete"
                           >
@@ -389,7 +390,7 @@ const RateCard = ({ isSidebarAdmin }) => {
                   </div>
                   <div className="flex gap-2">
                     <button onClick={() => canUpdate && navigate(`/dashboard/ratecard/update/${card._id}`)} className="text-[#10BE3B] transition-transform active:scale-90"><FaEdit size={12} /></button>
-                    <button onClick={() => canUpdate && handleDelete(card._id)} className="text-red-500 transition-transform active:scale-90"><FaTrash size={12} /></button>
+                    <button onClick={() => canUpdate && setConfirmDeleteId(card._id)} className="text-red-500 transition-transform active:scale-90"><FaTrash size={12} /></button>
                   </div>
                 </div>
 
@@ -441,6 +442,18 @@ const RateCard = ({ isSidebarAdmin }) => {
           isOpen={isUploadRatecardModalOpen}
           onClose={() => setIsUploadRatecardModalOpen(false)}
           setRefresh={refreshRates}
+        />
+        <ConfirmModal
+          isOpen={!!confirmDeleteId}
+          title="Delete Rate Card"
+          message="Are you sure you want to delete this rate card? This cannot be undone."
+          confirmLabel="Delete"
+          onCancel={() => setConfirmDeleteId(null)}
+          onConfirm={async () => {
+            const id = confirmDeleteId;
+            setConfirmDeleteId(null);
+            await handleDelete(id);
+          }}
         />
       </div>
     )
