@@ -21,6 +21,7 @@ import { FiChevronDown, FiArrowLeft, FiSearch, FiEdit, FiAlertCircle } from "rea
 import UploadRatecard from "../RateCard/UploadRatecard";
 import UserServiceManagement from "./UserServiceManagement";
 import Loader from "../../Loader";
+import ConfirmModal from "../../Common/ConfirmModal";
 
 
 // Referral Commission Edit Modal
@@ -176,6 +177,7 @@ export default function ProfileCard() {
   const [rateLoading, setRateLoading] = useState(false);
   const [currentRatePlan, setCurrentRatePlan] = useState("");
   const [isPlanDropdownOpen, setIsPlanDropdownOpen] = useState(false);
+  const [confirmDeleteRateId, setConfirmDeleteRateId] = useState(null);
   useEffect(() => {
     const fetchAdmin = async () => {
       try {
@@ -226,17 +228,15 @@ export default function ProfileCard() {
   };
 
   const handleDeleteRateCard = async (rateId) => {
-    if (window.confirm("Are you sure you want to delete this rate card?")) {
-      try {
-        await axios.delete(`${REACT_APP_BACKEND_URL}/saveRate/deleteRateCard/${rateId}`, {
-          data: { userId: id },
-          headers: { Authorization: `Bearer ${Cookies.get("session")}` }
-        });
-        Notification("Rate card deleted successfully", "success");
-        refreshRates();
-      } catch (error) {
-        Notification("Failed to delete rate card", "error");
-      }
+    try {
+      await axios.delete(`${REACT_APP_BACKEND_URL}/saveRate/deleteRateCard/${rateId}`, {
+        data: { userId: id },
+        headers: { Authorization: `Bearer ${Cookies.get("session")}` }
+      });
+      Notification("Rate card deleted successfully", "success");
+      refreshRates();
+    } catch (error) {
+      Notification("Failed to delete rate card", "error");
     }
   };
 
@@ -330,7 +330,7 @@ export default function ProfileCard() {
                   <td className="px-2 py-1.5" rowSpan={2}>
                     <div className="flex justify-center gap-1.5">
                       <button onClick={() => navigate(`/dashboard/ratecard/update/${card._id}?userId=${id}`)} className="text-[#10BE3B]"><FaEdit size={12} /></button>
-                      <button onClick={() => handleDeleteRateCard(card._id)} className="text-red-500"><FaTrash size={12} /></button>
+                      <button onClick={() => setConfirmDeleteRateId(card._id)} className="text-red-500"><FaTrash size={12} /></button>
                     </div>
                   </td>
                 </tr>
@@ -1364,6 +1364,18 @@ export default function ProfileCard() {
         replaceExisting={true}
         hidePlan={true}
         userId={id}
+      />
+      <ConfirmModal
+        isOpen={!!confirmDeleteRateId}
+        title="Delete Rate Card"
+        message="Are you sure you want to delete this rate card? This cannot be undone."
+        confirmLabel="Delete"
+        onCancel={() => setConfirmDeleteRateId(null)}
+        onConfirm={async () => {
+          const rateId = confirmDeleteRateId;
+          setConfirmDeleteRateId(null);
+          await handleDeleteRateCard(rateId);
+        }}
       />
     </div>
   );
