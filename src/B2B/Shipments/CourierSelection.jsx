@@ -37,9 +37,17 @@ const carrierLogos = {
   Ekart
 };
 
+// Some courier service names encode a weight slab, e.g. "Ekart Surface 2KG"
+// or "Dtdc Surface 0.5KG" — only treat a number in the name as a weight when
+// it's actually followed by a KG/G unit (converting grams to kg). A bare
+// number with no unit must NOT be misread as a weight in kg — fall back to
+// the order's real weight instead.
 const getWeightValue = (name, fallback) => {
-  const n = Number(name?.match(/\d+/)?.[0]);
-  return n > 0 ? n : fallback;
+  const match = name?.match(/(\d+(?:\.\d+)?)\s*(kg|g)\b/i);
+  if (!match) return fallback;
+  const value = parseFloat(match[1]);
+  const kgValue = match[2].toLowerCase() === "g" ? value / 1000 : value;
+  return kgValue > 0 ? kgValue : fallback;
 };
 
 const CarrierSelection = () => {
@@ -344,7 +352,8 @@ const CarrierSelection = () => {
                             </div>
                             <p className="text-center text-[12px] sm:text-[14px] font-[600] text-gray-500">
                               {(() => {
-                                const serviceWeight = Number(item?.courierServiceName?.match(/\d+/)?.[0]);
+                                const match = item?.courierServiceName?.match(/(\d+(?:\.\d+)?)\s*(kg|g)\b/i);
+                                const serviceWeight = match ? (match[2].toLowerCase() === "g" ? parseFloat(match[1]) / 1000 : parseFloat(match[1])) : 0;
                                 const applicableWeight = item?.working?.billable_weight || 0;
 
                                 return serviceWeight > applicableWeight ? serviceWeight : applicableWeight;
