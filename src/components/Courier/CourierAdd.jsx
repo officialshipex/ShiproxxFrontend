@@ -126,6 +126,13 @@ const courierConfigs = {
       { name: "password", label: "Password", placeholder: "Password", type: "password" },
     ],
   },
+  Jiffy: {
+    endpoint: "/Jiffy/addCourier",
+    fields: [
+      { name: "email", label: "Email", placeholder: "API Email", type: "email" },
+      { name: "password", label: "Password", placeholder: "API Password", type: "password" },
+    ],
+  },
 };
 
 const CourierAdd = ({ provider, onCourierSaved, canAction, existingCouriers }) => {

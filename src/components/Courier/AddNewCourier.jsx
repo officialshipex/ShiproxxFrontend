@@ -29,6 +29,7 @@ const courierOptions = [
   {value:"Proship",label:"Proship"},
   { value: "Shadowfax", label: "Shadowfax" },
   { value: "ShipexIndia", label: "ShipexIndia" },
+  { value: "Jiffy", label: "Jiffy" },
   // { value: "Losung360", label: "Losung360" }
 ];
 
@@ -256,6 +257,7 @@ const AddNewCourier = ({ isSidebarAdmin }) => {
                 <th className="py-2 px-3 text-center">Sr.</th>
                 <th className="py-2 px-3 text-left">Courier Name</th>
                 <th className="py-2 px-3 text-left">Provider</th>
+                <th className="py-2 px-3 text-center">Courier ID</th>
                 <th className="py-2 px-3 text-center">COD Contract</th>
                 <th className="py-2 px-3 text-center">Status</th>
                 <th className="py-2 px-3 text-center">Actions</th>
@@ -276,6 +278,7 @@ const AddNewCourier = ({ isSidebarAdmin }) => {
                         <span className="text-[#10BE3B] font-[600]">{courier.courierProvider}</span>
                       </div>
                     </td>
+                    <td className="py-2.5 px-3 text-center text-gray-500 font-[600]">{courier.courierId || "—"}</td>
                     <td className="py-2.5 px-3 text-center">{courier.CODDays} Days</td>
                     <td className="py-2.5 px-3 text-center">
                       <div className="flex justify-center">
@@ -323,7 +326,7 @@ const AddNewCourier = ({ isSidebarAdmin }) => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="6" className="py-10 text-center text-gray-400 text-[12px] font-[500]">
+                  <td colSpan="7" className="py-10 text-center text-gray-400 text-[12px] font-[500]">
                     No couriers found.
                   </td>
                 </tr>
@@ -359,6 +362,9 @@ const AddNewCourier = ({ isSidebarAdmin }) => {
                       </span>
                       <span className="text-[10px] text-[#10BE3B] font-[600]">
                         {courier.courierProvider}
+                        {courier.courierId && (
+                          <span className="text-gray-400 font-[500]"> · ID {courier.courierId}</span>
+                        )}
                       </span>
                     </div>
                   </div>

@@ -210,6 +210,7 @@ export default function CreateNewCourier({ isSidebarAdmin }) {
     e.preventDefault();
     const isLosung = formData.provider === "Losung360";
     const isBoxd = formData.provider === "BoxdLogistics";
+    const isJiffy = formData.provider === "Jiffy";
 
     if (!formData.provider || !formData.name || !formData.status || !formData.courierType) {
       Notification("Please fill all required fields", "info");
@@ -226,7 +227,12 @@ export default function CreateNewCourier({ isSidebarAdmin }) {
       return;
     }
 
-    if (providerServices.length > 0 && !isLosung && !isBoxd && !formData.courier) {
+    if (isJiffy && !formData.courier) {
+      Notification("Please enter Jiffy Courier Code", "info");
+      return;
+    }
+
+    if (providerServices.length > 0 && !isLosung && !isBoxd && !isJiffy && !formData.courier) {
       Notification("Please select a Courier", "info");
       return;
     }
@@ -317,7 +323,7 @@ export default function CreateNewCourier({ isSidebarAdmin }) {
               />
 
               {/* Courier / Service ID */}
-              {(providerServices.length > 0 || selectedProvider === "BoxdLogistics" || selectedProvider === "Losung360") && (
+              {(providerServices.length > 0 || selectedProvider === "BoxdLogistics" || selectedProvider === "Losung360" || selectedProvider === "Jiffy") && (
                 selectedProvider === "BoxdLogistics" ? (
                   <div className="flex flex-col gap-1.5">
                     <label className="text-[10px] sm:text-[12px] font-[600] text-gray-700">Courier Service ID</label>
@@ -325,6 +331,18 @@ export default function CreateNewCourier({ isSidebarAdmin }) {
                       type="text"
                       name="courier"
                       placeholder="Enter Courier Service ID"
+                      value={formData.courier}
+                      onChange={handleChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-[10px] sm:text-[12px] focus:outline-none focus:border-[#10BE3B] transition-all font-[600] text-gray-700"
+                    />
+                  </div>
+                ) : selectedProvider === "Jiffy" ? (
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-[10px] sm:text-[12px] font-[600] text-gray-700">Courier Code</label>
+                    <input
+                      type="text"
+                      name="courier"
+                      placeholder="e.g. DT03"
                       value={formData.courier}
                       onChange={handleChange}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg text-[10px] sm:text-[12px] focus:outline-none focus:border-[#10BE3B] transition-all font-[600] text-gray-700"
