@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
-import { FaTruck, FaPlane, FaSearch, FaEdit, FaChevronDown, FaCheck, FaExclamationTriangle, FaTimes } from "react-icons/fa";
+import { FaTruck, FaPlane, FaSearch, FaEdit, FaTrash, FaChevronDown, FaCheck, FaExclamationTriangle, FaTimes } from "react-icons/fa";
 import { Notification } from "../../Notification";
 import CustomDropdown from "./Dropdown";
 import { getCarrierLogo } from "../../Common/getCarrierLogo";
 import Cookies from "js-cookie";
+import ConfirmModal from "../../Common/ConfirmModal";
 
 const REACT_APP_BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -110,6 +111,8 @@ const CourierServiceList = ({ refresh, canUpdate }) => {
   const [isChangeProviderModalOpen, setIsChangeProviderModalOpen] = useState(false);
   const [isActionMenuOpen, setIsActionMenuOpen] = useState(false);
   const [serviceToChangeProvider, setServiceToChangeProvider] = useState(null);
+  const [courierToDelete, setCourierToDelete] = useState(null);
+  const [isBulkDeleteModalOpen, setIsBulkDeleteModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchCouriers = async () => {
@@ -181,6 +184,31 @@ const CourierServiceList = ({ refresh, canUpdate }) => {
     });
   };
 
+  const handleDeleteCourier = async () => {
+    if (!courierToDelete) return;
+    const { _id, name, provider } = courierToDelete;
+    try {
+      const response = await axios.delete(
+        `${REACT_APP_BACKEND_URL}/courierServices/couriers/${_id}`
+      );
+
+      setCouriers((prev) => prev.filter((c) => c._id !== _id));
+      setSelectedIds((prev) => prev.filter((id) => id !== _id));
+
+      const { rateCardsDeleted = 0, plansUpdated = 0 } = response.data || {};
+      Notification(
+        `"${name}" (${provider}) deleted along with ${rateCardsDeleted} rate card(s)` +
+          (plansUpdated > 0 ? ` and removed from ${plansUpdated} plan(s).` : "."),
+        "success"
+      );
+    } catch (error) {
+      console.error("Error deleting courier:", error);
+      Notification(error.response?.data?.message || "Failed to delete courier service", "error");
+    } finally {
+      setCourierToDelete(null);
+    }
+  };
+
   const handleSelectAll = (e) => {
     if (e.target.checked) {
       setSelectedIds(filteredCouriers.map(c => c._id));
@@ -210,6 +238,31 @@ const CourierServiceList = ({ refresh, canUpdate }) => {
 
     setIsChangeProviderModalOpen(true);
     setIsActionMenuOpen(false);
+  };
+
+  const handleBulkDeleteAction = () => {
+    if (selectedIds.length === 0) return;
+    setIsBulkDeleteModalOpen(true);
+    setIsActionMenuOpen(false);
+  };
+
+  const handleBulkDelete = async () => {
+    try {
+      const response = await axios.post(`${REACT_APP_BACKEND_URL}/courierServices/couriers/bulkDelete`, {
+        serviceIds: selectedIds,
+      });
+
+      if (response.data.success) {
+        Notification(response.data.message, "success");
+        setCouriers((prev) => prev.filter((c) => !selectedIds.includes(c._id)));
+        setSelectedIds([]);
+      }
+    } catch (err) {
+      console.error("Error bulk deleting couriers:", err);
+      Notification(err.response?.data?.message || "Failed to delete selected courier services", "error");
+    } finally {
+      setIsBulkDeleteModalOpen(false);
+    }
   };
 
   const handleChangeProvider = async (targetProvider) => {
@@ -281,6 +334,15 @@ const CourierServiceList = ({ refresh, canUpdate }) => {
                   <FaTruck size={12} />
                 </div>
                 Change Provider
+              </button>
+              <button
+                onClick={handleBulkDeleteAction}
+                className="w-full text-left px-4 py-2 text-[11px] font-bold text-red-500 hover:bg-red-50 flex items-center gap-2"
+              >
+                <div className="w-6 h-6 rounded-lg bg-red-50 flex items-center justify-center">
+                  <FaTrash size={12} />
+                </div>
+                Bulk Delete
               </button>
             </div>
           )}
@@ -362,6 +424,14 @@ const CourierServiceList = ({ refresh, canUpdate }) => {
                         >
                           <FaEdit size={14} />
                         </button>
+                        <button
+                          className={`p-1.5 rounded-lg text-red-500 bg-red-50 hover:bg-red-100 transition-all ${canUpdate ? "active:scale-90" : "opacity-50 cursor-not-allowed"}`}
+                          onClick={() => canUpdate && setCourierToDelete(courier)}
+                          disabled={!canUpdate}
+                          title="Delete Service"
+                        >
+                          <FaTrash size={14} />
+                        </button>
                       </div>
                     </td>
                   </tr>
@@ -421,13 +491,22 @@ const CourierServiceList = ({ refresh, canUpdate }) => {
                     </div>
                   </div>
                 </div>
-                <button
-                  className={`p-2 rounded-full transition-all ${canUpdate ? "text-[#10BE3B] active:scale-90" : "text-gray-300 cursor-not-allowed"}`}
-                  onClick={() => canUpdate && editHandler(courier)}
-                  disabled={!canUpdate}
-                >
-                  <FaEdit size={14} />
-                </button>
+                <div className="flex items-center gap-1">
+                  <button
+                    className={`p-2 rounded-full transition-all ${canUpdate ? "text-[#10BE3B] active:scale-90" : "text-gray-300 cursor-not-allowed"}`}
+                    onClick={() => canUpdate && editHandler(courier)}
+                    disabled={!canUpdate}
+                  >
+                    <FaEdit size={14} />
+                  </button>
+                  <button
+                    className={`p-2 rounded-full transition-all ${canUpdate ? "text-red-500 active:scale-90" : "text-gray-300 cursor-not-allowed"}`}
+                    onClick={() => canUpdate && setCourierToDelete(courier)}
+                    disabled={!canUpdate}
+                  >
+                    <FaTrash size={14} />
+                  </button>
+                </div>
               </div>
 
               <div className="grid grid-cols-2 text-[10px]">
@@ -470,6 +549,28 @@ const CourierServiceList = ({ refresh, canUpdate }) => {
         }}
         selectedServices={filteredCouriers.filter(c => selectedIds.includes(c._id))}
         onApply={handleChangeProvider}
+      />
+
+      <ConfirmModal
+        isOpen={!!courierToDelete}
+        title="Delete Courier Service?"
+        message={
+          courierToDelete
+            ? `This will permanently delete "${courierToDelete.name}" (${courierToDelete.provider}), every rate card for this service and provider, and remove it from any plan it's assigned to. This cannot be undone.`
+            : ""
+        }
+        confirmLabel="Delete"
+        onConfirm={handleDeleteCourier}
+        onCancel={() => setCourierToDelete(null)}
+      />
+
+      <ConfirmModal
+        isOpen={isBulkDeleteModalOpen}
+        title="Delete Selected Courier Services?"
+        message={`This will permanently delete ${selectedIds.length} selected courier service(s), every rate card for each service and provider, and remove them from any plans they're assigned to. This cannot be undone.`}
+        confirmLabel="Delete All"
+        onConfirm={handleBulkDelete}
+        onCancel={() => setIsBulkDeleteModalOpen(false)}
       />
     </div>
   );
