@@ -13,6 +13,13 @@ import Ekart from "../assets/ekart.png";
 import Shiproxx from "../assets/shiproxxNoBG.png"
 import ShipexIndia from "../assets/shipexindia.png"
 
+// Generic gray package icon shown whenever the service name doesn't match a
+// known carrier, so callers always get a valid <img src> instead of a
+// broken-image icon. Built from plain shapes (not a copied icon glyph) so
+// there's no risk of malformed path data.
+const DefaultCourierIcon =
+  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='7' width='18' height='13' rx='1.5'/%3E%3Cpath d='M3 7l9-4 9 4'/%3E%3Cpath d='M12 3v17'/%3E%3C/svg%3E";
+
 export const getCarrierLogo = (courierServiceName = "") => {
   const name = courierServiceName?.toLowerCase();
 
@@ -30,7 +37,7 @@ export const getCarrierLogo = (courierServiceName = "") => {
   if (name?.includes("ekart")) return Ekart;
   if (name?.includes("shiproxx")) return Shiproxx;
   if (name?.includes("shipex")) return ShipexIndia;
-  if (name?.includes("boxd")) return "";   // BoxdLogistics – add logo asset when available
+  if (name?.includes("boxd")) return DefaultCourierIcon;   // BoxdLogistics – add logo asset when available
 
-  return ""; // default fallback
+  return DefaultCourierIcon; // no match — generic fallback instead of a broken image
 };
