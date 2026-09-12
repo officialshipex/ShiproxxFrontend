@@ -22,6 +22,7 @@ import {
 import OrdersTable from "../Common/OrdersTable";
 import MobileOrderCard from "../Common/MobileOrderCard";
 import QuickActionButtons from "../Common/QuickActionButtons";
+import SelectedCountBadge from "../Common/SelectedCountBadge";
 import NdrStatusModal from "../NDR/NdrStatusModal";
 import NotFound from "../assets/nodatafound.png";
 
@@ -206,6 +207,7 @@ const ManualRto = ({ userId: initialUserId }) => {
         </div>
 
         <div className="flex items-center gap-2 w-auto justify-end">
+          <SelectedCountBadge count={selectedOrders.length} className="hidden md:inline-flex items-center bg-gray-100 px-2 py-1.5 rounded-lg" />
           <QuickActionButtons selectedCount={selectedOrders.length} className="hidden md:flex" actions={quickActions} />
           <div className="hidden md:block relative" ref={desktopActionRef}>
             <button
@@ -280,6 +282,7 @@ const ManualRto = ({ userId: initialUserId }) => {
           <div className="flex items-center gap-2 bg-gray-50 px-3 py-1.5 rounded-lg border flex-1">
             <input type="checkbox" checked={selectedOrders.length === orders.length && orders.length > 0} onChange={handleSelectAll} className="cursor-pointer accent-[#10BE3B] w-3 h-3" />
             <span className="text-[10px] font-[600]">Select All</span>
+            <SelectedCountBadge count={selectedOrders.length} />
           </div>
           <div className="flex items-center gap-2">
             <QuickActionButtons selectedCount={selectedOrders.length} actions={quickActions} />

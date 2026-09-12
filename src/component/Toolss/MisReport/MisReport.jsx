@@ -16,6 +16,7 @@ const MisReportPage = ({ isSidebarAdmin }) => {
   const [toDate, setToDate] = useState("");
   const [email, setEmail] = useState("");
   const [targetUserId, setTargetUserId] = useState(null);
+  const [allUsers, setAllUsers] = useState(false);
   
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -32,6 +33,7 @@ const MisReportPage = ({ isSidebarAdmin }) => {
   const tableRef = useRef(null);
 
   const REACT_APP_BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+  const effectiveUserId = allUsers ? "ALL" : targetUserId;
 
   useEffect(() => {
     const updateHeight = () => {
@@ -59,7 +61,7 @@ const MisReportPage = ({ isSidebarAdmin }) => {
         params: {
           page,
           limit,
-          userSearch: targetUserId || ""
+          userSearch: effectiveUserId || ""
         }
       });
       setReports(res.data.results || []);
@@ -73,7 +75,7 @@ const MisReportPage = ({ isSidebarAdmin }) => {
 
   useEffect(() => {
     fetchReports();
-  }, [page, limit, targetUserId]);
+  }, [page, limit, effectiveUserId]);
 
   const handleGenerate = async (e) => {
     if (e && typeof e.preventDefault === "function") {
@@ -93,7 +95,7 @@ const MisReportPage = ({ isSidebarAdmin }) => {
         fromDate,
         toDate,
         email,
-        userSearch: targetUserId
+        userSearch: effectiveUserId
       }, {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -112,6 +114,13 @@ const MisReportPage = ({ isSidebarAdmin }) => {
 
   const handleUserSelect = (userId) => {
     setTargetUserId(userId);
+    setAllUsers(false);
+    setPage(1);
+  };
+
+  const handleAllUsersToggle = (checked) => {
+    setAllUsers(checked);
+    if (checked) setTargetUserId(null);
     setPage(1);
   };
 
@@ -132,6 +141,7 @@ const MisReportPage = ({ isSidebarAdmin }) => {
     setToDate("");
     setEmail("");
     setTargetUserId(null);
+    setAllUsers(false);
     setClearTrigger(prev => !prev);
     setPage(1);
   };
@@ -191,8 +201,19 @@ const MisReportPage = ({ isSidebarAdmin }) => {
 
             {isSidebarAdmin && (
               <div className="col-span-1 w-full">
-                <label className="block text-gray-600 mb-1">Search User</label>
-                <UserFilter onUserSelect={handleUserSelect} clearTrigger={clearTrigger} />
+                <div className="flex items-center justify-between mb-1">
+                  <label className="block text-gray-600">Search User</label>
+                  <label className="flex items-center gap-1 text-[11px] font-[500] text-gray-600 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={allUsers}
+                      onChange={(e) => handleAllUsersToggle(e.target.checked)}
+                      className="cursor-pointer accent-[#10BE3B] w-3 h-3"
+                    />
+                    All Users
+                  </label>
+                </div>
+                <UserFilter onUserSelect={handleUserSelect} clearTrigger={clearTrigger} disabled={allUsers} />
               </div>
             )}
 
@@ -270,17 +291,21 @@ const MisReportPage = ({ isSidebarAdmin }) => {
                       <td className="py-2 px-3">{(page - 1) * limit + idx + 1}</td>
                       {isSidebarAdmin && (
                         <td className="py-2 px-3">
-                          <span
-                            className="text-[#10BE3B] font-bold cursor-pointer hover:underline"
-                            onMouseEnter={(e) => {
-                              const rect = e.currentTarget.getBoundingClientRect();
-                              setTooltipPos({ x: rect.left, y: rect.top - 70 });
-                              setHoveredUser(row.user);
-                            }}
-                            onMouseLeave={() => setHoveredUser(null)}
-                          >
-                            {row.user?.userId || "N/A"}
-                          </span>
+                          {row.isAllUsers ? (
+                            <span className="text-gray-500 font-bold">All Users</span>
+                          ) : (
+                            <span
+                              className="text-[#10BE3B] font-bold cursor-pointer hover:underline"
+                              onMouseEnter={(e) => {
+                                const rect = e.currentTarget.getBoundingClientRect();
+                                setTooltipPos({ x: rect.left, y: rect.top - 70 });
+                                setHoveredUser(row.user);
+                              }}
+                              onMouseLeave={() => setHoveredUser(null)}
+                            >
+                              {row.user?.userId || "N/A"}
+                            </span>
+                          )}
                         </td>
                       )}
                       <td className="py-2 px-3">{row.reportType}</td>
@@ -414,7 +439,11 @@ const MisReportPage = ({ isSidebarAdmin }) => {
                   </div>
 
                   {/* Admin User info */}
-                  {isSidebarAdmin && row.user && (
+                  {isSidebarAdmin && row.isAllUsers ? (
+                    <div className="bg-gray-50 rounded p-1.5 border border-gray-100 text-[9.5px] text-gray-600">
+                      <p className="font-bold text-gray-700 leading-tight">User: All Users</p>
+                    </div>
+                  ) : isSidebarAdmin && row.user && (
                     <div className="bg-gray-50 rounded p-1.5 border border-gray-100 text-[9.5px] text-gray-600 space-y-0.5">
                       <p className="font-bold text-gray-700 leading-tight">
                         User: {row.user.fullname || "N/A"} ({row.user.userId || "N/A"})

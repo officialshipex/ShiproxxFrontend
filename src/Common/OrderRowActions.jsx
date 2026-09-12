@@ -2,6 +2,7 @@ import React, { useState, useLayoutEffect } from "react";
 import { createPortal } from "react-dom";
 import { FiMoreHorizontal } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
+import { isAmazonAtsOrder } from "./orderActions";
 
 const OrderRowActions = ({
     index,
@@ -165,7 +166,7 @@ const OrderRowActions = ({
 
                                     {/* Label logic */}
                                     {showDownloadLabel && (
-                                        order.provider === "Amazon Shipping" ? (
+                                        isAmazonAtsOrder(order) && order.label ? (
                                             <li className="hover:bg-green-50 transition-colors">
                                                 <a
                                                     href={order.label}

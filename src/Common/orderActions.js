@@ -7,6 +7,16 @@ import { Notification } from "../Notification";
 import { refreshNotifications } from "../utils/NotificationListProvider";
 const REACT_APP_BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
+// Amazon's shipments aren't only booked directly (provider "Amazon
+// Shipping") — they're also booked through aggregator providers like
+// Shiprocket and Jiffy, where the CourierService is created under that
+// aggregator's provider name but its service name carries "ATS" (Amazon's
+// own carrier code) as the admin-set naming convention marking it as an
+// Amazon-fulfilled service. Either signal means the order should get
+// Amazon's original label instead of Shiproxx's generated one.
+export const isAmazonAtsOrder = (order) =>
+  order?.provider === "Amazon Shipping" || /ats/i.test(order?.courierServiceName || "");
+
 // Shared by both the user-side (Order/Orders.jsx) and admin-side
 // (adminOrder/NewOrder.jsx) "Bulk Ship" action so the two never drift.
 // Kicks off the backend job; progress/results surface via the navbar
@@ -294,7 +304,7 @@ export const handleBulkDownloadLabel = async ({ selectedOrders }) => {
     // ── 3. Download and assemble each label ──────────────────────────────
     for (const orderData of orderResponses) {
       let response;
-      if (orderData.provider === "Amazon Shipping" && orderData.label) {
+      if (isAmazonAtsOrder(orderData) && orderData.label) {
         response = await fetch(
           `${REACT_APP_BACKEND_URL}/printlabel/proxy-label?url=${encodeURIComponent(orderData.label)}`,
         );
