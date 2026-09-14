@@ -195,7 +195,7 @@ const MobileOrderCard = ({
                     {dayjs(order.createdAt).format("hh:mm A")}
                 </p>
                 <div className="flex justify-center items-center gap-2">
-                    <p>{order.channelId}</p>
+                    <p>{order.channelOrderName || order.channelId}</p>
                     <span className="uppercase text-[#10BE3B] bg-green-200 px-2 rounded">
                         {order.channel || "CUSTOM"}
                     </span>

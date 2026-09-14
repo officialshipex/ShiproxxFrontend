@@ -31,10 +31,12 @@ const OrderDetailsSection = ({ order }) => {
                             {order.channel || "CUSTOM"}
                         </span>
 
-                        {/* Channel ID (no background) */}
-                        {order.channelId && (
+                        {/* Channel order reference — the seller's own channel order
+                            number/name (e.g. Shopify's "#VN55038"), matching what they see
+                            in that channel's own admin panel, not the internal channelId. */}
+                        {(order.channelOrderName || order.channelId) && (
                             <span className="text-[10px] font-[600] text-gray-500">
-                                ({order.channelId})
+                                ({order.channelOrderName || order.channelId})
                             </span>
                         )}
                     </div>
