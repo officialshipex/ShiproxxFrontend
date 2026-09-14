@@ -37,17 +37,6 @@ const OrderTab = ({ isSidebarAdmin }) => {
 
     const tabStorageKey = "activeOrderTab";
 
-    const [activeTab, setActiveTab] = useState(() => {
-        return localStorage.getItem(tabStorageKey) || "New";
-    });
-
-    const params = new URLSearchParams(location.search);
-    const userId = params.get("userId");
-
-    useEffect(() => {
-        localStorage.setItem(tabStorageKey, activeTab);
-    }, [activeTab]);
-
     const tabs = [
         "New",
         "Ready to Ship",
@@ -58,6 +47,33 @@ const OrderTab = ({ isSidebarAdmin }) => {
 
     const moreTabs = ["Cancelled", "Lost", "Damaged", "RTO Initiated", "RTO In Transit", "RTO Delivered", "RTO Lost", "RTO Damaged", "All"];
     const allTabs = [...tabs, ...moreTabs];
+
+    // A dashboard status box navigates here with the target tab in
+    // location.state (e.g. { tab: "In Transit" }) so it opens the exact tab
+    // that was clicked instead of whatever tab was last remembered.
+    const [activeTab, setActiveTab] = useState(() => {
+        if (location.state?.tab && allTabs.includes(location.state.tab)) {
+            return location.state.tab;
+        }
+        return localStorage.getItem(tabStorageKey) || "New";
+    });
+
+    const params = new URLSearchParams(location.search);
+    const userId = params.get("userId");
+
+    useEffect(() => {
+        localStorage.setItem(tabStorageKey, activeTab);
+    }, [activeTab]);
+
+    // Covers navigating here again while OrderTab is already mounted (React
+    // Router doesn't remount on a navigate() to the same route), where the
+    // lazy useState initializer above wouldn't re-run on its own.
+    useEffect(() => {
+        if (location.state?.tab && allTabs.includes(location.state.tab)) {
+            setActiveTab(location.state.tab);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [location.state]);
 
     useEffect(() => {
         if (!allTabs.includes(activeTab)) {

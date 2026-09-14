@@ -33,11 +33,16 @@ const Dashboard = ({ selectedUserId, selectedDateRange }) => {
     const [isAdmin, setIsAdmin] = useState();
     const [adminTab, setAdminTab] = useState();
 
-    const handleShipmentClick = () => {
+    // Every status box used to land on the same generic orders URL with no
+    // indication of which status was clicked, so it always opened whatever
+    // tab OrdersPage had remembered (localStorage) instead of the one the
+    // seller actually clicked. Passing the target tab via navigation state
+    // lets OrdersPage/OrderTab open the right one directly.
+    const handleShipmentClick = (tab) => {
         if (!isAdmin || (isAdmin && !adminTab)) {
-            navigate("/dashboard/b2c/order");
+            navigate("/dashboard/b2c/order", { state: { tab } });
         } else {
-            navigate("/adminDashboard/b2c/order");
+            navigate("/adminDashboard/b2c/order", { state: { tab } });
         }
     };
 
@@ -194,12 +199,15 @@ const Dashboard = ({ selectedUserId, selectedDateRange }) => {
                     {/* <p className="text-[10px] sm:text-[12px] text-gray-500">Last 30 days</p> */}
                 </div>
                 <div className="grid grid-cols-2 text-[14px] sm:grid-cols-3 md:grid-cols-6 gap-2">
-                    <StatBox label="Booked" value={data?.shipmentStats?.booked || 0} icon={FaBox} onClick={handleShipmentClick} />
-                    <StatBox label="Ready To Ship" value={data?.shipmentStats?.readyToShip || 0} icon={FaTruckLoading} onClick={handleShipmentClick} />
-                    <StatBox label="In-Transit" value={data?.shipmentStats?.inTransit || 0} icon={FaShippingFast} onClick={handleShipmentClick} />
-                    <StatBox label="Out for Delivery" value={data?.shipmentStats?.outForDelivery || 0} icon={FaMapMarkedAlt} onClick={handleShipmentClick} />
-                    <StatBox label="Delivered" value={data?.shipmentStats?.delivered || 0} icon={FaCheckCircle} onClick={handleShipmentClick} />
-                    <StatBox label="RTO Delivered" value={data?.shipmentStats?.rto || 0} icon={FaUndo} />
+                    {/* "Booked" orders live under the "Ready to Ship" tab in OrdersPage
+                        (it queries status in [Ready To Ship, Booked, Not Picked]) — there's
+                        no separate visible "Booked" tab to send this to. */}
+                    <StatBox label="Booked" value={data?.shipmentStats?.booked || 0} icon={FaBox} onClick={() => handleShipmentClick("Ready to Ship")} />
+                    <StatBox label="Ready To Ship" value={data?.shipmentStats?.readyToShip || 0} icon={FaTruckLoading} onClick={() => handleShipmentClick("Ready to Ship")} />
+                    <StatBox label="In-Transit" value={data?.shipmentStats?.inTransit || 0} icon={FaShippingFast} onClick={() => handleShipmentClick("In Transit")} />
+                    <StatBox label="Out for Delivery" value={data?.shipmentStats?.outForDelivery || 0} icon={FaMapMarkedAlt} onClick={() => handleShipmentClick("Out for Delivery")} />
+                    <StatBox label="Delivered" value={data?.shipmentStats?.delivered || 0} icon={FaCheckCircle} onClick={() => handleShipmentClick("Delivered")} />
+                    <StatBox label="RTO Delivered" value={data?.shipmentStats?.rto || 0} icon={FaUndo} onClick={() => handleShipmentClick("RTO Delivered")} />
                 </div>
 
             </div>
