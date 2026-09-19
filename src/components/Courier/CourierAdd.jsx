@@ -133,6 +133,13 @@ const courierConfigs = {
       { name: "password", label: "Password", placeholder: "API Password", type: "password" },
     ],
   },
+  ShipMaxx: {
+    endpoint: "/ShipMaxx/getAuthToken",
+    fields: [
+      { name: "username", label: "Email/Username", placeholder: "Email", type: "email" },
+      { name: "password", label: "Password", placeholder: "Password", type: "password" },
+    ],
+  },
 };
 
 const CourierAdd = ({ provider, onCourierSaved, canAction, existingCouriers }) => {

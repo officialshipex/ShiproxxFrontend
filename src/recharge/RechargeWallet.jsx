@@ -29,7 +29,7 @@ const RechargeWallet = () => {
 
   const handlePayment = async () => {
     const numericAmount = Number(amount);
-    if (numericAmount < 1000) {
+    if (numericAmount < 1) {
       Notification("Minimum amount should be 1000", "warning");
       return;
     }
@@ -158,7 +158,7 @@ const RechargeWallet = () => {
               <input
                 type="number"
                 className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg sm:text-[14px] text-[12px] font-bold text-gray-700 focus:outline-none focus:border-[#10BE3B] focus:ring-1 focus:ring-green-50 transition-all placeholder-gray-300"
-                min={1000}
+                min={1}
                 value={amount}
                 onChange={(e) => handleAmountChange(e.target.value)}
                 placeholder="1000"
@@ -189,8 +189,8 @@ const RechargeWallet = () => {
           <div className="pt-4 space-y-2">
             <button
               onClick={handlePayment}
-              disabled={Number(amount) < 1000}
-              className={`w-full py-2 rounded-lg font-bold sm:text-[12px] text-[10px] text-white shadow-sm transition-all duration-300 transform active:scale-95 ${Number(amount) < 1000
+              disabled={Number(amount) < 1}
+              className={`w-full py-2 rounded-lg font-bold sm:text-[12px] text-[10px] text-white shadow-sm transition-all duration-300 transform active:scale-95 ${Number(amount) < 1
                 ? "bg-gray-300 cursor-not-allowed shadow-none"
                 : "bg-[#10BE3B] hover:bg-[#0aa66d] hover:shadow-xl shadow-green-200"
                 }`}

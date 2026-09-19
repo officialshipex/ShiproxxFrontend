@@ -30,6 +30,7 @@ const courierOptions = [
   { value: "Shadowfax", label: "Shadowfax" },
   { value: "ShipexIndia", label: "ShipexIndia" },
   { value: "Jiffy", label: "Jiffy" },
+  { value: "ShipMaxx", label: "ShipMaxx" },
   // { value: "Losung360", label: "Losung360" }
 ];
 
