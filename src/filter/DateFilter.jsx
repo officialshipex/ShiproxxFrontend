@@ -3,7 +3,13 @@ import { Calendar } from "lucide-react";
 import dayjs from "dayjs";
 import { DateRange } from "react-date-range";
 
-const DateFilter = ({ onDateChange, clearTrigger, noInitialFilter, className }) => {
+// A dashboard status card can deep-link here with the date range that was
+// active when it was clicked (see OrderPage.jsx / OverviewMiddleSection.jsx),
+// so the list the seller lands on covers the same dates as the number they
+// clicked instead of silently resetting to "last 30 days". Ordinary,
+// non-deep-linked pages don't pass it and keep today's default exactly as
+// before.
+const DateFilter = ({ onDateChange, clearTrigger, noInitialFilter, className, initialDateRange }) => {
     const dateRef = useRef(null);
     const [showCustom, setShowCustom] = useState(false);
     const [showDropdown, setShowDropdown] = useState(false);
@@ -11,7 +17,7 @@ const DateFilter = ({ onDateChange, clearTrigger, noInitialFilter, className }) 
     const calendarRef = useRef(null);
     const [popupPosition, setPopupPosition] = useState("left-0");
 
-    const initialDateRange = [
+    const DEFAULT_DATE_RANGE = [
         {
             startDate: dayjs().subtract(29, "day").startOf("day").toDate(),
             endDate: dayjs().endOf("day").toDate(),
@@ -19,14 +25,29 @@ const DateFilter = ({ onDateChange, clearTrigger, noInitialFilter, className }) 
         },
     ];
 
+    const startingRange = initialDateRange || DEFAULT_DATE_RANGE;
 
-    const [dateRange, setDateRange] = useState(initialDateRange);
+    const [dateRange, setDateRange] = useState(startingRange);
 
-    const [tempDateRange, setTempDateRange] = useState(initialDateRange);
+    const [tempDateRange, setTempDateRange] = useState(startingRange);
 
+    // "Clear All Filters" always goes back to the app's normal default, not
+    // back to whatever a deep link arrived with — that's what "clear" means.
+    // (Unchanged from before: this only resets DateFilter's own display: the
+    // pages that use `clearTrigger` already reset their own `dateRange` state
+    // to the same default directly, in their own handleClearFilters.)
+    // Skipped on the very first run (mount) — state is already correctly
+    // seeded from `startingRange` above; without this guard, a deep-linked
+    // `initialDateRange` would be overwritten by the default immediately.
+    const isFirstClearRun = useRef(true);
     useEffect(() => {
-        setDateRange(initialDateRange);
-        setTempDateRange(initialDateRange);
+        if (isFirstClearRun.current) {
+            isFirstClearRun.current = false;
+            return;
+        }
+        setDateRange(DEFAULT_DATE_RANGE);
+        setTempDateRange(DEFAULT_DATE_RANGE);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [clearTrigger]);
 
     // ✅ Dynamic Positioning for Custom Calendar
@@ -99,7 +120,7 @@ const DateFilter = ({ onDateChange, clearTrigger, noInitialFilter, className }) 
 
     useEffect(() => {
         if (!noInitialFilter) {
-            onDateChange && onDateChange(initialDateRange);
+            onDateChange && onDateChange(startingRange);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);

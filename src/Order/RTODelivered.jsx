@@ -32,7 +32,7 @@ import MobileOrderCard from "../Common/MobileOrderCard";
 import QuickActionButtons from "../Common/QuickActionButtons";
 import SelectedCountBadge from "../Common/SelectedCountBadge";
 
-const RTODelivered = (filterOrder) => {
+const RTODelivered = ({ initialDateRange } = {}) => {
   const [dropdownOpen, setDropdownOpen] = useState(null);
   const [orders, setOrders] = useState([]);
   const [selectedOrders, setSelectedOrders] = useState([]);
@@ -54,13 +54,18 @@ const RTODelivered = (filterOrder) => {
   const [orderId, setOrderId] = useState("");
   const [awbNumber, setAwbNumber] = useState("");
   const [paymentType, setPaymentType] = useState("");
-  const [dateRange, setDateRange] = useState([
-    {
-      startDate: dayjs().subtract(29, "day").startOf("day").toDate(),
-      endDate: dayjs().endOf("day").toDate(),
-      key: "selection",
-    },
-  ]);
+  // A dashboard status card can land here with the date range it was
+  // showing (e.g. "Yesterday") — start from that instead of always
+  // defaulting to the last 30 days, so the list matches the number clicked.
+  const [dateRange, setDateRange] = useState(
+    initialDateRange || [
+      {
+        startDate: dayjs().subtract(29, "day").startOf("day").toDate(),
+        endDate: dayjs().endOf("day").toDate(),
+        key: "selection",
+      },
+    ]
+  );
   const [pickupAddresses, setPickupAddresses] = useState([]);
   const [selectedPickupAddress, setSelectedPickupAddress] = useState("");
   const [courierOptions, setCourierOptions] = useState([]);
@@ -200,7 +205,7 @@ const RTODelivered = (filterOrder) => {
       <div className="flex w-full sm:mb-2 md:flex-row flex-col sm:mt-2 justify-between items-center gap-1">
         <div className="flex flex-row items-center gap-2 w-full md:w-auto">
           <div className="flex-1 md:w-[200px]">
-            <DateFilter onDateChange={setDateRange} clearTrigger={refresh} />
+            <DateFilter initialDateRange={initialDateRange} onDateChange={setDateRange} clearTrigger={refresh} />
           </div>
           <button
             onClick={() => setIsFilterPanelOpen(true)}

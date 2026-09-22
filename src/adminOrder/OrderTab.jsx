@@ -124,19 +124,28 @@ const OrderTab = ({ isSidebarAdmin }) => {
         checkAccess();
     }, [isSidebarAdmin]);
 
+    // A dashboard status card passes the date range it was showing alongside
+    // the target tab (see OverviewMiddleSection.jsx). Only honor it for that
+    // exact tab — once the admin switches tabs manually, `activeTab` no
+    // longer matches the tab this navigation targeted, so every other tab
+    // keeps using its own normal default instead of inheriting the
+    // dashboard's date filter indefinitely.
+    const dashboardDateRange =
+        location.state?.tab === activeTab ? location.state?.dateRange : undefined;
+
     const renderTabContent = () => {
         switch (activeTab) {
             case "New": return <Orders userId={userId} />;
             case "Booked": return <BookedOrders userId={userId} />;
-            case "Ready to Ship": return <ReadyToShipOrders userId={userId} />;
+            case "Ready to Ship": return <ReadyToShipOrders userId={userId} initialDateRange={dashboardDateRange} />;
             case "Pickup & Manifest": return <PickupManifestOrders userId={userId} />;
-            case "In Transit": return <InTransitOrders userId={userId} />;
-            case "Out for Delivery": return <OutForDelivery userId={userId} />;
-            case "Delivered": return <DeliveredOrders userId={userId} />;
+            case "In Transit": return <InTransitOrders userId={userId} initialDateRange={dashboardDateRange} />;
+            case "Out for Delivery": return <OutForDelivery userId={userId} initialDateRange={dashboardDateRange} />;
+            case "Delivered": return <DeliveredOrders userId={userId} initialDateRange={dashboardDateRange} />;
             case "Cancelled": return <CancelledOrder userId={userId} />;
             case "RTO Initiated": return <RTO userId={userId} />;
             case "RTO In Transit": return <RTOIntransit userId={userId} />;
-            case "RTO Delivered": return <RTODelivered userId={userId} />;
+            case "RTO Delivered": return <RTODelivered userId={userId} initialDateRange={dashboardDateRange} />;
             case "RTO Lost": return <RTOLost userId={userId} />;
             case "RTO Damaged": return <RTODamaged userId={userId} />;
             case "Lost": return <Lost userId={userId} />;

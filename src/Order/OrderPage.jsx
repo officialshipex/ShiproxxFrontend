@@ -39,7 +39,13 @@ const OrdersPage = () => {
     "Delivered",
   ];
 
-  const moreTabs = ["Cancelled", "Lost", "Damaged", "RTO Initiated", "RTO In Transit", "RTO Delivered", "RTO Lost", "RTO Damaged", "All"];
+  // "Booked" has its own page (BookedOrders.jsx, status:"Booked" only) and a
+  // matching case below, but was missing from both tab arrays — so the
+  // dashboard's "Booked" stat box (see OverviewMiddleSection.jsx) couldn't
+  // deep-link to it and fell back to "Ready to Ship" instead, whose count
+  // (Booked + Not Picked + Ready To Ship combined) never matched the number
+  // the seller had just clicked.
+  const moreTabs = ["Booked", "Cancelled", "Lost", "Damaged", "RTO Initiated", "RTO In Transit", "RTO Delivered", "RTO Lost", "RTO Damaged", "All"];
   const allTabs = [...tabs, ...moreTabs];
 
   const isNdrRoute =
@@ -109,19 +115,28 @@ const OrdersPage = () => {
     }
   };
 
+  // A dashboard status card passes the date range it was showing alongside
+  // the target tab (see OverviewMiddleSection.jsx). Only honor it for that
+  // exact tab — once the seller switches tabs manually, `activeTab` no
+  // longer matches the tab this navigation targeted, so every other tab
+  // keeps using its own normal default instead of inheriting the dashboard's
+  // date filter indefinitely.
+  const dashboardDateRange =
+    location.state?.tab === activeTab ? location.state?.dateRange : undefined;
+
   const renderTabContent = () => {
     switch (activeTab) {
       case "New": return <Orders />;
       case "Booked": return <BookedOrders />;
       case "Pickup & Manifest": return <PickupManifestOrders />;
-      case "Ready to Ship": return <ReadyToShipOrders />;
-      case "In Transit": return <InTransitOrders />;
-      case "Out for Delivery": return <OutForDelivery />;
-      case "Delivered": return <DeliveredOrders />;
+      case "Ready to Ship": return <ReadyToShipOrders initialDateRange={dashboardDateRange} />;
+      case "In Transit": return <InTransitOrders initialDateRange={dashboardDateRange} />;
+      case "Out for Delivery": return <OutForDelivery initialDateRange={dashboardDateRange} />;
+      case "Delivered": return <DeliveredOrders initialDateRange={dashboardDateRange} />;
       case "Cancelled": return <CancelledOrder />;
       case "RTO Initiated": return <RTO />;
       case "RTO In Transit": return <RTOIntransit />;
-      case "RTO Delivered": return <RTODelivered />;
+      case "RTO Delivered": return <RTODelivered initialDateRange={dashboardDateRange} />;
       case "RTO Lost": return <RTOLost />;
       case "RTO Damaged": return <RTODamaged />;
       case "Lost": return <Lost />;

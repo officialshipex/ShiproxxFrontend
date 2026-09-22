@@ -4,7 +4,6 @@ import { FaClipboardList } from "react-icons/fa";
 import { FiBarChart2 } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import {
-    FaBox,
     FaTruckLoading,
     FaShippingFast,
     FaMapMarkedAlt,
@@ -38,11 +37,18 @@ const Dashboard = ({ selectedUserId, selectedDateRange }) => {
     // tab OrdersPage had remembered (localStorage) instead of the one the
     // seller actually clicked. Passing the target tab via navigation state
     // lets OrdersPage/OrderTab open the right one directly.
+    //
+    // The destination tab also used to default to its own "last 30 days"
+    // regardless of what this dashboard's date filter was set to — e.g.
+    // picking "Yesterday" here, then clicking "Ready To Ship", opened a list
+    // still showing the last 30 days. Passing `selectedDateRange` along lets
+    // the destination tab start from the same dates this card's count was
+    // computed from.
     const handleShipmentClick = (tab) => {
         if (!isAdmin || (isAdmin && !adminTab)) {
-            navigate("/dashboard/b2c/order", { state: { tab } });
+            navigate("/dashboard/b2c/order", { state: { tab, dateRange: selectedDateRange } });
         } else {
-            navigate("/adminDashboard/b2c/order", { state: { tab } });
+            navigate("/adminDashboard/b2c/order", { state: { tab, dateRange: selectedDateRange } });
         }
     };
 
@@ -100,7 +106,7 @@ const Dashboard = ({ selectedUserId, selectedDateRange }) => {
         </div>
     );
 
-    const StatBox = ({ label, value, icon: Icon, onClick }) => (
+    const StatBox = ({ label, value, subtitle, icon: Icon, onClick }) => (
         <div className="flex items-center border border-gray-200 cursor-pointer bg-white rounded-lg p-3 shadow-sm hover:border-[#10BE3B] transition-all duration-700 w-full" onClick={onClick}>
             {Icon && (
                 <div className="bg-[#10BE3B] p-2 rounded-full mr-3">
@@ -110,6 +116,7 @@ const Dashboard = ({ selectedUserId, selectedDateRange }) => {
             <div className="flex flex-col">
                 <div className="text-[14px] text-gray-700 font-[600]">{value}</div>
                 <div className="text-[14px] text-gray-500">{label}</div>
+                {subtitle && <div className="text-[11px] text-gray-400">{subtitle}</div>}
             </div>
         </div>
     );
@@ -198,12 +205,19 @@ const Dashboard = ({ selectedUserId, selectedDateRange }) => {
                     <h2 className="text-[14px] text-gray-700 font-[600] mb-2">Shipments Details</h2>
                     {/* <p className="text-[10px] sm:text-[12px] text-gray-500">Last 30 days</p> */}
                 </div>
-                <div className="grid grid-cols-2 text-[14px] sm:grid-cols-3 md:grid-cols-6 gap-2">
-                    {/* "Booked" orders live under the "Ready to Ship" tab in OrdersPage
-                        (it queries status in [Ready To Ship, Booked, Not Picked]) — there's
-                        no separate visible "Booked" tab to send this to. */}
-                    <StatBox label="Booked" value={data?.shipmentStats?.booked || 0} icon={FaBox} onClick={() => handleShipmentClick("Ready to Ship")} />
-                    <StatBox label="Ready To Ship" value={data?.shipmentStats?.readyToShip || 0} icon={FaTruckLoading} onClick={() => handleShipmentClick("Ready to Ship")} />
+                <div className="grid grid-cols-2 text-[14px] sm:grid-cols-3 md:grid-cols-5 gap-2">
+                    {/* "Booked" no longer gets its own card — its count is folded into
+                        this one's subtitle instead, since "Ready To Ship" is the only
+                        thing this card can link to (the tab shows Booked + Not Picked +
+                        Ready To Ship combined; there's no separate "Booked" destination
+                        the number could point at without repeating the earlier mismatch). */}
+                    <StatBox
+                        label="Ready To Ship"
+                        value={data?.shipmentStats?.readyToShip || 0}
+                        subtitle={`${data?.shipmentStats?.booked || 0} Booked · ${Math.max((data?.shipmentStats?.readyToShip || 0) - (data?.shipmentStats?.booked || 0), 0)} Ready To Ship`}
+                        icon={FaTruckLoading}
+                        onClick={() => handleShipmentClick("Ready to Ship")}
+                    />
                     <StatBox label="In-Transit" value={data?.shipmentStats?.inTransit || 0} icon={FaShippingFast} onClick={() => handleShipmentClick("In Transit")} />
                     <StatBox label="Out for Delivery" value={data?.shipmentStats?.outForDelivery || 0} icon={FaMapMarkedAlt} onClick={() => handleShipmentClick("Out for Delivery")} />
                     <StatBox label="Delivered" value={data?.shipmentStats?.delivered || 0} icon={FaCheckCircle} onClick={() => handleShipmentClick("Delivered")} />
