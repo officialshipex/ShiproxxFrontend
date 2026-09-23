@@ -235,10 +235,27 @@ const DateFilter = ({ onDateChange, clearTrigger, noInitialFilter, className, in
                                 className="bg-[#10BE3B] text-white px-3 py-1 text-xs rounded"
                                 onClick={(e) => {
                                     e.stopPropagation();
-                                    setDateRange(tempDateRange);
+                                    // react-date-range sets both startDate and endDate to
+                                    // midnight of the clicked day(s) — clicking a single
+                                    // date gives startDate === endDate at 00:00:00, a
+                                    // zero-width window that matches nothing downstream
+                                    // ("Custom" + one date showed 0 everywhere). A dragged
+                                    // multi-day range has the same problem on its last day
+                                    // (also midnight, not end-of-day), silently dropping
+                                    // that day's data too. Every named preset above already
+                                    // stretches to startOf/endOf day — do the same here,
+                                    // once, at the point this gets reported to the parent.
+                                    const normalizedRange = [
+                                        {
+                                            ...tempDateRange[0],
+                                            startDate: dayjs(tempDateRange[0].startDate).startOf("day").toDate(),
+                                            endDate: dayjs(tempDateRange[0].endDate).endOf("day").toDate(),
+                                        },
+                                    ];
+                                    setDateRange(normalizedRange);
                                     setShowCustom(false);
                                     setShowDropdown(false);
-                                    onDateChange && onDateChange(tempDateRange); // ✅ send to parent
+                                    onDateChange && onDateChange(normalizedRange); // ✅ send to parent
                                 }}
                             >
                                 Apply
