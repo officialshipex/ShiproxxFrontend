@@ -801,7 +801,11 @@ const CODRemittanceOrder = ({ isSidebarAdmin }) => {
       {showTransferCODModal && (
         <TranseferCODModal
           id={transferCODUserId}
-          onClose={() => setShowTransferCODModal(false)}
+          onClose={() => {
+            setShowTransferCODModal(false);
+            setRefresh((prev) => !prev);
+            setSelectedRemittanceIds([]);
+          }}
           selectedRemittanceIds={selectedRemittanceIds}
         />
       )}

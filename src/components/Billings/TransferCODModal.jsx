@@ -11,6 +11,8 @@ const TranseferCODModal = ({ id, onClose, selectedRemittanceIds = [] }) => {
   const [bankDetails, setBankDetails] = useState(null);
   const [utr, setUtr] = useState("");
   const [loading, setLoading] = useState(false);
+  const [fetchLoading, setFetchLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(null);
 
   const [balance, setBalance] = useState(0);
   const [holdAmount, setHoldAmount] = useState(0);
@@ -33,14 +35,20 @@ const TranseferCODModal = ({ id, onClose, selectedRemittanceIds = [] }) => {
     const fetchCodTransfer = async () => {
       if (!id || !selectedRemittanceIds?.length) return;
 
+      setFetchLoading(true);
+      setFetchError(null);
       try {
         const token = Cookies.get("session");
 
+        const params = new URLSearchParams();
+        (selectedRemittanceIds || []).forEach((remId) => {
+          params.append("selectedRemittanceIds", remId);
+        });
+
         const response = await axios.get(
-          `${REACT_APP_BACKEND_URL}/cod/getCODTransferData/${id}`,
+          `${REACT_APP_BACKEND_URL}/cod/getCODTransferData/${id}?${params.toString()}`,
           {
             headers: { Authorization: `Bearer ${token}` },
-            params: { selectedRemittanceIds },
           }
         );
 
@@ -70,6 +78,11 @@ const TranseferCODModal = ({ id, onClose, selectedRemittanceIds = [] }) => {
         );
       } catch (error) {
         console.error("Error fetching remittance data:", error);
+        const errMsg = error?.response?.data?.message || "Error fetching remittance data";
+        setFetchError(errMsg);
+        Notification(errMsg, "error");
+      } finally {
+        setFetchLoading(false);
       }
     };
 
@@ -327,12 +340,28 @@ const TranseferCODModal = ({ id, onClose, selectedRemittanceIds = [] }) => {
             Transfer COD Details
           </h2>
 
-          {/* LOADING */}
-          {!remittance ? (
-            <div className="space-y-4">
+          {/* LOADING / ERROR / CONTENT */}
+          {fetchLoading ? (
+            <div className="space-y-4 py-8">
               <div className="h-6 bg-gray-200 rounded animate-pulse w-1/2"></div>
               <div className="h-6 bg-gray-200 rounded animate-pulse w-2/3"></div>
               <div className="h-6 bg-gray-200 rounded animate-pulse w-1/3"></div>
+            </div>
+          ) : fetchError ? (
+            <div className="py-8 text-center space-y-4">
+              <div className="p-3 bg-red-50 border border-red-200 text-red-600 rounded-lg text-[13px] font-semibold">
+                {fetchError}
+              </div>
+              <button
+                onClick={onClose}
+                className="px-4 py-2 text-[12px] font-semibold text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition"
+              >
+                Close
+              </button>
+            </div>
+          ) : !remittance ? (
+            <div className="py-8 text-center text-gray-500 text-[13px]">
+              No remittance data found.
             </div>
           ) : (
             <>
@@ -535,53 +564,60 @@ const TranseferCODModal = ({ id, onClose, selectedRemittanceIds = [] }) => {
               <h3 className="text-[12px] font-[600] mb-2 text-gray-700">
                 Bank Details
               </h3>
-              {/* Bank Details (unchanged) */}
-              {bankDetails && (
+              {/* Bank Details */}
+              {bankDetails ? (
                 <div className="mb-2 px-3 py-2 border border-gray-200 rounded-lg bg-green-50 shadow-sm">
                   <div className="grid sm:grid-cols-2 grid-cols-1 gap-2 text-[11px] text-gray-700">
                     <div>
                       <span className="font-[600]">Account Holder:</span>{" "}
-                      {bankDetails.nameAtBank}
+                      {bankDetails.nameAtBank || "N/A"}
                     </div>
                     <div>
                       <span className="font-[600]">Account Number:</span>{" "}
-                      {bankDetails.accountNumber}
+                      {bankDetails.accountNumber || "N/A"}
                     </div>
                     <div>
                       <span className="font-[600]">Bank:</span>{" "}
-                      {bankDetails.bank}
+                      {bankDetails.bank || "N/A"}
                     </div>
                     <div>
                       <span className="font-[600]">Branch:</span>{" "}
-                      {bankDetails.branch}
+                      {bankDetails.branch || "N/A"}
                     </div>
                     <div>
                       <span className="font-[600]">City:</span>{" "}
-                      {bankDetails.city}
+                      {bankDetails.city || "N/A"}
                     </div>
                     <div>
                       <span className="font-[600]">IFSC:</span>{" "}
-                      {bankDetails.ifsc}
+                      {bankDetails.ifsc || "N/A"}
                     </div>
                   </div>
+                </div>
+              ) : (
+                <div className="mb-2 px-3 py-2.5 border border-amber-200 rounded-lg bg-amber-50 shadow-sm flex items-center gap-2 text-[11px] text-amber-800">
+                  <span className="text-amber-600 font-bold text-sm">⚠️</span>
+                  <span>
+                    <strong>No bank details on file:</strong> This seller has not added bank account details yet. Please verify bank account details with the seller.
+                  </span>
                 </div>
               )}
               <h3 className="text-[12px] font-[600] mb-2 text-gray-700">
                 Remittance Details
               </h3>
-              {/* Summary Section — unchanged */}
+              {/* Summary Section */}
               <section className="mb-2 grid sm:grid-cols-2 grid-cols-1 font-[600] px-3 py-2 gap-2 text-[11px] border border-gray-200 rounded-lg bg-green-50 shadow-sm text-gray-700">
                 <div className="text-[#10BE3B]">
                   <span>Remittance Initiated:</span>{" "}
-                  ₹{remittance.RemittanceInitiated.toFixed(2)}
+                  ₹{(Number(remittance?.RemittanceInitiated) || 0).toFixed(2)}
                 </div>
                 <div className="text-orange-500">
                   <span className="font-[600]">COD To Be Remitted:</span>{" "}
-                  ₹{remittance.CODToBeRemitted.toFixed(2)}
+                  ₹{(Number(remittance?.CODToBeRemitted) || 0).toFixed(2)}
                 </div>
               </section>
 
-              {/* Remittance Table — unchanged layout */}
+              {/* Remittance Table */}
               <section className="mb-4">
                 <h3 className="text-[12px] font-[600] mb-2">Remittance Data</h3>
 
@@ -619,13 +655,13 @@ const TranseferCODModal = ({ id, onClose, selectedRemittanceIds = [] }) => {
                               ).toFixed(2)}
                             </td>
                             <td className="px-3 py-2">
-                              ₹{Number(item.amountCreditedToWallet).toFixed(2)}
+                              ₹{Number(item.amountCreditedToWallet || 0).toFixed(2)}
                             </td>
                             <td className="px-3 py-2">
-                              ₹{Number(item.earlyCodCharges).toFixed(2)}
+                              ₹{Number(item.earlyCodCharges || 0).toFixed(2)}
                             </td>
                             <td className="px-3 py-2">
-                              ₹{item.remittanceAmount.toFixed(2)}
+                              ₹{Number(item.remittanceAmount || 0).toFixed(2)}
                             </td>
                             <td className="px-3 py-2 capitalize text-orange-500">
                               {item.status}
