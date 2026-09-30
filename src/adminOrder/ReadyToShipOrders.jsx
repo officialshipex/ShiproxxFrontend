@@ -129,7 +129,7 @@ const ReadyToShipOrders = ({ userId: initialUserId, initialDateRange }) => {
       const params = {
         page,
         limit,
-        status: ["Booked", "Not Picked", "Ready To Ship"],
+        status: ["Ready To Ship"],
         searchQuery: searchQuery || undefined,
         orderId: orderId || undefined,
         awbNumber: awbNumber || undefined,

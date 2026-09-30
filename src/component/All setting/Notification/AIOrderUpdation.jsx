@@ -281,7 +281,7 @@ const AIOrderUpdation = () => {
           <FeatureCard
             icon={<MdOutlineVerified className="w-5 h-5" />}
             title="Order Verification"
-            description="AI calls customer after shipment is booked to verify address & details."
+            description="AI calls customer after shipment is ready to ship to verify address & details."
             enabled={settings.isAiOrderVerifyEnable}
             adminEnabled={settings.isAdminAiOrderVerifyEnable}
             activeLabel="Verification Active"

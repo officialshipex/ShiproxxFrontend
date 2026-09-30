@@ -119,7 +119,7 @@ const BookedOrders = ({ userId: selectedUserId }) => {
       const params = {
         page,
         limit,
-        status: ["Booked"],
+        status: ["Ready To Ship"],
         searchQuery: searchQuery || undefined,
         orderId: orderId || undefined,
         awbNumber: awbNumber || undefined,

@@ -75,7 +75,7 @@ const OrderRowActions = ({
     const action = getStatusAction(order)[order.status];
 
     // Status-based visibility logic
-    const showCancel = ["Ready To Ship", "Booked", "Not Picked"].includes(order.status);
+    const showCancel = ["Ready To Ship"].includes(order.status);
     const cancelLabel = isNewOrder ? "Delete Order" : "Cancel Order";
     const restrictedForManifest = ["new", "Cancelled"];
     const showDownloadManifest = !restrictedForManifest.includes(order.status);
@@ -147,7 +147,7 @@ const OrderRowActions = ({
                             >
                                 <ul className="text-[10px] font-[600]">
                                     {/* Verify Order logic */}
-                                    {onVerifyOrder && order.status === "Booked" && (
+                                    {onVerifyOrder && order.status === "Ready To Ship" && (
                                         <li
                                             onClick={(e) => {
                                                 e.stopPropagation();

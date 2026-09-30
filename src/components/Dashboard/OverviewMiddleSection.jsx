@@ -206,15 +206,11 @@ const Dashboard = ({ selectedUserId, selectedDateRange }) => {
                     {/* <p className="text-[10px] sm:text-[12px] text-gray-500">Last 30 days</p> */}
                 </div>
                 <div className="grid grid-cols-2 text-[14px] sm:grid-cols-3 md:grid-cols-5 gap-2">
-                    {/* "Booked" no longer gets its own card — its count is folded into
-                        this one's subtitle instead, since "Ready To Ship" is the only
-                        thing this card can link to (the tab shows Booked + Not Picked +
-                        Ready To Ship combined; there's no separate "Booked" destination
-                        the number could point at without repeating the earlier mismatch). */}
+                    {/* "Booked" and "Not Picked" are retired — all such orders
+                        are now "Ready To Ship". The card shows the unified count. */}
                     <StatBox
                         label="Ready To Ship"
                         value={data?.shipmentStats?.readyToShip || 0}
-                        subtitle={`${data?.shipmentStats?.booked || 0} Booked · ${Math.max((data?.shipmentStats?.readyToShip || 0) - (data?.shipmentStats?.booked || 0), 0)} Ready To Ship`}
                         icon={FaTruckLoading}
                         onClick={() => handleShipmentClick("Ready to Ship")}
                     />

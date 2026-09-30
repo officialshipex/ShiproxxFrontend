@@ -18,7 +18,7 @@ import RTOLost from "./RTOLost";
 import RTODamaged from "./RTODamaged";
 import Lost from "./Lost";
 import Damaged from "./Damaged";
-import BookedOrders from "./BookedOrders";
+import BookedOrders from "./BookedOrders"; // kept for legacy deep-links; will redirect to Ready to Ship
 
 const OrdersPage = () => {
   const [showDropdown, setShowDropdown] = useState(false);
@@ -39,13 +39,10 @@ const OrdersPage = () => {
     "Delivered",
   ];
 
-  // "Booked" has its own page (BookedOrders.jsx, status:"Booked" only) and a
-  // matching case below, but was missing from both tab arrays — so the
-  // dashboard's "Booked" stat box (see OverviewMiddleSection.jsx) couldn't
-  // deep-link to it and fell back to "Ready to Ship" instead, whose count
-  // (Booked + Not Picked + Ready To Ship combined) never matched the number
-  // the seller had just clicked.
-  const moreTabs = ["Booked", "Cancelled", "Lost", "Damaged", "RTO Initiated", "RTO In Transit", "RTO Delivered", "RTO Lost", "RTO Damaged", "All"];
+  // "Booked" and "Not Picked" statuses are retired — all such orders are
+  // now "Ready To Ship". The "Booked" tab has been removed; those orders
+  // appear under "Ready to Ship" instead.
+  const moreTabs = ["Cancelled", "Lost", "Damaged", "RTO Initiated", "RTO In Transit", "RTO Delivered", "RTO Lost", "RTO Damaged", "All"];
   const allTabs = [...tabs, ...moreTabs];
 
   const isNdrRoute =
@@ -127,7 +124,7 @@ const OrdersPage = () => {
   const renderTabContent = () => {
     switch (activeTab) {
       case "New": return <Orders />;
-      case "Booked": return <BookedOrders />;
+      case "Booked": // retired — redirect to Ready to Ship
       case "Pickup & Manifest": return <PickupManifestOrders />;
       case "Ready to Ship": return <ReadyToShipOrders initialDateRange={dashboardDateRange} />;
       case "In Transit": return <InTransitOrders initialDateRange={dashboardDateRange} />;

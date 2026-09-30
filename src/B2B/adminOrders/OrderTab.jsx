@@ -50,7 +50,6 @@ const OrderTab = ({ isSidebarAdmin }) => {
 
     const tabs = [
         "New",
-        "Booked",
         // "Pickup & Manifest",
         "Ready to Ship",
         "In Transit",
@@ -106,8 +105,8 @@ const OrderTab = ({ isSidebarAdmin }) => {
     const renderTabContent = () => {
         switch (activeTab) {
             case "New": return <Orders userId={userId} />;
-            case "Booked": return <BookedOrders userId={userId} />;
             case "Pickup & Manifest": return <PickupManifestOrders userId={userId} />;
+            case "Booked": // retired — falls through to Ready to Ship
             case "Ready to Ship": return <ReadyToShipOrders userId={userId} />;
             case "In Transit": return <InTransitOrders userId={userId} />;
             case "Out for Delivery": return <OutForDelivery userId={userId} />;

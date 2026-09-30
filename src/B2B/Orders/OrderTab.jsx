@@ -36,7 +36,6 @@ const OrdersPage = () => {
 
   const tabs = [
     "New",
-    "Booked",
     // "Pickup & Manifest",
     "Ready to Ship",
     "In Transit",
@@ -94,9 +93,9 @@ const OrdersPage = () => {
   const renderTabContent = () => {
     switch (activeTab) {
       case "New": return <Orders />;
-      case "Booked": return <BookedOrders />;
-      case "Pickup & Manifest": return <PickupManifestOrders />;
+      case "Booked": // retired — falls through to Ready to Ship
       case "Ready to Ship": return <ReadyToShipOrders />;
+      case "Pickup & Manifest": return <PickupManifestOrders />;
       case "In Transit": return <InTransitOrders />;
       case "Out for Delivery": return <OutForDelivery />;
       case "Delivered": return <DeliveredOrders />;

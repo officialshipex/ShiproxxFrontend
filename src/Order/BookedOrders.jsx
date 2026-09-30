@@ -203,7 +203,7 @@ const BookedOrders = (filterOrder) => {
         id,
         page,
         limit,
-        status: ["Booked"],
+        status: ["Ready To Ship"],
         searchQuery,
         orderId: orderId || undefined,
         awbNumber: awbNumber || undefined,
